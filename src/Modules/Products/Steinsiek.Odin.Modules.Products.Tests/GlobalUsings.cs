@@ -1,0 +1,10 @@
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Threading.Tasks;
+global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using Steinsiek.Odin.Modules.Products;
+global using Steinsiek.Odin.Modules.Products.Entities;
+global using Steinsiek.Odin.Modules.Products.Repositories;
+global using Steinsiek.Odin.Modules.Products.Services;
+global using Steinsiek.Odin.Modules.Products.Shared.DTOs;

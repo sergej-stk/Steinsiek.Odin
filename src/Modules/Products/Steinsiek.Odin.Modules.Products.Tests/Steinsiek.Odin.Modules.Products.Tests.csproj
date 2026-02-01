@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MSTest" Version="4.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Steinsiek.Odin.Modules.Products\Steinsiek.Odin.Modules.Products.csproj" />
+    <ProjectReference Include="..\Steinsiek.Odin.Modules.Products.Shared\Steinsiek.Odin.Modules.Products.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
