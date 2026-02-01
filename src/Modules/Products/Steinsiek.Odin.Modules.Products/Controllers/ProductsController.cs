@@ -67,7 +67,7 @@ public sealed class ProductsController(IProductService productService) : Control
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<ProductDto>> Create([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
     {
-        var product = await _productService.CreateAsync(request, cancellationToken);
+        var product = await _productService.Create(request, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
     }
 
@@ -78,7 +78,7 @@ public sealed class ProductsController(IProductService productService) : Control
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ProductDto>> Update(Guid id, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
     {
-        var product = await _productService.UpdateAsync(id, request, cancellationToken);
+        var product = await _productService.Update(id, request, cancellationToken);
         if (product is null)
         {
             return NotFound();
@@ -93,7 +93,7 @@ public sealed class ProductsController(IProductService productService) : Control
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _productService.DeleteAsync(id, cancellationToken);
+        var result = await _productService.Delete(id, cancellationToken);
         if (!result)
         {
             return NotFound();

@@ -17,7 +17,7 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
     [ProducesResponseType(typeof(IEnumerable<CategoryDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll(CancellationToken cancellationToken)
     {
-        var categories = await _categoryService.GetAllAsync(cancellationToken);
+        var categories = await _categoryService.GetAll(cancellationToken);
         return Ok(categories);
     }
 
@@ -28,7 +28,7 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CategoryDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var category = await _categoryService.GetByIdAsync(id, cancellationToken);
+        var category = await _categoryService.GetById(id, cancellationToken);
         if (category is null)
         {
             return NotFound();
@@ -43,7 +43,7 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<CategoryDto>> Create([FromBody] CreateCategoryRequest request, CancellationToken cancellationToken)
     {
-        var category = await _categoryService.CreateAsync(request, cancellationToken);
+        var category = await _categoryService.Create(request, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
     }
 
@@ -54,7 +54,7 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CategoryDto>> Update(Guid id, [FromBody] UpdateCategoryRequest request, CancellationToken cancellationToken)
     {
-        var category = await _categoryService.UpdateAsync(id, request, cancellationToken);
+        var category = await _categoryService.Update(id, request, cancellationToken);
         if (category is null)
         {
             return NotFound();
@@ -69,7 +69,7 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _categoryService.DeleteAsync(id, cancellationToken);
+        var result = await _categoryService.Delete(id, cancellationToken);
         if (!result)
         {
             return NotFound();
