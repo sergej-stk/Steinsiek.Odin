@@ -1,0 +1,4 @@
+Copyright (c) 2025 Sergej Steinsiek
+
+This software is proprietary and may not be used, copied, modified, or distributed
+without explicit written permission or a commercial license agreement from the author.
