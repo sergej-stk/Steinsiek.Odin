@@ -1,0 +1,6 @@
+@Steinsiek.Odin.API_HostAddress = http://localhost:5236
+
+GET {{Steinsiek.Odin.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
