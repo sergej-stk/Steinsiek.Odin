@@ -381,6 +381,7 @@ public async Task<ActionResult<ProductDto>> GetById(Guid id) { ... } // ❌
 - Use `Create`, not `CreateAsync`
 - Use `Delete`, not `DeleteAsync`
 - This applies to all layers: Controllers, Services, Repositories
+- Exception: Framework-required method signatures (e.g., middleware `InvokeAsync`) retain the Async suffix
 
 #### Examples
 ```csharp

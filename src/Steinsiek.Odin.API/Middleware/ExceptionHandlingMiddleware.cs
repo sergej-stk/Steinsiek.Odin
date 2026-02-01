@@ -31,11 +31,11 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            await HandleExceptionAsync(context, ex);
+            await HandleException(context, ex);
         }
     }
 
-    private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private async Task HandleException(HttpContext context, Exception exception)
     {
         _logger.LogError(exception, "An unhandled exception occurred: {Message}", exception.Message);
 
