@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Steinsiek.Odin.Modules.Products.Shared/Steinsiek.Odin.Modules.Products.Shared.csproj" />
+  <Project Path="Steinsiek.Odin.Modules.Products.Tests/Steinsiek.Odin.Modules.Products.Tests.csproj" />
+  <Project Path="Steinsiek.Odin.Modules.Products/Steinsiek.Odin.Modules.Products.csproj" />
+</Solution>
