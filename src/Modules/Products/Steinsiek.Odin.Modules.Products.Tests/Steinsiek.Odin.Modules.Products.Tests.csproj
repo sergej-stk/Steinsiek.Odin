@@ -1,17 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="MSTest" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Steinsiek.Odin.Modules.Core.Shared\Steinsiek.Odin.Modules.Core.Shared.csproj" />
     <ProjectReference Include="..\Steinsiek.Odin.Modules.Products\Steinsiek.Odin.Modules.Products.csproj" />
     <ProjectReference Include="..\Steinsiek.Odin.Modules.Products.Shared\Steinsiek.Odin.Modules.Products.Shared.csproj" />
   </ItemGroup>

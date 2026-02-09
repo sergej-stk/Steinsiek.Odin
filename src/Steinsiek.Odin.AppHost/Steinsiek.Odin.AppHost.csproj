@@ -1,5 +1,10 @@
 <Project Sdk="Aspire.AppHost.Sdk/13.0.0">
 
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>6de8552e-3068-4a20-8897-a22c7acb952f</UserSecretsId>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Steinsiek.Odin.API\Steinsiek.Odin.API.csproj" />
   </ItemGroup>
@@ -7,13 +12,5 @@
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.Redis" Version="13.1.0" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <UserSecretsId>6de8552e-3068-4a20-8897-a22c7acb952f</UserSecretsId>
-  </PropertyGroup>
 
 </Project>

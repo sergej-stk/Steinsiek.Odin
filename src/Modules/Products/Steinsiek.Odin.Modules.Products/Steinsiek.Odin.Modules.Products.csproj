@@ -1,13 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
-  </PropertyGroup>
-
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
@@ -18,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Steinsiek.Odin.Modules.Core\Steinsiek.Odin.Modules.Core.csproj" />
+    <ProjectReference Include="..\..\Core\Steinsiek.Odin.Modules.Core.Shared\Steinsiek.Odin.Modules.Core.Shared.csproj" />
     <ProjectReference Include="..\Steinsiek.Odin.Modules.Products.Shared\Steinsiek.Odin.Modules.Products.Shared.csproj" />
   </ItemGroup>
 
