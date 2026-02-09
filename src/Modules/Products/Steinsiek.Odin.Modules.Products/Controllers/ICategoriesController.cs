@@ -9,8 +9,8 @@ public interface ICategoriesController
     /// Retrieves all categories.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A list of all categories.</returns>
-    Task<ActionResult<IEnumerable<CategoryDto>>> GetAll(CancellationToken cancellationToken);
+    /// <returns>A list result containing all categories with total count.</returns>
+    Task<ActionResult<ListResult<CategoryDto>>> GetAll(CancellationToken cancellationToken);
 
     /// <summary>
     /// Retrieves a category by its identifier.

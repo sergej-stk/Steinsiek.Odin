@@ -13,6 +13,7 @@ global using Microsoft.Extensions.Logging;
 global using Steinsiek.Odin.Modules.Core;
 global using Steinsiek.Odin.Modules.Core.Entities;
 global using Steinsiek.Odin.Modules.Core.Repositories;
+global using Steinsiek.Odin.Modules.Core.Shared.DTOs;
 global using Steinsiek.Odin.Modules.Products.Entities;
 global using Steinsiek.Odin.Modules.Products.Repositories;
 global using Steinsiek.Odin.Modules.Products.Services;

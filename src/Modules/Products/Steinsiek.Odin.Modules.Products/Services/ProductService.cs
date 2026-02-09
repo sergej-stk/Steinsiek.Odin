@@ -26,7 +26,7 @@ public sealed class ProductService : IProductService
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<ProductDto>> GetAll(CancellationToken cancellationToken)
+    public async Task<ListResult<ProductDto>> GetAll(CancellationToken cancellationToken)
     {
         var products = await _productRepository.GetAll(cancellationToken);
         var dtos = new List<ProductDto>();
@@ -37,29 +37,42 @@ public sealed class ProductService : IProductService
             dtos.Add(MapToDto(product, category?.Name));
         }
 
-        return dtos;
+        return new ListResult<ProductDto>
+        {
+            TotalCount = dtos.Count,
+            Data = dtos
+        };
     }
 
     /// <inheritdoc />
     public async Task<ProductDto?> GetById(Guid id, CancellationToken cancellationToken)
     {
         var product = await _productRepository.GetById(id, cancellationToken);
-        if (product is null) return null;
+        if (product is null)
+        {
+            return null;
+        }
 
         var category = await _categoryRepository.GetById(product.CategoryId, cancellationToken);
         return MapToDto(product, category?.Name);
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<ProductDto>> GetByCategoryId(Guid categoryId, CancellationToken cancellationToken)
+    public async Task<ListResult<ProductDto>> GetByCategoryId(Guid categoryId, CancellationToken cancellationToken)
     {
         var products = await _productRepository.GetByCategoryId(categoryId, cancellationToken);
         var category = await _categoryRepository.GetById(categoryId, cancellationToken);
-        return products.Select(p => MapToDto(p, category?.Name));
+        var dtos = products.Select(p => MapToDto(p, category?.Name)).ToList();
+
+        return new ListResult<ProductDto>
+        {
+            TotalCount = dtos.Count,
+            Data = dtos
+        };
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<ProductDto>> Search(string searchTerm, CancellationToken cancellationToken)
+    public async Task<ListResult<ProductDto>> Search(string searchTerm, CancellationToken cancellationToken)
     {
         var products = await _productRepository.Search(searchTerm, cancellationToken);
         var dtos = new List<ProductDto>();
@@ -70,7 +83,11 @@ public sealed class ProductService : IProductService
             dtos.Add(MapToDto(product, category?.Name));
         }
 
-        return dtos;
+        return new ListResult<ProductDto>
+        {
+            TotalCount = dtos.Count,
+            Data = dtos
+        };
     }
 
     /// <inheritdoc />

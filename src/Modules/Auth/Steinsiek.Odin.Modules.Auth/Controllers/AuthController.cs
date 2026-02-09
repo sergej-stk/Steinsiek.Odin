@@ -18,11 +18,7 @@ public sealed class AuthController(IAuthService authService) : ControllerBase, I
     public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
         var result = await _authService.Login(request, cancellationToken);
-        if (result is null)
-        {
-            return Unauthorized(new { message = "Invalid email or password" });
-        }
-        return result;
+        return result ?? (ActionResult<LoginResponse>)Unauthorized(new { message = "Invalid email or password" });
     }
 
     /// <inheritdoc />
@@ -33,11 +29,7 @@ public sealed class AuthController(IAuthService authService) : ControllerBase, I
     public async Task<ActionResult<LoginResponse>> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
         var result = await _authService.Register(request, cancellationToken);
-        if (result is null)
-        {
-            return BadRequest(new { message = "Email already exists" });
-        }
-        return CreatedAtAction(nameof(Login), result);
+        return result is null ? (ActionResult<LoginResponse>)BadRequest(new { message = "Email already exists" }) : (ActionResult<LoginResponse>)CreatedAtAction(nameof(Login), result);
     }
 
     /// <inheritdoc />
@@ -58,17 +50,14 @@ public sealed class AuthController(IAuthService authService) : ControllerBase, I
         var lastName = User.FindFirst(ClaimTypes.Surname)?.Value
             ?? User.FindFirst("family_name")?.Value ?? "";
 
-        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email))
-        {
-            return Unauthorized();
-        }
-
-        return new UserDto
-        {
-            Id = Guid.Parse(userId),
-            Email = email,
-            FirstName = firstName,
-            LastName = lastName
-        };
+        return string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email)
+            ? (ActionResult<UserDto>)Unauthorized()
+            : (ActionResult<UserDto>)new UserDto
+            {
+                Id = Guid.Parse(userId),
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName
+            };
     }
 }

@@ -14,8 +14,8 @@ public sealed class ProductsController(IProductService productService) : Control
     /// <inheritdoc />
     [HttpGet]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(IEnumerable<ProductDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ProductDto>>> GetAll(CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ListResult<ProductDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ListResult<ProductDto>>> GetAll(CancellationToken cancellationToken)
     {
         var products = await _productService.GetAll(cancellationToken);
         return Ok(products);
@@ -29,18 +29,14 @@ public sealed class ProductsController(IProductService productService) : Control
     public async Task<ActionResult<ProductDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var product = await _productService.GetById(id, cancellationToken);
-        if (product is null)
-        {
-            return NotFound();
-        }
-        return product;
+        return product is null ? (ActionResult<ProductDto>)NotFound() : (ActionResult<ProductDto>)product;
     }
 
     /// <inheritdoc />
     [HttpGet("category/{categoryId:guid}")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(IEnumerable<ProductDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ProductDto>>> GetByCategory(Guid categoryId, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ListResult<ProductDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ListResult<ProductDto>>> GetByCategory(Guid categoryId, CancellationToken cancellationToken)
     {
         var products = await _productService.GetByCategoryId(categoryId, cancellationToken);
         return Ok(products);
@@ -49,12 +45,12 @@ public sealed class ProductsController(IProductService productService) : Control
     /// <inheritdoc />
     [HttpGet("search")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(IEnumerable<ProductDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ProductDto>>> Search([FromQuery] string q, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ListResult<ProductDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ListResult<ProductDto>>> Search([FromQuery] string? q, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(q))
         {
-            return Ok(Array.Empty<ProductDto>());
+            return Ok(new ListResult<ProductDto> { TotalCount = 0, Data = [] });
         }
         var products = await _productService.Search(q, cancellationToken);
         return Ok(products);
@@ -79,11 +75,7 @@ public sealed class ProductsController(IProductService productService) : Control
     public async Task<ActionResult<ProductDto>> Update(Guid id, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
     {
         var product = await _productService.Update(id, request, cancellationToken);
-        if (product is null)
-        {
-            return NotFound();
-        }
-        return product;
+        return product ?? (ActionResult<ProductDto>)NotFound();
     }
 
     /// <inheritdoc />
@@ -94,10 +86,6 @@ public sealed class ProductsController(IProductService productService) : Control
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         var result = await _productService.Delete(id, cancellationToken);
-        if (!result)
-        {
-            return NotFound();
-        }
-        return NoContent();
+        return !result ? NotFound() : NoContent();
     }
 }

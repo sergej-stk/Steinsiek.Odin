@@ -14,8 +14,8 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
     /// <inheritdoc />
     [HttpGet]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(IEnumerable<CategoryDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll(CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ListResult<CategoryDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ListResult<CategoryDto>>> GetAll(CancellationToken cancellationToken)
     {
         var categories = await _categoryService.GetAll(cancellationToken);
         return Ok(categories);
@@ -29,11 +29,7 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
     public async Task<ActionResult<CategoryDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var category = await _categoryService.GetById(id, cancellationToken);
-        if (category is null)
-        {
-            return NotFound();
-        }
-        return category;
+        return category ?? (ActionResult<CategoryDto>)NotFound();
     }
 
     /// <inheritdoc />
@@ -55,11 +51,7 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
     public async Task<ActionResult<CategoryDto>> Update(Guid id, [FromBody] UpdateCategoryRequest request, CancellationToken cancellationToken)
     {
         var category = await _categoryService.Update(id, request, cancellationToken);
-        if (category is null)
-        {
-            return NotFound();
-        }
-        return category;
+        return category ?? (ActionResult<CategoryDto>)NotFound();
     }
 
     /// <inheritdoc />
@@ -70,10 +62,6 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         var result = await _categoryService.Delete(id, cancellationToken);
-        if (!result)
-        {
-            return NotFound();
-        }
-        return NoContent();
+        return !result ? NotFound() : NoContent();
     }
 }

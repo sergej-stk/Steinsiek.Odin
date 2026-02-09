@@ -20,10 +20,16 @@ public sealed class CategoryService : ICategoryService
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<CategoryDto>> GetAll(CancellationToken cancellationToken)
+    public async Task<ListResult<CategoryDto>> GetAll(CancellationToken cancellationToken)
     {
         var categories = await _categoryRepository.GetAll(cancellationToken);
-        return categories.Select(MapToDto);
+        var dtos = categories.Select(MapToDto).ToList();
+
+        return new ListResult<CategoryDto>
+        {
+            TotalCount = dtos.Count,
+            Data = dtos
+        };
     }
 
     /// <inheritdoc />

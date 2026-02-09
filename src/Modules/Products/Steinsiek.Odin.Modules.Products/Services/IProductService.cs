@@ -9,8 +9,8 @@ public interface IProductService
     /// Retrieves all products.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A collection of all products.</returns>
-    Task<IEnumerable<ProductDto>> GetAll(CancellationToken cancellationToken);
+    /// <returns>A list result containing all products with total count.</returns>
+    Task<ListResult<ProductDto>> GetAll(CancellationToken cancellationToken);
 
     /// <summary>
     /// Retrieves a product by its identifier.
@@ -25,16 +25,16 @@ public interface IProductService
     /// </summary>
     /// <param name="categoryId">The category identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A collection of products in the specified category.</returns>
-    Task<IEnumerable<ProductDto>> GetByCategoryId(Guid categoryId, CancellationToken cancellationToken);
+    /// <returns>A list result containing products in the specified category with total count.</returns>
+    Task<ListResult<ProductDto>> GetByCategoryId(Guid categoryId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Searches for products by name or description.
     /// </summary>
     /// <param name="searchTerm">The search term to match.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A collection of matching products.</returns>
-    Task<IEnumerable<ProductDto>> Search(string searchTerm, CancellationToken cancellationToken);
+    /// <returns>A list result containing matching products with total count.</returns>
+    Task<ListResult<ProductDto>> Search(string searchTerm, CancellationToken cancellationToken);
 
     /// <summary>
     /// Creates a new product.
