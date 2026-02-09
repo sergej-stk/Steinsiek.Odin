@@ -79,6 +79,9 @@ try
 
     var app = builder.Build();
 
+    // Log Context Enrichment
+    app.UseLogContext();
+
     // Exception Handling
     app.UseExceptionHandling();
 
