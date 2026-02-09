@@ -88,6 +88,9 @@ try
     // Serilog Request Logging
     app.UseSerilogRequestLogging();
 
+    // Static Assets
+    app.MapStaticAssets();
+
     // OpenAPI & Scalar (Development)
     if (app.Environment.IsDevelopment())
     {
@@ -96,6 +99,7 @@ try
         {
             options.Title = "Steinsiek.Odin API";
             options.Theme = ScalarTheme.Purple;
+            options.Favicon = "/images/logo.svg";
             options.AddDocument("v1", "API v1", "/openapi/v1/openapi.json");
         });
     }

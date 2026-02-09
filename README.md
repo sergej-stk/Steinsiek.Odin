@@ -1,14 +1,13 @@
 <div align="center">
+  <a href="https://github.com/sergej-stk/Steinsiek.Odin">
+    <img src="assets/logo.svg" alt="Steinsiek.Odin Logo" width="400">
+  </a>
 
-<!-- Logo placeholder: Add your logo here -->
-<!-- <img src="assets/logo.png" alt="Steinsiek.Odin Logo" width="200" height="200"> -->
+  <h3>Steinsiek.Odin</h3>
 
-### Steinsiek.Odin
+  <p>A modular .NET Aspire E-Commerce REST API</p>
 
-A modular .NET Aspire E-Commerce REST API
-
-[Documentation](https://github.com/sergej-stk/Steinsiek.Odin) · [Report Bug](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?labels=bug) · [Request Feature](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?labels=enhancement)
-
+  [Documentation](https://github.com/sergej-stk/Steinsiek.Odin) · [Report Bug](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?labels=bug) · [Request Feature](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?labels=enhancement)
 </div>
 
 ---
