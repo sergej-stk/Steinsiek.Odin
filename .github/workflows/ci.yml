@@ -29,9 +29,6 @@ jobs:
         with:
           dotnet-version: 10.x
 
-      - name: Install Aspire Workload
-        run: dotnet workload install aspire
-
       - name: Cache NuGet Packages
         uses: actions/cache@v4
         with:
@@ -61,9 +58,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.x
-
-      - name: Install Aspire Workload
-        run: dotnet workload install aspire
 
       - name: Cache NuGet Packages
         uses: actions/cache@v4
