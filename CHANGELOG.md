@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-02-13
+
 ### Added
 
 - Modular monolith project structure with Core, Auth, and Products modules
@@ -36,3 +38,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - MSTestSettings.cs file encoding
 - CI pipeline restore failures
 - README issue template links
+
+[Unreleased]: https://github.com/sergej-stk/Steinsiek.Odin/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/sergej-stk/Steinsiek.Odin/releases/tag/v0.1.0
