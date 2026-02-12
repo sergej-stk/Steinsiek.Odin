@@ -7,6 +7,8 @@
 
   <p>A modular .NET Aspire E-Commerce REST API</p>
 
+  [![CI](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/ci.yml/badge.svg)](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/ci.yml)
+
   [Documentation](https://github.com/sergej-stk/Steinsiek.Odin) · [Report Bug](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?labels=bug) · [Request Feature](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?labels=enhancement)
 </div>
 
