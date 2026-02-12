@@ -9,9 +9,10 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     // Serilog
+    builder.Logging.ClearProviders();
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
-        .ReadFrom.Services(services));
+        .ReadFrom.Services(services), writeToProviders: true);
 
     // Service Defaults (Aspire)
     builder.AddServiceDefaults();

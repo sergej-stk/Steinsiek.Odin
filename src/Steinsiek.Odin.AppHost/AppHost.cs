@@ -1,10 +1,30 @@
-var builder = DistributedApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-var redis = builder.AddRedis("cache");
+Log.Information("Starting Steinsiek.Odin AppHost...");
 
-var api = builder.AddProject<Projects.Steinsiek_Odin_API>("api")
-    .WithReference(redis)
-    .WaitFor(redis)
-    .WithIconName("ShoppingBag", IconVariant.Filled);
+try
+{
+    var builder = DistributedApplication.CreateBuilder(args);
 
-builder.Build().Run();
+    builder.Services.AddSerilog((_, configuration) => configuration
+        .ReadFrom.Configuration(builder.Configuration));
+
+    var redis = builder.AddRedis("cache");
+
+    var api = builder.AddProject<Projects.Steinsiek_Odin_API>("api")
+        .WithReference(redis)
+        .WaitFor(redis)
+        .WithIconName("ShoppingBag", IconVariant.Filled);
+
+    builder.Build().Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

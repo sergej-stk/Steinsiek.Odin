@@ -4,3 +4,4 @@ global using System.Linq;
 global using System.Threading.Tasks;
 global using Aspire.Hosting;
 global using Aspire.Hosting.ApplicationModel;
+global using Serilog;
