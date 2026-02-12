@@ -3,27 +3,20 @@ namespace Steinsiek.Odin.Modules.Products.Services;
 /// <summary>
 /// Implementation of the product service handling CRUD operations.
 /// </summary>
-public sealed class ProductService : IProductService
+/// <remarks>
+/// Initializes a new instance of the <see cref="ProductService"/> class.
+/// </remarks>
+/// <param name="productRepository">The product repository.</param>
+/// <param name="categoryRepository">The category repository.</param>
+/// <param name="logger">The logger instance.</param>
+public sealed class ProductService(
+    IProductRepository productRepository,
+    ICategoryRepository categoryRepository,
+    ILogger<ProductService> logger) : IProductService
 {
-    private readonly IProductRepository _productRepository;
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly ILogger<ProductService> _logger;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ProductService"/> class.
-    /// </summary>
-    /// <param name="productRepository">The product repository.</param>
-    /// <param name="categoryRepository">The category repository.</param>
-    /// <param name="logger">The logger instance.</param>
-    public ProductService(
-        IProductRepository productRepository,
-        ICategoryRepository categoryRepository,
-        ILogger<ProductService> logger)
-    {
-        _productRepository = productRepository;
-        _categoryRepository = categoryRepository;
-        _logger = logger;
-    }
+    private readonly IProductRepository _productRepository = productRepository;
+    private readonly ICategoryRepository _categoryRepository = categoryRepository;
+    private readonly ILogger<ProductService> _logger = logger;
 
     /// <inheritdoc />
     public async Task<ListResult<ProductDto>> GetAll(CancellationToken cancellationToken)
