@@ -7,9 +7,11 @@
 
   <p>A modular .NET Aspire E-Commerce REST API</p>
 
-  [![CI](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/ci.yml/badge.svg)](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/ci.yml)
+  [![Build](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/build.yml/badge.svg)](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/build.yml)
+  [![Test](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/test.yml/badge.svg)](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/test.yml)
+  [![Code Quality](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/codequality.yml/badge.svg)](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/codequality.yml)
 
-  [Documentation](https://github.com/sergej-stk/Steinsiek.Odin) · [Report Bug](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?labels=bug) · [Request Feature](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?labels=enhancement)
+  [Documentation](https://github.com/sergej-stk/Steinsiek.Odin) · [Report Bug](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?template=bug-report.yml&labels=bug) · [Request Feature](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?template=feature-request.yml&labels=enhancement)
 </div>
 
 ---
