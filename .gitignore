@@ -77,6 +77,7 @@ artifacts/
 dist/
 
 *.stackdump
+nul
 $RECYCLE.BIN/
 BenchmarkDotNet.Artifacts/
 .config/dotnet-tools.json

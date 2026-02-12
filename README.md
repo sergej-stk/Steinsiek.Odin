@@ -11,7 +11,7 @@
   [![Test](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/test.yml/badge.svg)](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/test.yml)
   [![Code Quality](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/codequality.yml/badge.svg)](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/codequality.yml)
 
-  [Documentation](https://github.com/sergej-stk/Steinsiek.Odin) · [Report Bug](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?template=bug-report.yml&labels=bug) · [Request Feature](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?template=feature-request.yml&labels=enhancement)
+  [Documentation](https://github.com/sergej-stk/Steinsiek.Odin) · [Report Bug](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?template=bug-report.yml&labels=bug) · [Request Feature](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?template=feature-request.yml&labels=enhancement) · [Changelog](CHANGELOG.md)
 </div>
 
 ---
@@ -132,11 +132,15 @@ dotnet test
 
 ## Contributing
 
-Contributions are welcome! Feel free to open issues or submit pull requests.
+Contributions are welcome! Please read the [Contributing Guidelines](CONTRIBUTING.md) before opening issues or submitting pull requests.
 
 <a href="https://github.com/sergej-stk/Steinsiek.Odin/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=sergej-stk/Steinsiek.Odin" />
 </a>
+
+## Security
+
+To report a security vulnerability, please use [GitHub's private vulnerability reporting](https://github.com/sergej-stk/Steinsiek.Odin/security/advisories/new). See [SECURITY.md](SECURITY.md) for details.
 
 ## License
 
