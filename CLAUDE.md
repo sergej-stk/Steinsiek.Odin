@@ -2,12 +2,13 @@
 
 ## Project Overview
 
-Steinsiek.Odin is a modular .NET Aspire E-Commerce REST API. The project follows a **Modular Monolith** approach where each domain (Auth, Products, etc.) is encapsulated in a separate Class Library.
+Steinsiek.Odin is a modular .NET Aspire E-Commerce platform. The backend follows a **Modular Monolith** approach where each domain (Auth, Products, etc.) is encapsulated in a separate Class Library. The frontend is a **MudBlazor** Blazor Web App that communicates with the API via typed HttpClient services and Aspire service discovery.
 
 ## Technology Stack
 
 - **.NET 10** with C# 13
 - **.NET Aspire** for orchestration and service discovery
+- **MudBlazor 9.0.0-rc.1** for the Blazor Web App frontend
 - **Serilog** for structured logging
 - **Scalar** for API documentation (instead of Swagger UI)
 - **JWT Bearer** for authentication
@@ -23,6 +24,7 @@ Steinsiek.Odin/
 │   ├── Steinsiek.Odin.AppHost/           # Aspire Orchestration
 │   ├── Steinsiek.Odin.ServiceDefaults/   # Shared Aspire Config
 │   ├── Steinsiek.Odin.API/               # Host API (Program.cs, Middleware)
+│   ├── Steinsiek.Odin.Web/              # MudBlazor Frontend
 │   └── Modules/
 │       ├── Core/
 │       │   ├── Core.slnx                        # Module-specific solution
@@ -665,6 +667,65 @@ dotnet add src/Modules/{Name}/Steinsiek.Odin.Modules.{Name}.Tests reference src/
 .AddApplicationPart(typeof(Steinsiek.Odin.Modules.{Name}.{Name}Module).Assembly)
 ```
 
+## Frontend Architecture
+
+### Overview
+The frontend is a **Blazor Web App** (`Steinsiek.Odin.Web`) with **Interactive Server** rendering mode. It uses **MudBlazor 9.0.0-rc.1** for UI components.
+
+### Project Structure
+```
+src/Steinsiek.Odin.Web/
+├── Program.cs                          # Entry point, DI, Serilog, MudBlazor
+├── GlobalUsings.cs                     # Global using directives
+├── Theme/OdinTheme.cs                  # Custom MudTheme (dark/light)
+├── Auth/                               # JWT auth state management
+│   ├── ITokenStorageService.cs
+│   ├── TokenStorageService.cs          # ProtectedSessionStorage-based
+│   └── JwtAuthenticationStateProvider.cs
+├── Services/                           # Typed HttpClient API clients
+│   ├── ApiAuthenticationHandler.cs     # DelegatingHandler for JWT
+│   ├── IAuthApiClient.cs + AuthApiClient.cs
+│   ├── IProductApiClient.cs + ProductApiClient.cs
+│   └── ICategoryApiClient.cs + CategoryApiClient.cs
+├── Components/
+│   ├── App.razor                       # Root HTML component
+│   ├── Routes.razor                    # Router with AuthorizeRouteView
+│   ├── _Imports.razor                  # Global Razor imports
+│   ├── Layout/                         # MainLayout, NavMenu
+│   ├── Pages/                          # Route pages
+│   ├── Products/                       # Product components
+│   ├── Auth/                           # Auth form components
+│   └── Shared/                         # Reusable components
+└── wwwroot/                            # Static assets
+```
+
+### API Communication
+- Typed `HttpClient` services with Aspire service discovery (`https+http://api`)
+- References `.Shared` projects for DTO types (no duplication)
+- `ApiAuthenticationHandler` attaches JWT Bearer token to all outgoing requests
+- The Web project does NOT reference module core projects (only `.Shared`)
+
+### Authentication Flow
+1. User submits credentials via `LoginForm`
+2. `AuthApiClient` calls `POST /api/v1/auth/login`
+3. JWT token stored in `ProtectedSessionStorage` (server-side encrypted)
+4. `JwtAuthenticationStateProvider` parses JWT claims for `AuthenticationState`
+5. `<AuthorizeView>` and `@attribute [Authorize]` control UI visibility
+
+### Frontend Conventions
+- Blazor components use `_Imports.razor` for Razor-scoped imports
+- C# code-behind files use `GlobalUsings.cs` (same as backend)
+- API client services follow interface-first pattern (`I{Name}ApiClient`)
+- All service implementations are `sealed`
+- Pages use `@attribute [Authorize]` for protected routes
+- No business logic in components — all API interaction through services
+- MudBlazor Snackbar for user notifications
+
+### Theme
+- Custom `OdinTheme` with dark (default) and light palettes
+- Purple/Teal color scheme, Inter font, 12px border radius
+- Dark mode toggle in AppBar
+
 ## Authentication
 
 - JWT token via `/api/v1/auth/login`
@@ -706,6 +767,9 @@ dotnet run --project src/Steinsiek.Odin.AppHost
 dotnet test
 ```
 
+### Frontend
+After starting via Aspire, the Web frontend is available in the Aspire Dashboard under the `web` resource.
+
 ### API Documentation
 After starting: `https://localhost:{port}/scalar/v1`
 
@@ -725,12 +789,17 @@ After starting: `https://localhost:{port}/scalar/v1`
 ```
 
 ### Aspire AppHost
-Redis and API are orchestrated in `AppHost.cs`:
+Redis, API, and Web frontend are orchestrated in `AppHost.cs`:
 ```csharp
 var redis = builder.AddRedis("cache");
 var api = builder.AddProject<Projects.Steinsiek_Odin_API>("api")
     .WithReference(redis)
     .WaitFor(redis);
+
+builder.AddProject<Projects.Steinsiek_Odin_Web>("web")
+    .WithReference(api)
+    .WaitFor(api)
+    .WithExternalHttpEndpoints();
 ```
 
 ## Known IDs (Demo Data)

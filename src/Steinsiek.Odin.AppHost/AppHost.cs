@@ -18,6 +18,12 @@ try
         .WaitFor(redis)
         .WithIconName("ShoppingBag", IconVariant.Filled);
 
+    builder.AddProject<Projects.Steinsiek_Odin_Web>("web")
+        .WithReference(api)
+        .WaitFor(api)
+        .WithExternalHttpEndpoints()
+        .WithIconName("Globe", IconVariant.Filled);
+
     builder.Build().Run();
 }
 catch (Exception ex)

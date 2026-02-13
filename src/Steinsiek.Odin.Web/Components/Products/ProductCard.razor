@@ -1,0 +1,61 @@
+@inject NavigationManager Navigation
+
+<MudCard Elevation="2" Class="product-card" Style="cursor: pointer; height: 100%;" @onclick="@NavigateToDetail">
+    @if (!string.IsNullOrEmpty(Product.ImageUrl))
+    {
+        <MudCardMedia Image="@Product.ImageUrl" Height="200" />
+    }
+    else
+    {
+        <MudPaper Height="200px" Class="d-flex align-center justify-center" Style="background: linear-gradient(135deg, var(--mud-palette-primary-lighten), var(--mud-palette-secondary-lighten));">
+            <MudIcon Icon="@Icons.Material.Filled.ShoppingBag" Size="Size.Large" Style="opacity: 0.5;" />
+        </MudPaper>
+    }
+    <MudCardContent>
+        <MudStack Spacing="1">
+            <MudText Typo="Typo.h6" Class="text-truncate" Style="font-weight: 600;">@Product.Name</MudText>
+            @if (!string.IsNullOrEmpty(Product.CategoryName))
+            {
+                <MudChip T="string" Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined">
+                    @Product.CategoryName
+                </MudChip>
+            }
+            @if (!string.IsNullOrEmpty(Product.Description))
+            {
+                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-truncate-2">
+                    @Product.Description
+                </MudText>
+            }
+            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mt-2">
+                <MudText Typo="Typo.h6" Color="Color.Primary" Style="font-weight: 700;">
+                    @Product.Price.ToString("C2")
+                </MudText>
+                @if (Product.Stock > 0)
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Variant="Variant.Filled">
+                        In Stock
+                    </MudChip>
+                }
+                else
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Error" Variant="Variant.Filled">
+                        Out of Stock
+                    </MudChip>
+                }
+            </MudStack>
+        </MudStack>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    /// <summary>
+    /// The product to display.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public ProductDto Product { get; set; } = default!;
+
+    private void NavigateToDetail()
+    {
+        Navigation.NavigateTo($"/products/{Product.Id}");
+    }
+}

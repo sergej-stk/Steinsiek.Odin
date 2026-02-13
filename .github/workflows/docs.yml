@@ -4,7 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/**'
+      - 'src/Steinsiek.Odin.API/**'
+      - 'src/Modules/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

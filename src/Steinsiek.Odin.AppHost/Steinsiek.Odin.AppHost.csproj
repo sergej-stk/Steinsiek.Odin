@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Steinsiek.Odin.API\Steinsiek.Odin.API.csproj" />
+    <ProjectReference Include="..\Steinsiek.Odin.Web\Steinsiek.Odin.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

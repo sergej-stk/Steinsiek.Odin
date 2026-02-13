@@ -1,0 +1,30 @@
+<MudTextField T="string"
+              Value="@Value"
+              ValueChanged="@OnValueChanged"
+              Placeholder="Search products..."
+              Adornment="Adornment.Start"
+              AdornmentIcon="@Icons.Material.Filled.Search"
+              Variant="Variant.Outlined"
+              Immediate="true"
+              DebounceInterval="300"
+              Class="mt-0" />
+
+@code {
+    /// <summary>
+    /// The current search value.
+    /// </summary>
+    [Parameter]
+    public string? Value { get; set; }
+
+    /// <summary>
+    /// Callback when the search value changes (debounced).
+    /// </summary>
+    [Parameter]
+    public EventCallback<string?> ValueChanged { get; set; }
+
+    private async Task OnValueChanged(string? newValue)
+    {
+        Value = newValue;
+        await ValueChanged.InvokeAsync(newValue);
+    }
+}

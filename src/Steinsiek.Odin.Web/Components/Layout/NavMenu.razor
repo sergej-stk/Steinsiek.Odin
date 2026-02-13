@@ -1,0 +1,25 @@
+<MudNavMenu>
+    <MudNavLink Href="/" Match="NavLinkMatch.All"
+                Icon="@Icons.Material.Filled.Home">
+        Home
+    </MudNavLink>
+    <MudNavLink Href="/products" Match="NavLinkMatch.Prefix"
+                Icon="@Icons.Material.Filled.ShoppingBag">
+        Products
+    </MudNavLink>
+    <MudNavLink Href="/categories" Match="NavLinkMatch.Prefix"
+                Icon="@Icons.Material.Filled.Category">
+        Categories
+    </MudNavLink>
+    <AuthorizeView>
+        <Authorized>
+            <MudDivider Class="my-2" />
+            <MudNavGroup Title="Admin" Icon="@Icons.Material.Filled.AdminPanelSettings" Expanded="false">
+                <MudNavLink Href="/products/create"
+                            Icon="@Icons.Material.Filled.AddBox">
+                    New Product
+                </MudNavLink>
+            </MudNavGroup>
+        </Authorized>
+    </AuthorizeView>
+</MudNavMenu>

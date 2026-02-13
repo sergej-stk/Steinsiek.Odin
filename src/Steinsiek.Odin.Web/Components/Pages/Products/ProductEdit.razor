@@ -1,0 +1,105 @@
+@page "/products/{Id:guid}/edit"
+@attribute [Authorize]
+@inject IProductApiClient ProductApi
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>Edit Product - Odin</PageTitle>
+
+@if (_initialData is null && !_notFound)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+}
+else if (_notFound)
+{
+    <MudPaper Class="pa-8 text-center" Elevation="0">
+        <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" Color="Color.Error" Class="mb-4" />
+        <MudText Typo="Typo.h5">Product not found</MudText>
+        <MudButton Href="/products" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
+            Back to Products
+        </MudButton>
+    </MudPaper>
+}
+else
+{
+    <PageHeader Title="@($"Edit: {_initialData!.Name}")">
+        <Actions>
+            <MudButton Href="@($"/products/{Id}")" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ArrowBack">
+                Back
+            </MudButton>
+        </Actions>
+    </PageHeader>
+
+    <MudPaper Class="pa-6" MaxWidth="800px" Elevation="2">
+        <ProductForm InitialData="@_initialData"
+                     ShowIsActive="true"
+                     SubmitText="Update Product"
+                     IsSubmitting="@_isSubmitting"
+                     OnSubmit="@HandleUpdate"
+                     OnCancel="@(() => Navigation.NavigateTo($"/products/{Id}"))" />
+    </MudPaper>
+}
+
+@code {
+    private ProductFormData? _initialData;
+    private bool _notFound;
+    private bool _isSubmitting;
+
+    /// <summary>
+    /// The product identifier from the route.
+    /// </summary>
+    [Parameter]
+    public Guid Id { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        var product = await ProductApi.GetById(Id, CancellationToken.None);
+        if (product is null)
+        {
+            _notFound = true;
+            return;
+        }
+
+        _initialData = new ProductFormData
+        {
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            Stock = product.Stock,
+            ImageUrl = product.ImageUrl,
+            CategoryId = product.CategoryId,
+            IsActive = product.IsActive
+        };
+    }
+
+    private async Task HandleUpdate(ProductFormData data)
+    {
+        _isSubmitting = true;
+
+        var request = new UpdateProductRequest
+        {
+            Name = data.Name,
+            Description = data.Description,
+            Price = data.Price,
+            Stock = data.Stock,
+            ImageUrl = data.ImageUrl,
+            CategoryId = data.CategoryId,
+            IsActive = data.IsActive
+        };
+
+        var result = await ProductApi.Update(Id, request, CancellationToken.None);
+
+        if (result is not null)
+        {
+            Snackbar.Add("Product updated successfully", Severity.Success);
+            Navigation.NavigateTo($"/products/{Id}");
+        }
+        else
+        {
+            Snackbar.Add("Failed to update product", Severity.Error);
+        }
+
+        _isSubmitting = false;
+    }
+}

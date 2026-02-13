@@ -1,0 +1,27 @@
+@if (Products is null || Products.Count == 0)
+{
+    <MudPaper Class="pa-8 text-center" Elevation="0">
+        <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Color="Color.Secondary" Class="mb-4" />
+        <MudText Typo="Typo.h6" Color="Color.Secondary">No products found</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">Try adjusting your search or filters.</MudText>
+    </MudPaper>
+}
+else
+{
+    <MudGrid>
+        @foreach (var product in Products)
+        {
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <ProductCard Product="product" />
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code {
+    /// <summary>
+    /// The list of products to display in the grid.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyList<ProductDto>? Products { get; set; }
+}

@@ -1,0 +1,116 @@
+@inject ICategoryApiClient CategoryApi
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" @bind-IsValid="_isValid">
+            <MudStack Spacing="3">
+                <MudTextField T="string" @bind-Value="Name" Label="Name" Required="true"
+                              RequiredError="Name is required" Variant="Variant.Outlined" />
+                <MudTextField T="string" @bind-Value="Description" Label="Description"
+                              Variant="Variant.Outlined" Lines="3" />
+                @if (IsEdit)
+                {
+                    <MudSwitch T="bool" @bind-Value="IsActive" Label="Active" Color="Color.Primary" />
+                }
+            </MudStack>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled"
+                   Disabled="@(!_isValid || _isSubmitting)" OnClick="HandleSubmit">
+            @if (_isSubmitting)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            @(IsEdit ? "Update" : "Create")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private MudForm _form = default!;
+    private bool _isValid;
+    private bool _isSubmitting;
+
+    /// <summary>
+    /// Whether the dialog is in edit mode.
+    /// </summary>
+    [Parameter]
+    public bool IsEdit { get; set; }
+
+    /// <summary>
+    /// The category identifier (edit mode only).
+    /// </summary>
+    [Parameter]
+    public Guid CategoryId { get; set; }
+
+    /// <summary>
+    /// The category name.
+    /// </summary>
+    [Parameter]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The category description.
+    /// </summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Whether the category is active.
+    /// </summary>
+    [Parameter]
+    public bool IsActive { get; set; } = true;
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    private async Task HandleSubmit()
+    {
+        await _form.Validate();
+        if (!_isValid)
+        {
+            return;
+        }
+
+        _isSubmitting = true;
+
+        if (IsEdit)
+        {
+            var request = new UpdateCategoryRequest
+            {
+                Name = Name,
+                Description = Description,
+                IsActive = IsActive
+            };
+
+            var result = await CategoryApi.Update(CategoryId, request, CancellationToken.None);
+            if (result is not null)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+        }
+        else
+        {
+            var request = new CreateCategoryRequest
+            {
+                Name = Name,
+                Description = Description
+            };
+
+            var result = await CategoryApi.Create(request, CancellationToken.None);
+            if (result is not null)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+        }
+
+        _isSubmitting = false;
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
