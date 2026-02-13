@@ -851,3 +851,59 @@ Add Auth module
 - Non-imperative title is incorrect
 - Co-Authored-By lines are incorrect
 - Filler words in commit messages are incorrect
+
+## GitHub CLI Workflow
+
+All GitHub operations use the **GitHub CLI** (`gh`).
+
+### Installation
+GitHub CLI is installed via `winget` and located at `C:\Program Files\GitHub CLI\gh.exe`.
+
+### Branch + PR Workflow
+1. Create a feature branch from `main`:
+```bash
+git checkout -b feature/{feature-name}
+```
+
+2. Commit changes and push with upstream tracking:
+```bash
+git push -u origin feature/{feature-name}
+```
+
+3. Create a Pull Request via `gh`:
+```bash
+gh pr create --title "Add feature X" --body "## Summary
+- Change 1
+- Change 2
+
+## Test plan
+- [ ] Verification step 1
+- [ ] Verification step 2"
+```
+
+4. Merge the PR:
+```bash
+gh pr merge {pr-number} --merge
+```
+
+5. Return to `main` and pull:
+```bash
+git checkout main && git pull origin main
+```
+
+### Branch Naming
+- `feature/{name}` for new features
+- `fix/{name}` for bug fixes
+- `refactor/{name}` for refactoring
+- Use kebab-case for branch names
+
+### PR Conventions
+- Title: Short, imperative mood (same as commit title rules)
+- Body: `## Summary` with bullet points, `## Test plan` with checklist
+- Target branch: `main`
+- Merge strategy: merge commit (not squash or rebase)
+
+### Failure Conditions
+- PRs without a summary section are incorrect
+- Direct pushes to `main` for feature work are incorrect
+- PRs without a test plan are incorrect
