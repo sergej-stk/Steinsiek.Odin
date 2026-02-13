@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Steinsiek.Odin.Modules.Products.Shared\Steinsiek.Odin.Modules.Products.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="SeedImages\*.jpg" />
+  </ItemGroup>
+
 </Project>

@@ -1,7 +1,9 @@
 global using System;
 global using System.Collections.Concurrent;
 global using System.Collections.Generic;
+global using System.IO;
 global using System.Linq;
+global using System.Reflection;
 global using System.Threading;
 global using System.Threading.Tasks;
 global using Asp.Versioning;
@@ -12,6 +14,7 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
 global using Steinsiek.Odin.Modules.Core;
 global using Steinsiek.Odin.Modules.Core.Entities;
+global using Steinsiek.Odin.Modules.Core.Exceptions;
 global using Steinsiek.Odin.Modules.Core.Repositories;
 global using Steinsiek.Odin.Modules.Core.Shared.DTOs;
 global using Steinsiek.Odin.Modules.Products.Entities;

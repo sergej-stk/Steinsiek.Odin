@@ -10,7 +10,9 @@ public sealed class ProductsModule : IModule
     {
         services.AddSingleton<ICategoryRepository, InMemoryCategoryRepository>();
         services.AddSingleton<IProductRepository, InMemoryProductRepository>();
+        services.AddSingleton<IProductImageRepository, InMemoryProductImageRepository>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IProductImageService, ProductImageService>();
     }
 }
