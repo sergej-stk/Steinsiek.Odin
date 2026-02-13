@@ -1,0 +1,146 @@
+@page "/categories"
+@inject ICategoryApiClient CategoryApi
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<PageTitle>Categories - Odin</PageTitle>
+
+<PageHeader Title="Categories" Subtitle="Manage product categories">
+    <Actions>
+        <AuthorizeView>
+            <Authorized>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Add" OnClick="@OpenCreateDialog">
+                    New Category
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
+    </Actions>
+</PageHeader>
+
+@if (_categories is null)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+}
+else
+{
+    <MudDataGrid Items="_categories.Data" Hover="true" Striped="true" Elevation="2"
+                 Dense="true" Class="rounded-lg">
+        <Columns>
+            <PropertyColumn Property="x => x.Name" Title="Name" />
+            <PropertyColumn Property="x => x.Description" Title="Description" />
+            <TemplateColumn Title="Status">
+                <CellTemplate>
+                    @if (context.Item.IsActive)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Success" Variant="Variant.Filled">Active</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Filled">Inactive</MudChip>
+                    }
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Products">
+                <CellTemplate>
+                    <MudButton Href="@($"/products?category={context.Item.Id}")" Variant="Variant.Text"
+                               Color="Color.Primary" Size="Size.Small">
+                        View Products
+                    </MudButton>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Actions" HeaderStyle="text-align: right;" CellStyle="text-align: right;">
+                <CellTemplate>
+                    <AuthorizeView>
+                        <Authorized Context="auth">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small"
+                                           Color="Color.Primary" OnClick="@(() => OpenEditDialog(context.Item))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small"
+                                           Color="Color.Error" OnClick="@(() => HandleDelete(context.Item))" />
+                        </Authorized>
+                    </AuthorizeView>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+}
+
+@code {
+    private ListResult<CategoryDto>? _categories;
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategories();
+    }
+
+    private async Task LoadCategories()
+    {
+        _categories = await CategoryApi.GetAll(CancellationToken.None);
+    }
+
+    private async Task OpenCreateDialog()
+    {
+        var parameters = new DialogParameters<CategoryFormDialog>
+        {
+            { x => x.IsEdit, false }
+        };
+
+        var dialog = await DialogService.ShowAsync<CategoryFormDialog>("Create Category", parameters);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            await LoadCategories();
+            Snackbar.Add("Category created successfully", Severity.Success);
+        }
+    }
+
+    private async Task OpenEditDialog(CategoryDto category)
+    {
+        var parameters = new DialogParameters<CategoryFormDialog>
+        {
+            { x => x.IsEdit, true },
+            { x => x.CategoryId, category.Id },
+            { x => x.Name, category.Name },
+            { x => x.Description, category.Description },
+            { x => x.IsActive, category.IsActive }
+        };
+
+        var dialog = await DialogService.ShowAsync<CategoryFormDialog>("Edit Category", parameters);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            await LoadCategories();
+            Snackbar.Add("Category updated successfully", Severity.Success);
+        }
+    }
+
+    private async Task HandleDelete(CategoryDto category)
+    {
+        var parameters = new DialogParameters<ConfirmDialog>
+        {
+            { x => x.ContentText, $"Are you sure you want to delete \"{category.Name}\"?" },
+            { x => x.ButtonText, "Delete" },
+            { x => x.ButtonColor, Color.Error }
+        };
+
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>("Delete Category", parameters);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            var success = await CategoryApi.Delete(category.Id, CancellationToken.None);
+            if (success)
+            {
+                await LoadCategories();
+                Snackbar.Add("Category deleted successfully", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Failed to delete category", Severity.Error);
+            }
+        }
+    }
+}

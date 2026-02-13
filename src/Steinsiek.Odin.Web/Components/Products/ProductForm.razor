@@ -1,0 +1,128 @@
+@inject ICategoryApiClient CategoryApi
+
+<MudForm @ref="_form" @bind-IsValid="_isValid">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudTextField T="string" @bind-Value="_data.Name" Label="Name" Required="true"
+                          RequiredError="Name is required" Variant="Variant.Outlined"
+                          Counter="100" MaxLength="100" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField T="string" @bind-Value="_data.Description" Label="Description"
+                          Variant="Variant.Outlined" Lines="3" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudNumericField T="decimal" @bind-Value="_data.Price" Label="Price" Required="true"
+                             RequiredError="Price is required" Min="0.01m"
+                             Variant="Variant.Outlined" Format="F2"
+                             Adornment="Adornment.Start" AdornmentText="$" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudNumericField T="int" @bind-Value="_data.Stock" Label="Stock" Required="true"
+                             RequiredError="Stock is required" Min="0"
+                             Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField T="string" @bind-Value="_data.ImageUrl" Label="Image URL"
+                          Variant="Variant.Outlined" Placeholder="https://..." />
+        </MudItem>
+        <MudItem xs="12">
+            @if (_categories is not null)
+            {
+                <MudSelect T="Guid" @bind-Value="_data.CategoryId" Label="Category" Required="true"
+                           RequiredError="Category is required" Variant="Variant.Outlined"
+                           AnchorOrigin="Origin.BottomCenter">
+                    @foreach (var category in _categories.Data)
+                    {
+                        <MudSelectItem T="Guid" Value="@category.Id">@category.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            }
+            else
+            {
+                <MudSkeleton Width="100%" Height="56px" />
+            }
+        </MudItem>
+        @if (ShowIsActive)
+        {
+            <MudItem xs="12">
+                <MudSwitch T="bool" @bind-Value="_data.IsActive" Label="Active" Color="Color.Primary" />
+            </MudItem>
+        }
+        <MudItem xs="12" Class="d-flex justify-end gap-2">
+            <MudButton Variant="Variant.Text" OnClick="@OnCancel">Cancel</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       Disabled="@(!_isValid || IsSubmitting)"
+                       OnClick="@HandleSubmit">
+                @if (IsSubmitting)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                @SubmitText
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+</MudForm>
+
+@code {
+    private MudForm _form = default!;
+    private bool _isValid;
+    private ListResult<CategoryDto>? _categories;
+    private ProductFormData _data = new();
+
+    /// <summary>
+    /// Initial form data to populate the form with.
+    /// </summary>
+    [Parameter]
+    public ProductFormData? InitialData { get; set; }
+
+    /// <summary>
+    /// Whether to show the IsActive toggle.
+    /// </summary>
+    [Parameter]
+    public bool ShowIsActive { get; set; }
+
+    /// <summary>
+    /// The submit button text.
+    /// </summary>
+    [Parameter]
+    public string SubmitText { get; set; } = "Create";
+
+    /// <summary>
+    /// Whether the form is currently submitting.
+    /// </summary>
+    [Parameter]
+    public bool IsSubmitting { get; set; }
+
+    /// <summary>
+    /// Callback when the form is submitted with the form data.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ProductFormData> OnSubmit { get; set; }
+
+    /// <summary>
+    /// Callback when the form is cancelled.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        if (InitialData is not null)
+        {
+            _data = InitialData;
+        }
+
+        _categories = await CategoryApi.GetAll(CancellationToken.None);
+    }
+
+    private async Task HandleSubmit()
+    {
+        await _form.Validate();
+        if (_isValid)
+        {
+            await OnSubmit.InvokeAsync(_data);
+        }
+    }
+}

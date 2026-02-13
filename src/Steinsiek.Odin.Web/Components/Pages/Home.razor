@@ -1,0 +1,61 @@
+@page "/"
+@inject IProductApiClient ProductApi
+@inject ICategoryApiClient CategoryApi
+
+<PageTitle>Odin - Modern E-Commerce</PageTitle>
+
+<MudPaper Class="pa-8 mb-6 rounded-xl" Style="background: linear-gradient(135deg, var(--mud-palette-primary), var(--mud-palette-secondary));">
+    <MudStack Spacing="2">
+        <MudText Typo="Typo.h3" Style="color: white; font-weight: 700;">Welcome to Odin</MudText>
+        <MudText Typo="Typo.subtitle1" Style="color: rgba(255,255,255,0.85);">
+            Discover our curated collection of premium products
+        </MudText>
+        <MudStack Row="true" Spacing="2" Class="mt-2">
+            <MudButton Href="/products" Variant="Variant.Filled"
+                       Style="background: white; color: var(--mud-palette-primary);"
+                       EndIcon="@Icons.Material.Filled.ArrowForward">
+                Browse Products
+            </MudButton>
+        </MudStack>
+    </MudStack>
+</MudPaper>
+
+@if (_categories is not null)
+{
+    <MudText Typo="Typo.h5" Class="mb-3" Style="font-weight: 600;">Categories</MudText>
+    <MudStack Row="true" Spacing="2" Class="mb-6" Wrap="Wrap.Wrap">
+        @foreach (var category in _categories.Data)
+        {
+            <MudChip T="string" Color="Color.Primary" Variant="Variant.Outlined"
+                     Href="@($"/products?category={category.Id}")"
+                     Icon="@Icons.Material.Filled.Category">
+                @category.Name
+            </MudChip>
+        }
+    </MudStack>
+}
+
+<MudText Typo="Typo.h5" Class="mb-3" Style="font-weight: 600;">Featured Products</MudText>
+@if (_products is null)
+{
+    <LoadingIndicator />
+}
+else
+{
+    <ProductGrid Products="_products.Data" />
+}
+
+@code {
+    private ListResult<ProductDto>? _products;
+    private ListResult<CategoryDto>? _categories;
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        var productsTask = ProductApi.GetAll(CancellationToken.None);
+        var categoriesTask = CategoryApi.GetAll(CancellationToken.None);
+        await Task.WhenAll(productsTask, categoriesTask);
+        _products = productsTask.Result;
+        _categories = categoriesTask.Result;
+    }
+}

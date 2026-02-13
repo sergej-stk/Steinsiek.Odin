@@ -3,6 +3,7 @@
     <Project Path="src/Steinsiek.Odin.API/Steinsiek.Odin.API.csproj" />
     <Project Path="src/Steinsiek.Odin.AppHost/Steinsiek.Odin.AppHost.csproj" />
     <Project Path="src/Steinsiek.Odin.ServiceDefaults/Steinsiek.Odin.ServiceDefaults.csproj" />
+    <Project Path="src/Steinsiek.Odin.Web/Steinsiek.Odin.Web.csproj" />
   </Folder>
   <Folder Name="/src/Modules/" />
   <Folder Name="/src/Modules/Auth/">

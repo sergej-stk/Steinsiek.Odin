@@ -1,0 +1,55 @@
+@page "/products/create"
+@attribute [Authorize]
+@inject IProductApiClient ProductApi
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>Create Product - Odin</PageTitle>
+
+<PageHeader Title="Create Product">
+    <Actions>
+        <MudButton Href="/products" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ArrowBack">
+            Back
+        </MudButton>
+    </Actions>
+</PageHeader>
+
+<MudPaper Class="pa-6" MaxWidth="800px" Elevation="2">
+    <ProductForm SubmitText="Create Product"
+                 IsSubmitting="@_isSubmitting"
+                 OnSubmit="@HandleCreate"
+                 OnCancel="@(() => Navigation.NavigateTo("/products"))" />
+</MudPaper>
+
+@code {
+    private bool _isSubmitting;
+
+    private async Task HandleCreate(ProductFormData data)
+    {
+        _isSubmitting = true;
+
+        var request = new CreateProductRequest
+        {
+            Name = data.Name,
+            Description = data.Description,
+            Price = data.Price,
+            Stock = data.Stock,
+            ImageUrl = data.ImageUrl,
+            CategoryId = data.CategoryId
+        };
+
+        var result = await ProductApi.Create(request, CancellationToken.None);
+
+        if (result is not null)
+        {
+            Snackbar.Add("Product created successfully", Severity.Success);
+            Navigation.NavigateTo($"/products/{result.Id}");
+        }
+        else
+        {
+            Snackbar.Add("Failed to create product", Severity.Error);
+        }
+
+        _isSubmitting = false;
+    }
+}

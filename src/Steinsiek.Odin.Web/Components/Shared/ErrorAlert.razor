@@ -1,0 +1,30 @@
+@if (Visible)
+{
+    <MudAlert Severity="Severity.Error"
+              Variant="Variant.Filled"
+              Class="mb-4"
+              ShowCloseIcon="true"
+              CloseIconClicked="@(() => Visible = false)">
+        @Message
+    </MudAlert>
+}
+
+@code {
+    /// <summary>
+    /// The error message to display.
+    /// </summary>
+    [Parameter]
+    public string? Message { get; set; }
+
+    /// <summary>
+    /// Whether the alert is visible.
+    /// </summary>
+    [Parameter]
+    public bool Visible { get; set; }
+
+    /// <summary>
+    /// Callback when visibility changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<bool> VisibleChanged { get; set; }
+}
