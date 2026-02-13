@@ -1,7 +1,6 @@
 @page "/categories"
 @inject ICategoryApiClient CategoryApi
-@inject IDialogService DialogService
-@inject ISnackbar Snackbar
+@inject IToastService ToastService
 
 <PageTitle>Categories - Odin</PageTitle>
 
@@ -9,10 +8,9 @@
     <Actions>
         <AuthorizeView>
             <Authorized>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                           StartIcon="@Icons.Material.Filled.Add" OnClick="@OpenCreateDialog">
-                    New Category
-                </MudButton>
+                <button class="btn btn-primary" @onclick="OpenCreateDialog">
+                    <i class="bi bi-plus-lg me-1"></i> New Category
+                </button>
             </Authorized>
         </AuthorizeView>
     </Actions>
@@ -20,53 +18,91 @@
 
 @if (_categories is null)
 {
-    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    <div class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 }
 else
 {
-    <MudDataGrid Items="_categories.Data" Hover="true" Striped="true" Elevation="2"
-                 Dense="true" Class="rounded-lg">
-        <Columns>
-            <PropertyColumn Property="x => x.Name" Title="Name" />
-            <PropertyColumn Property="x => x.Description" Title="Description" />
-            <TemplateColumn Title="Status">
-                <CellTemplate>
-                    @if (context.Item.IsActive)
-                    {
-                        <MudChip T="string" Size="Size.Small" Color="Color.Success" Variant="Variant.Filled">Active</MudChip>
-                    }
-                    else
-                    {
-                        <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Filled">Inactive</MudChip>
-                    }
-                </CellTemplate>
-            </TemplateColumn>
-            <TemplateColumn Title="Products">
-                <CellTemplate>
-                    <MudButton Href="@($"/products?category={context.Item.Id}")" Variant="Variant.Text"
-                               Color="Color.Primary" Size="Size.Small">
-                        View Products
-                    </MudButton>
-                </CellTemplate>
-            </TemplateColumn>
-            <TemplateColumn Title="Actions" HeaderStyle="text-align: right;" CellStyle="text-align: right;">
-                <CellTemplate>
-                    <AuthorizeView>
-                        <Authorized Context="auth">
-                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small"
-                                           Color="Color.Primary" OnClick="@(() => OpenEditDialog(context.Item))" />
-                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small"
-                                           Color="Color.Error" OnClick="@(() => HandleDelete(context.Item))" />
-                        </Authorized>
-                    </AuthorizeView>
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-    </MudDataGrid>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Products</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in _categories.Data)
+                {
+                    <tr>
+                        <td>@category.Name</td>
+                        <td>@category.Description</td>
+                        <td>
+                            @if (category.IsActive)
+                            {
+                                <span class="badge text-bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge text-bg-secondary">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            <a href="/products?category=@category.Id" class="btn btn-link btn-sm p-0">View Products</a>
+                        </td>
+                        <td class="text-end">
+                            <AuthorizeView>
+                                <Authorized Context="auth">
+                                    <button class="btn btn-sm btn-outline-primary me-1" @onclick="@(() => OpenEditDialog(category))">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="@(() => OpenDeleteConfirm(category))">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </Authorized>
+                            </AuthorizeView>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
+
+<CategoryFormDialog Visible="_showFormDialog"
+                    IsEdit="_formIsEdit"
+                    CategoryId="_formCategoryId"
+                    Name="@_formName"
+                    Description="@_formDescription"
+                    IsActive="_formIsActive"
+                    OnClose="HandleFormClose" />
+
+<ConfirmDialog Visible="_showDeleteConfirm"
+               Title="Delete Category"
+               ContentText="@($"Are you sure you want to delete \"{_deleteCategoryName}\"?")"
+               ButtonText="Delete"
+               OnConfirm="ConfirmDelete"
+               OnCancel="@(() => _showDeleteConfirm = false)" />
 
 @code {
     private ListResult<CategoryDto>? _categories;
+
+    private bool _showFormDialog;
+    private bool _formIsEdit;
+    private Guid _formCategoryId;
+    private string _formName = string.Empty;
+    private string? _formDescription;
+    private bool _formIsActive = true;
+
+    private bool _showDeleteConfirm;
+    private Guid _deleteCategoryId;
+    private string _deleteCategoryName = string.Empty;
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
@@ -79,68 +115,57 @@ else
         _categories = await CategoryApi.GetAll(CancellationToken.None);
     }
 
-    private async Task OpenCreateDialog()
+    private void OpenCreateDialog()
     {
-        var parameters = new DialogParameters<CategoryFormDialog>
-        {
-            { x => x.IsEdit, false }
-        };
+        _formIsEdit = false;
+        _formCategoryId = Guid.Empty;
+        _formName = string.Empty;
+        _formDescription = null;
+        _formIsActive = true;
+        _showFormDialog = true;
+    }
 
-        var dialog = await DialogService.ShowAsync<CategoryFormDialog>("Create Category", parameters);
-        var result = await dialog.Result;
+    private void OpenEditDialog(CategoryDto category)
+    {
+        _formIsEdit = true;
+        _formCategoryId = category.Id;
+        _formName = category.Name;
+        _formDescription = category.Description;
+        _formIsActive = category.IsActive;
+        _showFormDialog = true;
+    }
 
-        if (result is not null && !result.Canceled)
+    private async Task HandleFormClose(bool success)
+    {
+        _showFormDialog = false;
+        if (success)
         {
             await LoadCategories();
-            Snackbar.Add("Category created successfully", Severity.Success);
+            ToastService.Show(
+                _formIsEdit ? "Category updated successfully" : "Category created successfully",
+                ToastLevel.Success);
         }
     }
 
-    private async Task OpenEditDialog(CategoryDto category)
+    private void OpenDeleteConfirm(CategoryDto category)
     {
-        var parameters = new DialogParameters<CategoryFormDialog>
-        {
-            { x => x.IsEdit, true },
-            { x => x.CategoryId, category.Id },
-            { x => x.Name, category.Name },
-            { x => x.Description, category.Description },
-            { x => x.IsActive, category.IsActive }
-        };
-
-        var dialog = await DialogService.ShowAsync<CategoryFormDialog>("Edit Category", parameters);
-        var result = await dialog.Result;
-
-        if (result is not null && !result.Canceled)
-        {
-            await LoadCategories();
-            Snackbar.Add("Category updated successfully", Severity.Success);
-        }
+        _deleteCategoryId = category.Id;
+        _deleteCategoryName = category.Name;
+        _showDeleteConfirm = true;
     }
 
-    private async Task HandleDelete(CategoryDto category)
+    private async Task ConfirmDelete()
     {
-        var parameters = new DialogParameters<ConfirmDialog>
+        _showDeleteConfirm = false;
+        var success = await CategoryApi.Delete(_deleteCategoryId, CancellationToken.None);
+        if (success)
         {
-            { x => x.ContentText, $"Are you sure you want to delete \"{category.Name}\"?" },
-            { x => x.ButtonText, "Delete" },
-            { x => x.ButtonColor, Color.Error }
-        };
-
-        var dialog = await DialogService.ShowAsync<ConfirmDialog>("Delete Category", parameters);
-        var result = await dialog.Result;
-
-        if (result is not null && !result.Canceled)
+            await LoadCategories();
+            ToastService.Show("Category deleted successfully", ToastLevel.Success);
+        }
+        else
         {
-            var success = await CategoryApi.Delete(category.Id, CancellationToken.None);
-            if (success)
-            {
-                await LoadCategories();
-                Snackbar.Add("Category deleted successfully", Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add("Failed to delete category", Severity.Error);
-            }
+            ToastService.Show("Failed to delete category", ToastLevel.Error);
         }
     }
 }

@@ -1,72 +1,77 @@
 @inject ICategoryApiClient CategoryApi
 
-<MudForm @ref="_form" @bind-IsValid="_isValid">
-    <MudGrid>
-        <MudItem xs="12">
-            <MudTextField T="string" @bind-Value="_data.Name" Label="Name" Required="true"
-                          RequiredError="Name is required" Variant="Variant.Outlined"
-                          Counter="100" MaxLength="100" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudTextField T="string" @bind-Value="_data.Description" Label="Description"
-                          Variant="Variant.Outlined" Lines="3" />
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudNumericField T="decimal" @bind-Value="_data.Price" Label="Price" Required="true"
-                             RequiredError="Price is required" Min="0.01m"
-                             Variant="Variant.Outlined" Format="F2"
-                             Adornment="Adornment.Start" AdornmentText="$" />
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudNumericField T="int" @bind-Value="_data.Stock" Label="Stock" Required="true"
-                             RequiredError="Stock is required" Min="0"
-                             Variant="Variant.Outlined" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudTextField T="string" @bind-Value="_data.ImageUrl" Label="Image URL"
-                          Variant="Variant.Outlined" Placeholder="https://..." />
-        </MudItem>
-        <MudItem xs="12">
+<EditForm Model="_data" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <div class="row g-3">
+        <div class="col-12">
+            <label class="form-label">Name</label>
+            <InputText @bind-Value="_data.Name" class="form-control" maxlength="100" />
+            <ValidationMessage For="@(() => _data.Name)" />
+        </div>
+        <div class="col-12">
+            <label class="form-label">Description</label>
+            <InputTextArea @bind-Value="_data.Description" class="form-control" rows="3" />
+        </div>
+        <div class="col-12 col-sm-6">
+            <label class="form-label">Price</label>
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                <InputNumber @bind-Value="_data.Price" class="form-control" />
+            </div>
+            <ValidationMessage For="@(() => _data.Price)" />
+        </div>
+        <div class="col-12 col-sm-6">
+            <label class="form-label">Stock</label>
+            <InputNumber @bind-Value="_data.Stock" class="form-control" />
+            <ValidationMessage For="@(() => _data.Stock)" />
+        </div>
+        <div class="col-12">
+            <label class="form-label">Image URL</label>
+            <InputText @bind-Value="_data.ImageUrl" class="form-control" placeholder="https://..." />
+        </div>
+        <div class="col-12">
+            <label class="form-label">Category</label>
             @if (_categories is not null)
             {
-                <MudSelect T="Guid" @bind-Value="_data.CategoryId" Label="Category" Required="true"
-                           RequiredError="Category is required" Variant="Variant.Outlined"
-                           AnchorOrigin="Origin.BottomCenter">
+                <InputSelect @bind-Value="_data.CategoryId" class="form-select">
+                    <option value="">Select a category...</option>
                     @foreach (var category in _categories.Data)
                     {
-                        <MudSelectItem T="Guid" Value="@category.Id">@category.Name</MudSelectItem>
+                        <option value="@category.Id">@category.Name</option>
                     }
-                </MudSelect>
+                </InputSelect>
+                <ValidationMessage For="@(() => _data.CategoryId)" />
             }
             else
             {
-                <MudSkeleton Width="100%" Height="56px" />
+                <div class="placeholder-glow">
+                    <span class="placeholder col-12" style="height: 38px;"></span>
+                </div>
             }
-        </MudItem>
+        </div>
         @if (ShowIsActive)
         {
-            <MudItem xs="12">
-                <MudSwitch T="bool" @bind-Value="_data.IsActive" Label="Active" Color="Color.Primary" />
-            </MudItem>
+            <div class="col-12">
+                <div class="form-check form-switch">
+                    <InputCheckbox @bind-Value="_data.IsActive" class="form-check-input" id="productActiveSwitch" />
+                    <label class="form-check-label" for="productActiveSwitch">Active</label>
+                </div>
+            </div>
         }
-        <MudItem xs="12" Class="d-flex justify-end gap-2">
-            <MudButton Variant="Variant.Text" OnClick="@OnCancel">Cancel</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                       Disabled="@(!_isValid || IsSubmitting)"
-                       OnClick="@HandleSubmit">
+        <div class="col-12 d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-secondary" @onclick="OnCancel">Cancel</button>
+            <button type="submit" class="btn btn-primary" disabled="@IsSubmitting">
                 @if (IsSubmitting)
                 {
-                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
                 }
                 @SubmitText
-            </MudButton>
-        </MudItem>
-    </MudGrid>
-</MudForm>
+            </button>
+        </div>
+    </div>
+</EditForm>
 
 @code {
-    private MudForm _form = default!;
-    private bool _isValid;
     private ListResult<CategoryDto>? _categories;
     private ProductFormData _data = new();
 
@@ -119,10 +124,6 @@
 
     private async Task HandleSubmit()
     {
-        await _form.Validate();
-        if (_isValid)
-        {
-            await OnSubmit.InvokeAsync(_data);
-        }
+        await OnSubmit.InvokeAsync(_data);
     }
 }

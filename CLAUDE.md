@@ -2,13 +2,14 @@
 
 ## Project Overview
 
-Steinsiek.Odin is a modular .NET Aspire E-Commerce platform. The backend follows a **Modular Monolith** approach where each domain (Auth, Products, etc.) is encapsulated in a separate Class Library. The frontend is a **MudBlazor** Blazor Web App that communicates with the API via typed HttpClient services and Aspire service discovery.
+Steinsiek.Odin is a modular .NET Aspire E-Commerce platform. The backend follows a **Modular Monolith** approach where each domain (Auth, Products, etc.) is encapsulated in a separate Class Library. The frontend is a **Blazor Web App with Bootstrap 5** that communicates with the API via typed HttpClient services and Aspire service discovery.
 
 ## Technology Stack
 
 - **.NET 10** with C# 13
 - **.NET Aspire** for orchestration and service discovery
-- **MudBlazor 9.0.0-rc.1** for the Blazor Web App frontend
+- **Bootstrap 5.3.8** for the Blazor Web App frontend (via CDN)
+- **Bootstrap Icons 1.13** for iconography (via CDN)
 - **Serilog** for structured logging
 - **Scalar** for API documentation (instead of Swagger UI)
 - **JWT Bearer** for authentication
@@ -24,7 +25,7 @@ Steinsiek.Odin/
 │   ├── Steinsiek.Odin.AppHost/           # Aspire Orchestration
 │   ├── Steinsiek.Odin.ServiceDefaults/   # Shared Aspire Config
 │   ├── Steinsiek.Odin.API/               # Host API (Program.cs, Middleware)
-│   ├── Steinsiek.Odin.Web/              # MudBlazor Frontend
+│   ├── Steinsiek.Odin.Web/              # Bootstrap 5 Frontend
 │   └── Modules/
 │       ├── Core/
 │       │   ├── Core.slnx                        # Module-specific solution
@@ -670,23 +671,25 @@ dotnet add src/Modules/{Name}/Steinsiek.Odin.Modules.{Name}.Tests reference src/
 ## Frontend Architecture
 
 ### Overview
-The frontend is a **Blazor Web App** (`Steinsiek.Odin.Web`) with **Interactive Server** rendering mode. It uses **MudBlazor 9.0.0-rc.1** for UI components.
+The frontend is a **Blazor Web App** (`Steinsiek.Odin.Web`) with **Interactive Server** rendering mode. It uses **Bootstrap 5.3** for UI styling.
 
 ### Project Structure
 ```
 src/Steinsiek.Odin.Web/
-├── Program.cs                          # Entry point, DI, Serilog, MudBlazor
+├── Program.cs                          # Entry point, DI, Serilog, Bootstrap
 ├── GlobalUsings.cs                     # Global using directives
-├── Theme/OdinTheme.cs                  # Custom MudTheme (dark/light)
 ├── Auth/                               # JWT auth state management
 │   ├── ITokenStorageService.cs
 │   ├── TokenStorageService.cs          # ProtectedSessionStorage-based
 │   └── JwtAuthenticationStateProvider.cs
-├── Services/                           # Typed HttpClient API clients
+├── Services/                           # Typed HttpClient API clients + Toast
 │   ├── ApiAuthenticationHandler.cs     # DelegatingHandler for JWT
 │   ├── IAuthApiClient.cs + AuthApiClient.cs
 │   ├── IProductApiClient.cs + ProductApiClient.cs
-│   └── ICategoryApiClient.cs + CategoryApiClient.cs
+│   ├── ICategoryApiClient.cs + CategoryApiClient.cs
+│   ├── IToastService.cs + ToastService.cs  # Toast notification service
+│   ├── ToastLevel.cs                   # Toast severity enum
+│   └── ToastMessage.cs                 # Toast message model
 ├── Components/
 │   ├── App.razor                       # Root HTML component
 │   ├── Routes.razor                    # Router with AuthorizeRouteView
@@ -695,8 +698,8 @@ src/Steinsiek.Odin.Web/
 │   ├── Pages/                          # Route pages
 │   ├── Products/                       # Product components
 │   ├── Auth/                           # Auth form components
-│   └── Shared/                         # Reusable components
-└── wwwroot/                            # Static assets
+│   └── Shared/                         # Reusable components (ToastContainer, ConfirmDialog, etc.)
+└── wwwroot/                            # Static assets (CSS, JS interop)
 ```
 
 ### API Communication
@@ -719,12 +722,15 @@ src/Steinsiek.Odin.Web/
 - All service implementations are `sealed`
 - Pages use `@attribute [Authorize]` for protected routes
 - No business logic in components — all API interaction through services
-- MudBlazor Snackbar for user notifications
+- Custom `IToastService` for user notifications (`ToastService.Show(message, ToastLevel)`)
+- Bootstrap Modals for confirmation and form dialogs (declarative inline components with `Visible` parameter)
+- Forms use `EditForm` + `DataAnnotationsValidator` for form validation
+- Icons use Bootstrap Icons (`bi-*` classes)
 
 ### Theme
-- Custom `OdinTheme` with dark (default) and light palettes
-- Purple/Teal color scheme, Inter font, 12px border radius
-- Dark mode toggle in AppBar
+- CSS Custom Properties for dark/light mode (`data-theme` attribute toggle)
+- Bootstrap standard color scheme (Blue/Grey), Inter font
+- Dark mode toggle in navbar
 
 ## Authentication
 

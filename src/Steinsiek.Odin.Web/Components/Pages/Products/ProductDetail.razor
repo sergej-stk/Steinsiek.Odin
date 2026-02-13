@@ -1,24 +1,25 @@
 @page "/products/{Id:guid}"
 @inject IProductApiClient ProductApi
 @inject NavigationManager Navigation
-@inject IDialogService DialogService
-@inject ISnackbar Snackbar
+@inject IToastService ToastService
 
 <PageTitle>@(_product?.Name ?? "Product") - Odin</PageTitle>
 
 @if (_product is null && !_notFound)
 {
-    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    <div class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 }
 else if (_notFound)
 {
-    <MudPaper Class="pa-8 text-center" Elevation="0">
-        <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" Color="Color.Error" Class="mb-4" />
-        <MudText Typo="Typo.h5">Product not found</MudText>
-        <MudButton Href="/products" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
-            Back to Products
-        </MudButton>
-    </MudPaper>
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-circle text-danger fs-1 mb-3 d-block"></i>
+        <h5>Product not found</h5>
+        <a href="/products" class="btn btn-primary mt-3">Back to Products</a>
+    </div>
 }
 else if (_product is not null)
 {
@@ -26,93 +27,89 @@ else if (_product is not null)
         <Actions>
             <AuthorizeView>
                 <Authorized>
-                    <MudButton Href="@($"/products/{_product.Id}/edit")" Variant="Variant.Outlined"
-                               Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit">
-                        Edit
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled" Color="Color.Error"
-                               StartIcon="@Icons.Material.Filled.Delete" OnClick="@HandleDelete"
-                               Class="ml-2">
-                        Delete
-                    </MudButton>
+                    <a href="/products/@(_product.Id)/edit" class="btn btn-outline-primary">
+                        <i class="bi bi-pencil me-1"></i> Edit
+                    </a>
+                    <button class="btn btn-danger ms-2" @onclick="@(() => _showDeleteConfirm = true)">
+                        <i class="bi bi-trash me-1"></i> Delete
+                    </button>
                 </Authorized>
             </AuthorizeView>
         </Actions>
     </PageHeader>
 
-    <MudGrid>
-        <MudItem xs="12" md="5">
-            <MudPaper Class="rounded-lg overflow-hidden" Elevation="2">
+    <div class="row g-4">
+        <div class="col-12 col-md-5">
+            <div class="card overflow-hidden">
                 @if (!string.IsNullOrEmpty(_product.ImageUrl))
                 {
-                    <MudImage Src="@_product.ImageUrl" Alt="@_product.Name"
-                              ObjectFit="ObjectFit.Cover" Width="100" Height="400"
-                              Class="rounded-lg" Style="width: 100%;" />
+                    <img src="@_product.ImageUrl" alt="@_product.Name" class="card-img-top" style="height: 400px; object-fit: cover;" />
                 }
                 else
                 {
-                    <MudPaper Height="400px" Class="d-flex align-center justify-center"
-                              Style="background: linear-gradient(135deg, var(--mud-palette-primary-lighten), var(--mud-palette-secondary-lighten));">
-                        <MudIcon Icon="@Icons.Material.Filled.ShoppingBag" Style="font-size: 5rem; opacity: 0.5;" />
-                    </MudPaper>
+                    <div class="placeholder-image" style="height: 400px;">
+                        <i class="bi bi-bag" style="font-size: 5rem;"></i>
+                    </div>
                 }
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" md="7">
-            <MudStack Spacing="3">
+            </div>
+        </div>
+        <div class="col-12 col-md-7">
+            <div class="d-flex flex-column gap-3">
                 @if (!string.IsNullOrEmpty(_product.CategoryName))
                 {
-                    <MudChip T="string" Color="Color.Primary" Variant="Variant.Outlined"
-                             Icon="@Icons.Material.Filled.Category">
-                        @_product.CategoryName
-                    </MudChip>
+                    <span class="badge text-bg-primary align-self-start">
+                        <i class="bi bi-grid me-1"></i> @_product.CategoryName
+                    </span>
                 }
 
-                <MudText Typo="Typo.h3" Color="Color.Primary" Style="font-weight: 700;">
-                    @_product.Price.ToString("C2")
-                </MudText>
+                <h3 class="fw-bold text-primary">@_product.Price.ToString("C2")</h3>
 
-                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                <div class="d-flex gap-2 align-items-center">
                     @if (_product.Stock > 0)
                     {
-                        <MudChip T="string" Color="Color.Success" Variant="Variant.Filled"
-                                 Icon="@Icons.Material.Filled.CheckCircle">
-                            In Stock (@_product.Stock available)
-                        </MudChip>
+                        <span class="badge text-bg-success">
+                            <i class="bi bi-check-circle me-1"></i> In Stock (@_product.Stock available)
+                        </span>
                     }
                     else
                     {
-                        <MudChip T="string" Color="Color.Error" Variant="Variant.Filled"
-                                 Icon="@Icons.Material.Filled.RemoveCircle">
-                            Out of Stock
-                        </MudChip>
+                        <span class="badge text-bg-danger">
+                            <i class="bi bi-x-circle me-1"></i> Out of Stock
+                        </span>
                     }
                     @if (!_product.IsActive)
                     {
-                        <MudChip T="string" Color="Color.Warning" Variant="Variant.Filled">Inactive</MudChip>
+                        <span class="badge text-bg-warning">Inactive</span>
                     }
-                </MudStack>
+                </div>
 
                 @if (!string.IsNullOrEmpty(_product.Description))
                 {
-                    <MudDivider />
-                    <MudText Typo="Typo.h6" Style="font-weight: 600;">Description</MudText>
-                    <MudText Typo="Typo.body1">@_product.Description</MudText>
+                    <hr />
+                    <h6 class="fw-semibold">Description</h6>
+                    <p>@_product.Description</p>
                 }
 
-                <MudDivider />
-                <MudButton Href="/products" Variant="Variant.Text" Color="Color.Primary"
-                           StartIcon="@Icons.Material.Filled.ArrowBack">
-                    Back to Products
-                </MudButton>
-            </MudStack>
-        </MudItem>
-    </MudGrid>
+                <hr />
+                <a href="/products" class="text-decoration-none">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Products
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <ConfirmDialog Visible="_showDeleteConfirm"
+                   Title="Delete Product"
+                   ContentText="@($"Are you sure you want to delete \"{_product.Name}\"? This action cannot be undone.")"
+                   ButtonText="Delete"
+                   OnConfirm="ConfirmDelete"
+                   OnCancel="@(() => _showDeleteConfirm = false)" />
 }
 
 @code {
     private ProductDto? _product;
     private bool _notFound;
+    private bool _showDeleteConfirm;
 
     /// <summary>
     /// The product identifier from the route.
@@ -130,30 +127,18 @@ else if (_product is not null)
         }
     }
 
-    private async Task HandleDelete()
+    private async Task ConfirmDelete()
     {
-        var parameters = new DialogParameters<ConfirmDialog>
+        _showDeleteConfirm = false;
+        var success = await ProductApi.Delete(_product!.Id, CancellationToken.None);
+        if (success)
         {
-            { x => x.ContentText, $"Are you sure you want to delete \"{_product!.Name}\"? This action cannot be undone." },
-            { x => x.ButtonText, "Delete" },
-            { x => x.ButtonColor, Color.Error }
-        };
-
-        var dialog = await DialogService.ShowAsync<ConfirmDialog>("Delete Product", parameters);
-        var result = await dialog.Result;
-
-        if (result is not null && !result.Canceled)
+            ToastService.Show("Product deleted successfully", ToastLevel.Success);
+            Navigation.NavigateTo("/products");
+        }
+        else
         {
-            var success = await ProductApi.Delete(_product.Id, CancellationToken.None);
-            if (success)
-            {
-                Snackbar.Add("Product deleted successfully", Severity.Success);
-                Navigation.NavigateTo("/products");
-            }
-            else
-            {
-                Snackbar.Add("Failed to delete product", Severity.Error);
-            }
+            ToastService.Show("Failed to delete product", ToastLevel.Error);
         }
     }
 }

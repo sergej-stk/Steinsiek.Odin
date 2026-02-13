@@ -2,15 +2,15 @@
 
 <PageTitle>Register - Odin</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center" Style="min-height: 70vh;">
-    <MudCard Class="pa-8 rounded-xl" Elevation="4" Style="width: 100%; max-width: 500px;">
-        <MudCardContent>
-            <MudStack Spacing="3" AlignItems="AlignItems.Center" Class="mb-4">
-                <MudIcon Icon="@Icons.Material.Filled.Bolt" Size="Size.Large" Color="Color.Primary" />
-                <MudText Typo="Typo.h4" Style="font-weight: 700;">Create Account</MudText>
-                <MudText Typo="Typo.body2" Color="Color.Secondary">Join the Odin E-Commerce platform</MudText>
-            </MudStack>
+<div class="d-flex align-items-center justify-content-center" style="min-height: 70vh;">
+    <div class="card shadow" style="width: 100%; max-width: 500px;">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <i class="bi bi-lightning-charge-fill text-primary fs-1"></i>
+                <h4 class="fw-bold mt-2">Create Account</h4>
+                <p class="text-muted small">Join the Odin E-Commerce platform</p>
+            </div>
             <RegisterForm />
-        </MudCardContent>
-    </MudCard>
-</MudContainer>
+        </div>
+    </div>
+</div>

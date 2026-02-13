@@ -2,42 +2,46 @@
 @attribute [Authorize]
 @inject IProductApiClient ProductApi
 @inject NavigationManager Navigation
-@inject ISnackbar Snackbar
+@inject IToastService ToastService
 
 <PageTitle>Edit Product - Odin</PageTitle>
 
 @if (_initialData is null && !_notFound)
 {
-    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    <div class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 }
 else if (_notFound)
 {
-    <MudPaper Class="pa-8 text-center" Elevation="0">
-        <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" Color="Color.Error" Class="mb-4" />
-        <MudText Typo="Typo.h5">Product not found</MudText>
-        <MudButton Href="/products" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
-            Back to Products
-        </MudButton>
-    </MudPaper>
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-circle text-danger fs-1 mb-3 d-block"></i>
+        <h5>Product not found</h5>
+        <a href="/products" class="btn btn-primary mt-3">Back to Products</a>
+    </div>
 }
 else
 {
     <PageHeader Title="@($"Edit: {_initialData!.Name}")">
         <Actions>
-            <MudButton Href="@($"/products/{Id}")" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ArrowBack">
-                Back
-            </MudButton>
+            <a href="/products/@Id" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
         </Actions>
     </PageHeader>
 
-    <MudPaper Class="pa-6" MaxWidth="800px" Elevation="2">
-        <ProductForm InitialData="@_initialData"
-                     ShowIsActive="true"
-                     SubmitText="Update Product"
-                     IsSubmitting="@_isSubmitting"
-                     OnSubmit="@HandleUpdate"
-                     OnCancel="@(() => Navigation.NavigateTo($"/products/{Id}"))" />
-    </MudPaper>
+    <div class="card" style="max-width: 800px;">
+        <div class="card-body p-4">
+            <ProductForm InitialData="@_initialData"
+                         ShowIsActive="true"
+                         SubmitText="Update Product"
+                         IsSubmitting="@_isSubmitting"
+                         OnSubmit="@HandleUpdate"
+                         OnCancel="@(() => Navigation.NavigateTo($"/products/{Id}"))" />
+        </div>
+    </div>
 }
 
 @code {
@@ -92,12 +96,12 @@ else
 
         if (result is not null)
         {
-            Snackbar.Add("Product updated successfully", Severity.Success);
+            ToastService.Show("Product updated successfully", ToastLevel.Success);
             Navigation.NavigateTo($"/products/{Id}");
         }
         else
         {
-            Snackbar.Add("Failed to update product", Severity.Error);
+            ToastService.Show("Failed to update product", ToastLevel.Error);
         }
 
         _isSubmitting = false;

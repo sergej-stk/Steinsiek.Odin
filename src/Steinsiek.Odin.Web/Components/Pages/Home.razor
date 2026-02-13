@@ -4,38 +4,28 @@
 
 <PageTitle>Odin - Modern E-Commerce</PageTitle>
 
-<MudPaper Class="pa-8 mb-6 rounded-xl" Style="background: linear-gradient(135deg, var(--mud-palette-primary), var(--mud-palette-secondary));">
-    <MudStack Spacing="2">
-        <MudText Typo="Typo.h3" Style="color: white; font-weight: 700;">Welcome to Odin</MudText>
-        <MudText Typo="Typo.subtitle1" Style="color: rgba(255,255,255,0.85);">
-            Discover our curated collection of premium products
-        </MudText>
-        <MudStack Row="true" Spacing="2" Class="mt-2">
-            <MudButton Href="/products" Variant="Variant.Filled"
-                       Style="background: white; color: var(--mud-palette-primary);"
-                       EndIcon="@Icons.Material.Filled.ArrowForward">
-                Browse Products
-            </MudButton>
-        </MudStack>
-    </MudStack>
-</MudPaper>
+<div class="hero-section mb-4">
+    <h3 class="fw-bold">Welcome to Odin</h3>
+    <p class="mb-3" style="opacity: 0.85;">Discover our curated collection of premium products</p>
+    <a href="/products" class="btn btn-light">
+        Browse Products <i class="bi bi-arrow-right ms-1"></i>
+    </a>
+</div>
 
 @if (_categories is not null)
 {
-    <MudText Typo="Typo.h5" Class="mb-3" Style="font-weight: 600;">Categories</MudText>
-    <MudStack Row="true" Spacing="2" Class="mb-6" Wrap="Wrap.Wrap">
+    <h5 class="fw-semibold mb-3">Categories</h5>
+    <div class="d-flex flex-wrap gap-2 mb-4">
         @foreach (var category in _categories.Data)
         {
-            <MudChip T="string" Color="Color.Primary" Variant="Variant.Outlined"
-                     Href="@($"/products?category={category.Id}")"
-                     Icon="@Icons.Material.Filled.Category">
-                @category.Name
-            </MudChip>
+            <a href="/products?category=@category.Id" class="badge text-bg-primary text-decoration-none fs-6 fw-normal py-2 px-3">
+                <i class="bi bi-grid me-1"></i> @category.Name
+            </a>
         }
-    </MudStack>
+    </div>
 }
 
-<MudText Typo="Typo.h5" Class="mb-3" Style="font-weight: 600;">Featured Products</MudText>
+<h5 class="fw-semibold mb-3">Featured Products</h5>
 @if (_products is null)
 {
     <LoadingIndicator />

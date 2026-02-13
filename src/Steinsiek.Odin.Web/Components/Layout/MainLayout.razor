@@ -2,79 +2,40 @@
 @inject JwtAuthenticationStateProvider AuthStateProvider
 @inject ITokenStorageService TokenStorage
 @inject NavigationManager Navigation
-@inject ISnackbar Snackbar
+@inject IToastService ToastService
+@inject IJSRuntime JS
 
-<MudThemeProvider Theme="OdinTheme.Theme" @bind-IsDarkMode="_isDarkMode" />
-<MudPopoverProvider />
-<MudDialogProvider
-    FullWidth="true"
-    MaxWidth="MaxWidth.Small"
-    CloseButton="true"
-    BackdropClick="false" />
-<MudSnackbarProvider />
+<NavMenu IsDarkMode="_isDarkMode" OnToggleDarkMode="ToggleDarkMode" OnLogout="Logout" />
 
-<MudLayout>
-    <MudAppBar Elevation="0" Dense="true" Class="border-b">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu"
-                       Color="Color.Inherit"
-                       Edge="Edge.Start"
-                       OnClick="@ToggleDrawer" />
-        <MudIcon Icon="@Icons.Material.Filled.Bolt" Size="Size.Large" Color="Color.Primary" />
-        <MudText Typo="Typo.h6" Class="ml-2" Style="font-weight: 700; letter-spacing: 0.5px;">ODIN</MudText>
-        <MudSpacer />
-        <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
-                       Color="Color.Inherit"
-                       OnClick="@ToggleDarkMode"
-                       aria-label="@(_isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode")" />
-        <AuthorizeView>
-            <Authorized>
-                <MudMenu Icon="@Icons.Material.Filled.Person" Color="Color.Inherit" AnchorOrigin="Origin.BottomRight">
-                    <MudMenuItem Icon="@Icons.Material.Filled.AccountCircle" Href="/profile">Profile</MudMenuItem>
-                    <MudDivider />
-                    <MudMenuItem Icon="@Icons.Material.Filled.Logout" OnClick="@Logout">Logout</MudMenuItem>
-                </MudMenu>
-            </Authorized>
-            <NotAuthorized>
-                <MudButton Href="/login" Variant="Variant.Text" Color="Color.Inherit" StartIcon="@Icons.Material.Filled.Login">
-                    Login
-                </MudButton>
-                <MudButton Href="/register" Variant="Variant.Filled" Color="Color.Primary" Class="ml-2">
-                    Register
-                </MudButton>
-            </NotAuthorized>
-        </AuthorizeView>
-    </MudAppBar>
+<main class="container-xl py-4">
+    @Body
+</main>
 
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="1" Variant="DrawerVariant.Mini" OpenMiniOnHover="true">
-        <NavMenu />
-    </MudDrawer>
-
-    <MudMainContent Class="pa-4">
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
-            @Body
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
+<ToastContainer />
 
 @code {
-    private bool _drawerOpen = true;
     private bool _isDarkMode = true;
 
-    private void ToggleDrawer()
+    /// <inheritdoc />
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _drawerOpen = !_drawerOpen;
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("bootstrapInterop.setTheme", _isDarkMode ? "dark" : "light");
+        }
     }
 
-    private void ToggleDarkMode()
+    private async Task ToggleDarkMode()
     {
         _isDarkMode = !_isDarkMode;
+        await JS.InvokeVoidAsync("bootstrapInterop.setTheme", _isDarkMode ? "dark" : "light");
     }
 
     private async Task Logout()
     {
         await TokenStorage.RemoveToken(CancellationToken.None);
         AuthStateProvider.NotifyAuthenticationStateChanged();
-        Snackbar.Add("Successfully logged out", Severity.Info);
+        ToastService.Show("Successfully logged out", ToastLevel.Info);
         Navigation.NavigateTo("/");
     }
 }

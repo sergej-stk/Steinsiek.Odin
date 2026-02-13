@@ -1,21 +1,21 @@
 @if (Products is null || Products.Count == 0)
 {
-    <MudPaper Class="pa-8 text-center" Elevation="0">
-        <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Color="Color.Secondary" Class="mb-4" />
-        <MudText Typo="Typo.h6" Color="Color.Secondary">No products found</MudText>
-        <MudText Typo="Typo.body2" Color="Color.Secondary">Try adjusting your search or filters.</MudText>
-    </MudPaper>
+    <div class="text-center py-5">
+        <i class="bi bi-search fs-1 text-muted mb-3 d-block"></i>
+        <h6 class="text-muted">No products found</h6>
+        <p class="text-muted small">Try adjusting your search or filters.</p>
+    </div>
 }
 else
 {
-    <MudGrid>
+    <div class="row g-3">
         @foreach (var product in Products)
         {
-            <MudItem xs="12" sm="6" md="4" lg="3">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                 <ProductCard Product="product" />
-            </MudItem>
+            </div>
         }
-    </MudGrid>
+    </div>
 }
 
 @code {

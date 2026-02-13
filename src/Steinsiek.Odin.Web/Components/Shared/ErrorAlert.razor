@@ -1,12 +1,9 @@
 @if (Visible)
 {
-    <MudAlert Severity="Severity.Error"
-              Variant="Variant.Filled"
-              Class="mb-4"
-              ShowCloseIcon="true"
-              CloseIconClicked="@(() => Visible = false)">
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
         @Message
-    </MudAlert>
+        <button type="button" class="btn-close" @onclick="Dismiss"></button>
+    </div>
 }
 
 @code {
@@ -27,4 +24,10 @@
     /// </summary>
     [Parameter]
     public EventCallback<bool> VisibleChanged { get; set; }
+
+    private async Task Dismiss()
+    {
+        Visible = false;
+        await VisibleChanged.InvokeAsync(false);
+    }
 }

@@ -1,15 +1,14 @@
-<MudTextField T="string"
-              Value="@Value"
-              ValueChanged="@OnValueChanged"
-              Placeholder="Search products..."
-              Adornment="Adornment.Start"
-              AdornmentIcon="@Icons.Material.Filled.Search"
-              Variant="Variant.Outlined"
-              Immediate="true"
-              DebounceInterval="300"
-              Class="mt-0" />
+@implements IDisposable
+
+<div class="input-group">
+    <span class="input-group-text"><i class="bi bi-search"></i></span>
+    <input type="text" class="form-control" placeholder="Search products..."
+           value="@Value" @oninput="OnInput" />
+</div>
 
 @code {
+    private Timer? _debounceTimer;
+
     /// <summary>
     /// The current search value.
     /// </summary>
@@ -22,9 +21,23 @@
     [Parameter]
     public EventCallback<string?> ValueChanged { get; set; }
 
-    private async Task OnValueChanged(string? newValue)
+    private void OnInput(ChangeEventArgs e)
     {
-        Value = newValue;
-        await ValueChanged.InvokeAsync(newValue);
+        var newValue = e.Value?.ToString();
+        _debounceTimer?.Dispose();
+        _debounceTimer = new Timer(async _ =>
+        {
+            await InvokeAsync(async () =>
+            {
+                Value = newValue;
+                await ValueChanged.InvokeAsync(newValue);
+            });
+        }, null, 300, Timeout.Infinite);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        _debounceTimer?.Dispose();
     }
 }

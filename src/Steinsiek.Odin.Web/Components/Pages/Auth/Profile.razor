@@ -8,62 +8,54 @@
 
 @if (_user is null && !_error)
 {
-    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    <div class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 }
 else if (_error)
 {
-    <MudAlert Severity="Severity.Error" Class="mb-4">
+    <div class="alert alert-danger mb-4">
         Failed to load profile information. Please try again later.
-    </MudAlert>
+    </div>
 }
 else if (_user is not null)
 {
-    <MudGrid>
-        <MudItem xs="12" md="6">
-            <MudCard Elevation="2" Class="rounded-lg">
-                <MudCardContent>
-                    <MudStack AlignItems="AlignItems.Center" Spacing="3" Class="pa-4">
-                        <MudAvatar Size="Size.Large" Color="Color.Primary" Style="width: 80px; height: 80px; font-size: 2rem;">
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex flex-column align-items-center gap-3 p-3">
+                        <div class="avatar-circle">
                             @(_user.FirstName[0])@(_user.LastName[0])
-                        </MudAvatar>
-                        <MudText Typo="Typo.h5" Style="font-weight: 700;">
-                            @_user.FirstName @_user.LastName
-                        </MudText>
-                        <MudText Typo="Typo.body1" Color="Color.Secondary">
-                            @_user.Email
-                        </MudText>
-                    </MudStack>
-                    <MudDivider Class="my-4" />
-                    <MudList T="string" Dense="true">
-                        <MudListItem T="string" Icon="@Icons.Material.Filled.Badge">
-                            <MudStack Row="true" Justify="Justify.SpaceBetween">
-                                <MudText Typo="Typo.body2" Color="Color.Secondary">User ID</MudText>
-                                <MudText Typo="Typo.body2" Style="font-family: monospace;">@_user.Id</MudText>
-                            </MudStack>
-                        </MudListItem>
-                        <MudListItem T="string" Icon="@Icons.Material.Filled.Person">
-                            <MudStack Row="true" Justify="Justify.SpaceBetween">
-                                <MudText Typo="Typo.body2" Color="Color.Secondary">First Name</MudText>
-                                <MudText Typo="Typo.body2">@_user.FirstName</MudText>
-                            </MudStack>
-                        </MudListItem>
-                        <MudListItem T="string" Icon="@Icons.Material.Filled.Person">
-                            <MudStack Row="true" Justify="Justify.SpaceBetween">
-                                <MudText Typo="Typo.body2" Color="Color.Secondary">Last Name</MudText>
-                                <MudText Typo="Typo.body2">@_user.LastName</MudText>
-                            </MudStack>
-                        </MudListItem>
-                        <MudListItem T="string" Icon="@Icons.Material.Filled.Email">
-                            <MudStack Row="true" Justify="Justify.SpaceBetween">
-                                <MudText Typo="Typo.body2" Color="Color.Secondary">Email</MudText>
-                                <MudText Typo="Typo.body2">@_user.Email</MudText>
-                            </MudStack>
-                        </MudListItem>
-                    </MudList>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
+                        </div>
+                        <h5 class="fw-bold mb-0">@_user.FirstName @_user.LastName</h5>
+                        <p class="text-muted mb-0">@_user.Email</p>
+                    </div>
+                    <hr />
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="text-muted"><i class="bi bi-person-badge me-2"></i>User ID</span>
+                            <span class="font-monospace small">@_user.Id</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="text-muted"><i class="bi bi-person me-2"></i>First Name</span>
+                            <span>@_user.FirstName</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="text-muted"><i class="bi bi-person me-2"></i>Last Name</span>
+                            <span>@_user.LastName</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="text-muted"><i class="bi bi-envelope me-2"></i>Email</span>
+                            <span>@_user.Email</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 @code {

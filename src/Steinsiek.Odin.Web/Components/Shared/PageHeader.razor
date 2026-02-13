@@ -1,20 +1,16 @@
-<MudStack Class="mb-4">
-    @if (BreadcrumbItems is not null && BreadcrumbItems.Count > 0)
-    {
-        <MudBreadcrumbs Items="BreadcrumbItems" Class="pa-0" />
-    }
-    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-        <MudText Typo="Typo.h4" Style="font-weight: 700;">@Title</MudText>
+<div class="mb-4">
+    <div class="d-flex align-items-center justify-content-between">
+        <h4 class="fw-bold mb-0">@Title</h4>
         @if (Actions is not null)
         {
             @Actions
         }
-    </MudStack>
+    </div>
     @if (!string.IsNullOrEmpty(Subtitle))
     {
-        <MudText Typo="Typo.body1" Color="Color.Secondary">@Subtitle</MudText>
+        <p class="text-muted mt-1 mb-0">@Subtitle</p>
     }
-</MudStack>
+</div>
 
 @code {
     /// <summary>
@@ -28,12 +24,6 @@
     /// </summary>
     [Parameter]
     public string? Subtitle { get; set; }
-
-    /// <summary>
-    /// Breadcrumb navigation items.
-    /// </summary>
-    [Parameter]
-    public List<BreadcrumbItem>? BreadcrumbItems { get; set; }
 
     /// <summary>
     /// Optional action buttons rendered on the right side.
