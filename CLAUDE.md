@@ -746,6 +746,9 @@ src/Steinsiek.Odin.Web/
 | POST /api/v1/products | Yes | Create product |
 | PUT /api/v1/products/{id} | Yes | Update product |
 | DELETE /api/v1/products/{id} | Yes | Delete product |
+| GET /api/v1/products/{id}/image | No | Product image |
+| PUT /api/v1/products/{id}/image | Yes | Upload product image |
+| DELETE /api/v1/products/{id}/image | Yes | Delete product image |
 | GET /api/v1/categories | No | All categories |
 | POST /api/v1/categories | Yes | Create category |
 
@@ -813,6 +816,16 @@ Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa") // Electronics
 Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb") // Clothing
 Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc") // Books
 Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd") // Household
+
+// Products
+Guid.Parse("11111111-0001-0001-0001-000000000001") // iPhone 15 Pro
+Guid.Parse("11111111-0001-0001-0001-000000000002") // MacBook Air M3
+Guid.Parse("11111111-0001-0001-0001-000000000003") // Samsung Galaxy S24 Ultra
+Guid.Parse("11111111-0001-0001-0001-000000000004") // Premium Hoodie
+Guid.Parse("11111111-0001-0001-0001-000000000005") // Designer Jeans
+Guid.Parse("11111111-0001-0001-0001-000000000006") // Clean Code
+Guid.Parse("11111111-0001-0001-0001-000000000007") // Design Patterns
+Guid.Parse("11111111-0001-0001-0001-000000000008") // Coffee Machine Deluxe
 ```
 
 ## Git Commit Conventions
