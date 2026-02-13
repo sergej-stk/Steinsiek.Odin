@@ -17,7 +17,7 @@ public sealed class ProductImageService(
 
     private const long MaxFileSizeBytes = 5 * 1024 * 1024;
 
-    private static readonly HashSet<string> AllowedContentTypes = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> _allowedContentTypes = new(StringComparer.OrdinalIgnoreCase)
     {
         "image/jpeg",
         "image/png",
@@ -39,9 +39,9 @@ public sealed class ProductImageService(
             throw new ElementNotFoundException("Product", productId);
         }
 
-        if (!AllowedContentTypes.Contains(file.ContentType))
+        if (!_allowedContentTypes.Contains(file.ContentType))
         {
-            throw new OdinValidationException($"Content type '{file.ContentType}' is not allowed. Allowed types: {string.Join(", ", AllowedContentTypes)}");
+            throw new OdinValidationException($"Content type '{file.ContentType}' is not allowed. Allowed types: {string.Join(", ", _allowedContentTypes)}");
         }
 
         if (file.Length > MaxFileSizeBytes)
