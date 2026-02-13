@@ -1,16 +1,38 @@
-@inject IDialogService DialogService
-
-<MudDialog>
-    <DialogContent>
-        <MudText Typo="Typo.body1">@ContentText</MudText>
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Cancel" Variant="Variant.Text">Cancel</MudButton>
-        <MudButton Color="@ButtonColor" Variant="Variant.Filled" OnClick="Confirm">@ButtonText</MudButton>
-    </DialogActions>
-</MudDialog>
+@if (Visible)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Title</h5>
+                    <button type="button" class="btn-close" @onclick="Cancel"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@ContentText</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="Confirm">@ButtonText</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
+    /// <summary>
+    /// Whether the dialog is visible.
+    /// </summary>
+    [Parameter]
+    public bool Visible { get; set; }
+
+    /// <summary>
+    /// The dialog title.
+    /// </summary>
+    [Parameter]
+    public string Title { get; set; } = "Confirm";
+
     /// <summary>
     /// The dialog content text.
     /// </summary>
@@ -24,21 +46,24 @@
     public string ButtonText { get; set; } = "Delete";
 
     /// <summary>
-    /// The confirm button color.
+    /// Callback when the user confirms the action.
     /// </summary>
     [Parameter]
-    public Color ButtonColor { get; set; } = Color.Error;
+    public EventCallback OnConfirm { get; set; }
 
-    [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; } = default!;
+    /// <summary>
+    /// Callback when the user cancels the action.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
 
-    private void Confirm()
+    private async Task Confirm()
     {
-        MudDialog.Close(DialogResult.Ok(true));
+        await OnConfirm.InvokeAsync();
     }
 
-    private void Cancel()
+    private async Task Cancel()
     {
-        MudDialog.Cancel();
+        await OnCancel.InvokeAsync();
     }
 }

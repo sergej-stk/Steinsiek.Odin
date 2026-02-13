@@ -1,37 +1,60 @@
 @inject ICategoryApiClient CategoryApi
 
-<MudDialog>
-    <DialogContent>
-        <MudForm @ref="_form" @bind-IsValid="_isValid">
-            <MudStack Spacing="3">
-                <MudTextField T="string" @bind-Value="Name" Label="Name" Required="true"
-                              RequiredError="Name is required" Variant="Variant.Outlined" />
-                <MudTextField T="string" @bind-Value="Description" Label="Description"
-                              Variant="Variant.Outlined" Lines="3" />
-                @if (IsEdit)
-                {
-                    <MudSwitch T="bool" @bind-Value="IsActive" Label="Active" Color="Color.Primary" />
-                }
-            </MudStack>
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Cancel" Variant="Variant.Text">Cancel</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled"
-                   Disabled="@(!_isValid || _isSubmitting)" OnClick="HandleSubmit">
-            @if (_isSubmitting)
-            {
-                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
-            }
-            @(IsEdit ? "Update" : "Create")
-        </MudButton>
-    </DialogActions>
-</MudDialog>
+@if (Visible)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(IsEdit ? "Edit Category" : "Create Category")</h5>
+                    <button type="button" class="btn-close" @onclick="Cancel"></button>
+                </div>
+                <EditForm Model="_model" OnValidSubmit="HandleSubmit">
+                    <DataAnnotationsValidator />
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <InputText @bind-Value="_model.Name" class="form-control" />
+                            <ValidationMessage For="@(() => _model.Name)" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <InputTextArea @bind-Value="_model.Description" class="form-control" rows="3" />
+                        </div>
+                        @if (IsEdit)
+                        {
+                            <div class="form-check form-switch">
+                                <InputCheckbox @bind-Value="_model.IsActive" class="form-check-input" id="categoryActiveSwitch" />
+                                <label class="form-check-label" for="categoryActiveSwitch">Active</label>
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+                        <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                            @if (_isSubmitting)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            }
+                            @(IsEdit ? "Update" : "Create")
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
-    private MudForm _form = default!;
-    private bool _isValid;
+    private CategoryFormModel _model = new();
     private bool _isSubmitting;
+
+    /// <summary>
+    /// Whether the dialog is visible.
+    /// </summary>
+    [Parameter]
+    public bool Visible { get; set; }
 
     /// <summary>
     /// Whether the dialog is in edit mode.
@@ -63,54 +86,87 @@
     [Parameter]
     public bool IsActive { get; set; } = true;
 
-    [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; } = default!;
+    /// <summary>
+    /// Callback when the dialog closes with a result.
+    /// </summary>
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        if (Visible)
+        {
+            _model = new CategoryFormModel
+            {
+                Name = Name,
+                Description = Description,
+                IsActive = IsActive
+            };
+        }
+    }
 
     private async Task HandleSubmit()
     {
-        await _form.Validate();
-        if (!_isValid)
-        {
-            return;
-        }
-
         _isSubmitting = true;
 
         if (IsEdit)
         {
             var request = new UpdateCategoryRequest
             {
-                Name = Name,
-                Description = Description,
-                IsActive = IsActive
+                Name = _model.Name,
+                Description = _model.Description,
+                IsActive = _model.IsActive
             };
 
             var result = await CategoryApi.Update(CategoryId, request, CancellationToken.None);
             if (result is not null)
             {
-                MudDialog.Close(DialogResult.Ok(true));
+                await OnClose.InvokeAsync(true);
             }
         }
         else
         {
             var request = new CreateCategoryRequest
             {
-                Name = Name,
-                Description = Description
+                Name = _model.Name,
+                Description = _model.Description
             };
 
             var result = await CategoryApi.Create(request, CancellationToken.None);
             if (result is not null)
             {
-                MudDialog.Close(DialogResult.Ok(true));
+                await OnClose.InvokeAsync(true);
             }
         }
 
         _isSubmitting = false;
     }
 
-    private void Cancel()
+    private async Task Cancel()
     {
-        MudDialog.Cancel();
+        await OnClose.InvokeAsync(false);
+    }
+
+    /// <summary>
+    /// Form model for category creation and editing.
+    /// </summary>
+    private sealed class CategoryFormModel
+    {
+        /// <summary>
+        /// The category name.
+        /// </summary>
+        [Required(ErrorMessage = "Name is required")]
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The category description.
+        /// </summary>
+        public string? Description { get; set; }
+
+        /// <summary>
+        /// Whether the category is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
     }
 }

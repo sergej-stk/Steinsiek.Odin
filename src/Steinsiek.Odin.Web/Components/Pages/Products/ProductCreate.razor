@@ -2,24 +2,26 @@
 @attribute [Authorize]
 @inject IProductApiClient ProductApi
 @inject NavigationManager Navigation
-@inject ISnackbar Snackbar
+@inject IToastService ToastService
 
 <PageTitle>Create Product - Odin</PageTitle>
 
 <PageHeader Title="Create Product">
     <Actions>
-        <MudButton Href="/products" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ArrowBack">
-            Back
-        </MudButton>
+        <a href="/products" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back
+        </a>
     </Actions>
 </PageHeader>
 
-<MudPaper Class="pa-6" MaxWidth="800px" Elevation="2">
-    <ProductForm SubmitText="Create Product"
-                 IsSubmitting="@_isSubmitting"
-                 OnSubmit="@HandleCreate"
-                 OnCancel="@(() => Navigation.NavigateTo("/products"))" />
-</MudPaper>
+<div class="card" style="max-width: 800px;">
+    <div class="card-body p-4">
+        <ProductForm SubmitText="Create Product"
+                     IsSubmitting="@_isSubmitting"
+                     OnSubmit="@HandleCreate"
+                     OnCancel="@(() => Navigation.NavigateTo("/products"))" />
+    </div>
+</div>
 
 @code {
     private bool _isSubmitting;
@@ -42,12 +44,12 @@
 
         if (result is not null)
         {
-            Snackbar.Add("Product created successfully", Severity.Success);
+            ToastService.Show("Product created successfully", ToastLevel.Success);
             Navigation.NavigateTo($"/products/{result.Id}");
         }
         else
         {
-            Snackbar.Add("Failed to create product", Severity.Error);
+            ToastService.Show("Failed to create product", ToastLevel.Error);
         }
 
         _isSubmitting = false;

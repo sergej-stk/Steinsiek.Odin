@@ -9,39 +9,35 @@
     <Actions>
         <AuthorizeView>
             <Authorized>
-                <MudButton Href="/products/create" Variant="Variant.Filled" Color="Color.Primary"
-                           StartIcon="@Icons.Material.Filled.Add">
-                    New Product
-                </MudButton>
+                <a href="/products/create" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i> New Product
+                </a>
             </Authorized>
         </AuthorizeView>
     </Actions>
 </PageHeader>
 
-<MudGrid Class="mb-4">
-    <MudItem xs="12" sm="8" md="6">
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-8 col-md-6">
         <ProductSearchBar Value="@_searchQuery" ValueChanged="@OnSearchChanged" />
-    </MudItem>
-    <MudItem xs="12" sm="4" md="3">
+    </div>
+    <div class="col-12 col-sm-4 col-md-3">
         @if (_categories is not null)
         {
-            <MudSelect T="Guid?" Value="_selectedCategoryId" ValueChanged="@OnCategoryChanged"
-                       Label="Category" Variant="Variant.Outlined" Clearable="true"
-                       AnchorOrigin="Origin.BottomCenter">
+            <select class="form-select" value="@_selectedCategoryId" @onchange="OnCategorySelectChanged">
+                <option value="">All Categories</option>
                 @foreach (var category in _categories.Data)
                 {
-                    <MudSelectItem T="Guid?" Value="@((Guid?)category.Id)">@category.Name</MudSelectItem>
+                    <option value="@category.Id">@category.Name</option>
                 }
-            </MudSelect>
+            </select>
         }
-    </MudItem>
-</MudGrid>
+    </div>
+</div>
 
 @if (_products is not null)
 {
-    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
-        @_products.TotalCount product(s) found
-    </MudText>
+    <p class="text-muted small mb-3">@_products.TotalCount product(s) found</p>
 }
 
 @if (_isLoading)
@@ -80,9 +76,10 @@ else
         await LoadProducts();
     }
 
-    private async Task OnCategoryChanged(Guid? categoryId)
+    private async Task OnCategorySelectChanged(ChangeEventArgs e)
     {
-        _selectedCategoryId = categoryId;
+        var value = e.Value?.ToString();
+        _selectedCategoryId = string.IsNullOrEmpty(value) ? null : Guid.Parse(value);
         _searchQuery = null;
         await LoadProducts();
     }

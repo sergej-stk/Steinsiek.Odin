@@ -1,0 +1,54 @@
+@implements IDisposable
+@inject IToastService ToastService
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
+    @foreach (var toast in ToastService.Toasts)
+    {
+        <div class="toast show align-items-center @GetToastClass(toast.Level) border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi @GetIconClass(toast.Level) me-2"></i>
+                    @toast.Message
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" @onclick="@(() => ToastService.Remove(toast.Id))"></button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        ToastService.OnChange += HandleStateChange;
+    }
+
+    private void HandleStateChange()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        ToastService.OnChange -= HandleStateChange;
+    }
+
+    private static string GetToastClass(ToastLevel level) => level switch
+    {
+        ToastLevel.Success => "text-bg-success",
+        ToastLevel.Error => "text-bg-danger",
+        ToastLevel.Warning => "text-bg-warning",
+        ToastLevel.Info => "text-bg-primary",
+        _ => "text-bg-primary"
+    };
+
+    private static string GetIconClass(ToastLevel level) => level switch
+    {
+        ToastLevel.Success => "bi-check-circle-fill",
+        ToastLevel.Error => "bi-exclamation-triangle-fill",
+        ToastLevel.Warning => "bi-exclamation-circle-fill",
+        ToastLevel.Info => "bi-info-circle-fill",
+        _ => "bi-info-circle-fill"
+    };
+}

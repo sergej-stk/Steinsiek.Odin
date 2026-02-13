@@ -21,16 +21,8 @@ try
     builder.Services.AddRazorComponents()
         .AddInteractiveServerComponents();
 
-    // MudBlazor
-    builder.Services.AddMudServices(config =>
-    {
-        config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
-        config.SnackbarConfiguration.PreventDuplicates = false;
-        config.SnackbarConfiguration.NewestOnTop = true;
-        config.SnackbarConfiguration.ShowCloseIcon = true;
-        config.SnackbarConfiguration.VisibleStateDuration = 5000;
-        config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
-    });
+    // Toast Notifications
+    builder.Services.AddScoped<IToastService, ToastService>();
 
     // Authentication State
     builder.Services.AddScoped<JwtAuthenticationStateProvider>();

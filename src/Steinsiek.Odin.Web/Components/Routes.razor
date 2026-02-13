@@ -2,20 +2,16 @@
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
             <NotAuthorized>
-                <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center" Style="min-height: 60vh;">
-                    <MudCard Class="pa-8" Elevation="4">
-                        <MudCardContent Class="text-center">
-                            <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Large" Color="Color.Primary" Class="mb-4" />
-                            <MudText Typo="Typo.h5" Class="mb-2">Access Denied</MudText>
-                            <MudText Typo="Typo.body1" Color="Color.Secondary" Class="mb-4">
-                                You need to be logged in to access this page.
-                            </MudText>
-                            <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Primary">
-                                Go to Login
-                            </MudButton>
-                        </MudCardContent>
-                    </MudCard>
-                </MudContainer>
+                <div class="d-flex align-items-center justify-content-center" style="min-height: 60vh;">
+                    <div class="card shadow p-5 text-center" style="max-width: 400px;">
+                        <div class="card-body">
+                            <i class="bi bi-lock-fill text-primary fs-1 mb-3 d-block"></i>
+                            <h5 class="fw-bold mb-2">Access Denied</h5>
+                            <p class="text-muted mb-4">You need to be logged in to access this page.</p>
+                            <a href="/login" class="btn btn-primary">Go to Login</a>
+                        </div>
+                    </div>
+                </div>
             </NotAuthorized>
         </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />

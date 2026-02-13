@@ -1,22 +1,26 @@
-<MudGrid>
+<div class="row g-3">
     @for (var i = 0; i < Count; i++)
     {
-        <MudItem xs="12" sm="6" md="4" lg="3">
-            <MudCard Elevation="2">
-                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="200px" />
-                <MudCardContent>
-                    <MudSkeleton Width="60%" />
-                    <MudSkeleton Width="40%" Class="mt-2" />
-                    <MudSkeleton Width="30%" Class="mt-2" />
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="card placeholder-glow">
+                <div class="placeholder-image" style="height: 200px;">
+                    <div class="spinner-border text-light" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <span class="placeholder col-7"></span>
+                    <span class="placeholder col-5 mt-2"></span>
+                    <span class="placeholder col-3 mt-2"></span>
+                </div>
+            </div>
+        </div>
     }
-</MudGrid>
+</div>
 
 @code {
     /// <summary>
-    /// The number of skeleton cards to display.
+    /// The number of placeholder cards to display.
     /// </summary>
     [Parameter]
     public int Count { get; set; } = 8;

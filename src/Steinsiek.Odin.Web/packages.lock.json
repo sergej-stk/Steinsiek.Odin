@@ -8,12 +8,6 @@
         "resolved": "10.0.3",
         "contentHash": "mr3Zn+ht8lijYvlMIasftw9opU9hsLKDdnOgQMmYI3RjWPJLOF9l8+YHDseRkTs97wOrULmJgo/NDCmzL/EGDg=="
       },
-      "MudBlazor": {
-        "type": "Direct",
-        "requested": "[9.0.0-rc.1, )",
-        "resolved": "9.0.0-rc.1",
-        "contentHash": "IAWKwIA80rj7pYGBFpGKG9iKfmbh0uf9mPTnTY8LHEjOoPArzD82bI9AD3wtIOzlBgFvTfkq18w02xJKnY8cFw=="
-      },
       "Roslynator.Analyzers": {
         "type": "Direct",
         "requested": "[4.15.0, )",
