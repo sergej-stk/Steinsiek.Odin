@@ -11,11 +11,20 @@ try
     builder.Services.AddSerilog((_, configuration) => configuration
         .ReadFrom.Configuration(builder.Configuration));
 
-    var redis = builder.AddRedis("cache");
+    var redis = builder.AddRedis("cache")
+        .WithImageTag("7.4")
+        .WithoutHttpsCertificate();
+
+    var postgres = builder.AddPostgres("postgres")
+        .WithPgAdmin();
+    var odinDb = postgres.AddDatabase("odindb");
 
     var api = builder.AddProject<Projects.Steinsiek_Odin_API>("api")
         .WithReference(redis)
+        .WithReference(odinDb)
         .WaitFor(redis)
+        .WaitFor(postgres)
+        .WithEnvironment("DatabaseProvider", "PostgreSQL")
         .WithIconName("ShoppingBag", IconVariant.Filled);
 
     builder.AddProject<Projects.Steinsiek_Odin_Web>("web")
