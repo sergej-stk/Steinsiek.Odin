@@ -1,0 +1,37 @@
+<div class="card mb-3">
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <div class="card-header">
+            <h6 class="card-title mb-0">
+                @if (!string.IsNullOrEmpty(Icon))
+                {
+                    <i class="bi @Icon me-2"></i>
+                }
+                @Title
+            </h6>
+        </div>
+    }
+    <div class="card-body">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// The card title displayed in the header.
+    /// </summary>
+    [Parameter]
+    public string? Title { get; set; }
+
+    /// <summary>
+    /// Optional Bootstrap icon class displayed before the title.
+    /// </summary>
+    [Parameter]
+    public string? Icon { get; set; }
+
+    /// <summary>
+    /// The content rendered inside the card body.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}
