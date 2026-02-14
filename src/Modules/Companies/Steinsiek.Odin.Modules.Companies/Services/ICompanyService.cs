@@ -52,4 +52,21 @@ public interface ICompanyService
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A list result containing matching companies.</returns>
     Task<ListResult<CompanyDto>> Search(string searchTerm, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Retrieves a paged, filtered, and sorted collection of companies.
+    /// </summary>
+    /// <param name="query">The pagination and sorting parameters.</param>
+    /// <param name="filter">The filter criteria.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A paged result containing matching companies.</returns>
+    Task<PagedResult<CompanyDto>> GetPaged(PagedQuery query, CompanyFilterQuery filter, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Deletes multiple companies by their identifiers.
+    /// </summary>
+    /// <param name="ids">The collection of company identifiers to delete.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The number of successfully deleted companies.</returns>
+    Task<int> DeleteMany(IReadOnlyList<Guid> ids, CancellationToken cancellationToken);
 }

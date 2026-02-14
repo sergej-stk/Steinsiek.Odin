@@ -24,6 +24,16 @@ public sealed class CompaniesController(ICompanyService companyService, ILogger<
     }
 
     /// <inheritdoc />
+    [HttpGet("paged")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(PagedResult<CompanyDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResult<CompanyDto>>> GetPaged([FromQuery] PagedQuery query, [FromQuery] CompanyFilterQuery filter, CancellationToken cancellationToken)
+    {
+        var result = await _companyService.GetPaged(query, filter, cancellationToken);
+        return Ok(result);
+    }
+
+    /// <inheritdoc />
     [HttpGet("{id:guid}")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(CompanyDetailDto), StatusCodes.Status200OK)]
@@ -100,5 +110,15 @@ public sealed class CompaniesController(ICompanyService companyService, ILogger<
         }
 
         return NoContent();
+    }
+
+    /// <inheritdoc />
+    [HttpDelete("bulk")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<int>> DeleteMany([FromBody] IReadOnlyList<Guid> ids, CancellationToken cancellationToken)
+    {
+        var deletedCount = await _companyService.DeleteMany(ids, cancellationToken);
+        return deletedCount;
     }
 }

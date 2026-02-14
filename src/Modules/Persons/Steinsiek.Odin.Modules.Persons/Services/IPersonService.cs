@@ -52,4 +52,21 @@ public interface IPersonService
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A list result containing matching persons.</returns>
     Task<ListResult<PersonDto>> Search(string searchTerm, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Retrieves a paged, filtered, and sorted collection of persons.
+    /// </summary>
+    /// <param name="query">The pagination and sorting parameters.</param>
+    /// <param name="filter">The filter criteria.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A paged result containing matching persons.</returns>
+    Task<PagedResult<PersonDto>> GetPaged(PagedQuery query, PersonFilterQuery filter, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Deletes multiple persons by their identifiers.
+    /// </summary>
+    /// <param name="ids">The collection of person identifiers to delete.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The number of successfully deleted persons.</returns>
+    Task<int> DeleteMany(IReadOnlyList<Guid> ids, CancellationToken cancellationToken);
 }

@@ -133,6 +133,46 @@ public sealed class CompanyService(ICompanyRepository companyRepository, ILogger
         };
     }
 
+    /// <inheritdoc />
+    public async Task<PagedResult<CompanyDto>> GetPaged(PagedQuery query, CompanyFilterQuery filter, CancellationToken cancellationToken)
+    {
+        var allowedPageSizes = new[] { 25, 50, 100 };
+        var pageSize = allowedPageSizes.Contains(query.PageSize) ? query.PageSize : 25;
+        var clampedQuery = query with { PageSize = pageSize, Page = Math.Max(1, query.Page) };
+
+        _logger.LogInformation("Retrieving paged companies (Page={Page}, PageSize={PageSize})", clampedQuery.Page, clampedQuery.PageSize);
+
+        var (items, totalCount) = await _companyRepository.GetPaged(clampedQuery, filter, cancellationToken);
+        var dtos = items.Select(MapToDto).ToList();
+
+        return new PagedResult<CompanyDto>
+        {
+            TotalCount = totalCount,
+            Data = dtos,
+            CurrentPage = clampedQuery.Page,
+            PageSize = clampedQuery.PageSize
+        };
+    }
+
+    /// <inheritdoc />
+    public async Task<int> DeleteMany(IReadOnlyList<Guid> ids, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Bulk deleting {Count} companies", ids.Count);
+
+        var deletedCount = 0;
+        foreach (var id in ids)
+        {
+            var result = await _companyRepository.Delete(id, cancellationToken);
+            if (result)
+            {
+                deletedCount++;
+            }
+        }
+
+        _logger.LogInformation("Bulk delete completed: {DeletedCount} of {RequestedCount} companies deleted", deletedCount, ids.Count);
+        return deletedCount;
+    }
+
     /// <summary>
     /// Maps a company entity to a summary DTO.
     /// </summary>

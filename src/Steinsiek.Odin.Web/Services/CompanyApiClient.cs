@@ -144,6 +144,110 @@ public sealed class CompanyApiClient(
         }
     }
 
+    /// <inheritdoc />
+    public async Task<PagedResult<CompanyDto>?> GetPaged(int page, int pageSize, string? sort, SortDirection? sortDir, string? search, CompanyFilterQuery? filter, CancellationToken cancellationToken)
+    {
+        await ApplyAuthHeader(cancellationToken);
+        try
+        {
+            var queryParams = new Dictionary<string, string?>
+            {
+                ["page"] = page.ToString(),
+                ["pageSize"] = pageSize.ToString()
+            };
+
+            if (!string.IsNullOrWhiteSpace(sort))
+            {
+                queryParams["sort"] = sort;
+            }
+
+            if (sortDir.HasValue)
+            {
+                queryParams["sortDir"] = sortDir.Value.ToString();
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                queryParams["q"] = search;
+            }
+
+            if (filter is not null)
+            {
+                if (filter.IndustryId.HasValue)
+                {
+                    queryParams["industryId"] = filter.IndustryId.Value.ToString();
+                }
+
+                if (filter.LegalFormId.HasValue)
+                {
+                    queryParams["legalFormId"] = filter.LegalFormId.Value.ToString();
+                }
+
+                if (!string.IsNullOrWhiteSpace(filter.City))
+                {
+                    queryParams["city"] = filter.City;
+                }
+
+                if (filter.EmployeeCountMin.HasValue)
+                {
+                    queryParams["employeeCountMin"] = filter.EmployeeCountMin.Value.ToString();
+                }
+
+                if (filter.EmployeeCountMax.HasValue)
+                {
+                    queryParams["employeeCountMax"] = filter.EmployeeCountMax.Value.ToString();
+                }
+
+                if (filter.FoundingDateFrom.HasValue)
+                {
+                    queryParams["foundingDateFrom"] = filter.FoundingDateFrom.Value.ToString("O");
+                }
+
+                if (filter.FoundingDateTo.HasValue)
+                {
+                    queryParams["foundingDateTo"] = filter.FoundingDateTo.Value.ToString("O");
+                }
+            }
+
+            var queryString = string.Join("&", queryParams
+                .Where(kv => kv.Value is not null)
+                .Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value!)}"));
+
+            return await _httpClient.GetFromJsonAsync<PagedResult<CompanyDto>>($"/api/v1/companies/paged?{queryString}", cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving paged companies");
+            return null;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<int> DeleteMany(IReadOnlyList<Guid> ids, CancellationToken cancellationToken)
+    {
+        await ApplyAuthHeader(cancellationToken);
+        try
+        {
+            var request = new HttpRequestMessage(HttpMethod.Delete, "/api/v1/companies/bulk")
+            {
+                Content = JsonContent.Create(ids)
+            };
+            var response = await _httpClient.SendAsync(request, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("Failed to bulk delete companies with status {StatusCode}", response.StatusCode);
+                return 0;
+            }
+
+            return await response.Content.ReadFromJsonAsync<int>(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error bulk deleting companies");
+            return 0;
+        }
+    }
+
     /// <summary>
     /// Applies the JWT Bearer token from session storage to the HTTP client.
     /// </summary>

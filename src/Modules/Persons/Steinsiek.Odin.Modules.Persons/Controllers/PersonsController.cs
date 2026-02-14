@@ -24,6 +24,16 @@ public sealed class PersonsController(IPersonService personService, ILogger<Pers
     }
 
     /// <inheritdoc />
+    [HttpGet("paged")]
+    [ProducesResponseType(typeof(PagedResult<PersonDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<PagedResult<PersonDto>>> GetPaged([FromQuery] PagedQuery query, [FromQuery] PersonFilterQuery filter, CancellationToken cancellationToken)
+    {
+        var result = await _personService.GetPaged(query, filter, cancellationToken);
+        return Ok(result);
+    }
+
+    /// <inheritdoc />
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(PersonDetailDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -100,5 +110,17 @@ public sealed class PersonsController(IPersonService personService, ILogger<Pers
         }
 
         return NoContent();
+    }
+
+    /// <inheritdoc />
+    [HttpDelete("bulk")]
+    [Authorize(Roles = OdinRoles.AdminOrManager)]
+    [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<int>> DeleteMany([FromBody] IReadOnlyList<Guid> ids, CancellationToken cancellationToken)
+    {
+        var deletedCount = await _personService.DeleteMany(ids, cancellationToken);
+        return deletedCount;
     }
 }

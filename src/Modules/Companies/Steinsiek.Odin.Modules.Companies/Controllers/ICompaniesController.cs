@@ -46,10 +46,27 @@ public interface ICompaniesController
     Task<ActionResult<CompanyDto>> Update(Guid id, UpdateCompanyRequest request, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Retrieves a paged, filtered, and sorted collection of companies.
+    /// </summary>
+    /// <param name="query">The pagination and sorting parameters.</param>
+    /// <param name="filter">The filter criteria.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A paged result of companies.</returns>
+    Task<ActionResult<PagedResult<CompanyDto>>> GetPaged(PagedQuery query, CompanyFilterQuery filter, CancellationToken cancellationToken);
+
+    /// <summary>
     /// Deletes a company by its unique identifier.
     /// </summary>
     /// <param name="id">The company identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>No content if deleted successfully.</returns>
     Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Deletes multiple companies by their identifiers.
+    /// </summary>
+    /// <param name="ids">The collection of company identifiers to delete.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The number of successfully deleted companies.</returns>
+    Task<ActionResult<int>> DeleteMany(IReadOnlyList<Guid> ids, CancellationToken cancellationToken);
 }

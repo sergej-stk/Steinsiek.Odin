@@ -124,6 +124,110 @@ public sealed class PersonApiClient(
         }
     }
 
+    /// <inheritdoc />
+    public async Task<PagedResult<PersonDto>?> GetPaged(int page, int pageSize, string? sort, SortDirection? sortDir, string? search, PersonFilterQuery? filter, CancellationToken cancellationToken)
+    {
+        await ApplyAuthHeader(cancellationToken);
+        try
+        {
+            var queryParams = new Dictionary<string, string?>
+            {
+                ["page"] = page.ToString(),
+                ["pageSize"] = pageSize.ToString()
+            };
+
+            if (!string.IsNullOrWhiteSpace(sort))
+            {
+                queryParams["sort"] = sort;
+            }
+
+            if (sortDir.HasValue)
+            {
+                queryParams["sortDir"] = sortDir.Value.ToString();
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                queryParams["q"] = search;
+            }
+
+            if (filter is not null)
+            {
+                if (!string.IsNullOrWhiteSpace(filter.City))
+                {
+                    queryParams["city"] = filter.City;
+                }
+
+                if (filter.SalutationId.HasValue)
+                {
+                    queryParams["salutationId"] = filter.SalutationId.Value.ToString();
+                }
+
+                if (filter.GenderId.HasValue)
+                {
+                    queryParams["genderId"] = filter.GenderId.Value.ToString();
+                }
+
+                if (filter.NationalityId.HasValue)
+                {
+                    queryParams["nationalityId"] = filter.NationalityId.Value.ToString();
+                }
+
+                if (filter.MaritalStatusId.HasValue)
+                {
+                    queryParams["maritalStatusId"] = filter.MaritalStatusId.Value.ToString();
+                }
+
+                if (filter.CreatedFrom.HasValue)
+                {
+                    queryParams["createdFrom"] = filter.CreatedFrom.Value.ToString("O");
+                }
+
+                if (filter.CreatedTo.HasValue)
+                {
+                    queryParams["createdTo"] = filter.CreatedTo.Value.ToString("O");
+                }
+            }
+
+            var queryString = string.Join("&", queryParams
+                .Where(kv => kv.Value is not null)
+                .Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value!)}"));
+
+            return await _httpClient.GetFromJsonAsync<PagedResult<PersonDto>>($"/api/v1/persons/paged?{queryString}", cancellationToken);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogWarning(ex, "Failed to retrieve paged persons");
+            return null;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<int> DeleteMany(IReadOnlyList<Guid> ids, CancellationToken cancellationToken)
+    {
+        await ApplyAuthHeader(cancellationToken);
+        try
+        {
+            var request = new HttpRequestMessage(HttpMethod.Delete, "/api/v1/persons/bulk")
+            {
+                Content = JsonContent.Create(ids)
+            };
+            var response = await _httpClient.SendAsync(request, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("Failed to bulk delete persons with status {StatusCode}", response.StatusCode);
+                return 0;
+            }
+
+            return await response.Content.ReadFromJsonAsync<int>(cancellationToken);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogWarning(ex, "Failed to bulk delete persons");
+            return 0;
+        }
+    }
+
     /// <summary>
     /// Applies the JWT Bearer token from session storage to the HTTP client.
     /// </summary>

@@ -46,10 +46,27 @@ public interface IPersonsController
     Task<ActionResult<PersonDto>> Update(Guid id, UpdatePersonRequest request, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Retrieves a paged, filtered, and sorted collection of persons.
+    /// </summary>
+    /// <param name="query">The pagination and sorting parameters.</param>
+    /// <param name="filter">The filter criteria.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A paged result of persons.</returns>
+    Task<ActionResult<PagedResult<PersonDto>>> GetPaged(PagedQuery query, PersonFilterQuery filter, CancellationToken cancellationToken);
+
+    /// <summary>
     /// Deletes a person by identifier.
     /// </summary>
     /// <param name="id">The person identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>No content if successful.</returns>
     Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Deletes multiple persons by their identifiers.
+    /// </summary>
+    /// <param name="ids">The collection of person identifiers to delete.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The number of successfully deleted persons.</returns>
+    Task<ActionResult<int>> DeleteMany(IReadOnlyList<Guid> ids, CancellationToken cancellationToken);
 }

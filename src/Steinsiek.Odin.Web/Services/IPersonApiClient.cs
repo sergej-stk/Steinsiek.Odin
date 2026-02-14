@@ -52,4 +52,25 @@ public interface IPersonApiClient
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns><c>true</c> if the person was deleted; otherwise, <c>false</c>.</returns>
     Task<bool> Delete(Guid id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Retrieves a paged, filtered, and sorted list of persons.
+    /// </summary>
+    /// <param name="page">The one-based page number.</param>
+    /// <param name="pageSize">The number of items per page.</param>
+    /// <param name="sort">The sort column name.</param>
+    /// <param name="sortDir">The sort direction.</param>
+    /// <param name="search">The full-text search term.</param>
+    /// <param name="filter">The filter criteria.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The paged result, or <c>null</c> if the request failed.</returns>
+    Task<PagedResult<PersonDto>?> GetPaged(int page, int pageSize, string? sort, SortDirection? sortDir, string? search, PersonFilterQuery? filter, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Deletes multiple persons by their identifiers.
+    /// </summary>
+    /// <param name="ids">The collection of person identifiers to delete.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The number of successfully deleted persons.</returns>
+    Task<int> DeleteMany(IReadOnlyList<Guid> ids, CancellationToken cancellationToken);
 }
