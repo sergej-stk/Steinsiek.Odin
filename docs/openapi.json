@@ -2,10 +2,201 @@
   "openapi": "3.1.1",
   "info": {
     "title": "Steinsiek.Odin API",
-    "description": "Employee and Company Management API - Version 1",
+    "description": "Employee Management REST API - Version 1",
     "version": "v1"
   },
   "paths": {
+    "/api/v1/Dashboard/stats": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Retrieves aggregate statistics for the dashboard.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardStatsDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardStatsDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardStatsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { }
+        ]
+      }
+    },
+    "/api/v1/Dashboard/recent-activity": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Retrieves the most recent audit log entries.",
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "description": "The maximum number of entries to return.",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfAuditLogDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfAuditLogDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfAuditLogDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { }
+        ]
+      }
+    },
+    "/api/v1/Dashboard/upcoming-birthdays": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Retrieves persons with upcoming birthdays.",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "description": "The number of days to look ahead.",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfPersonDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfPersonDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfPersonDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { }
+        ]
+      }
+    },
     "/api/v1/Auth/login": {
       "post": {
         "tags": [
@@ -196,10 +387,10 @@
         ]
       }
     },
-    "/api/v1/Categories": {
+    "/api/v1/Auth/roles": {
       "get": {
         "tags": [
-          "Categories"
+          "Auth"
         ],
         "responses": {
           "200": {
@@ -207,409 +398,90 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListResultOfCategoryDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleDto"
+                  }
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListResultOfCategoryDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleDto"
+                  }
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListResultOfCategoryDto"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Categories"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCategoryRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCategoryRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCategoryRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          { }
-        ]
-      }
-    },
-    "/api/v1/Categories/{id}": {
-      "get": {
-        "tags": [
-          "Categories"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Categories"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCategoryRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCategoryRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCategoryRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          { }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Categories"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          { }
-        ]
-      }
-    },
-    "/api/v1/products/{productId}/image": {
-      "get": {
-        "tags": [
-          "ProductImages"
-        ],
-        "parameters": [
-          {
-            "name": "productId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "ProductImages"
-        ],
-        "parameters": [
-          {
-            "name": "productId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "$ref": "#/components/schemas/IFormFile"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleDto"
                   }
                 }
               }
             }
           },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { }
+        ]
+      }
+    },
+    "/api/v1/Auth/users/{userId}/roles": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignRoleRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignRoleRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignRoleRequest"
+              }
+            }
+          },
           "required": true
         },
         "responses": {
@@ -655,39 +527,30 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
           }
         },
         "security": [
           { }
         ]
-      },
+      }
+    },
+    "/api/v1/Auth/users/{userId}/roles/{roleId}": {
       "delete": {
         "tags": [
-          "ProductImages"
+          "Auth"
         ],
         "parameters": [
           {
-            "name": "productId",
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "roleId",
             "in": "path",
             "required": true,
             "schema": {
@@ -746,10 +609,10 @@
         ]
       }
     },
-    "/api/v1/Products": {
+    "/api/v1/Companies": {
       "get": {
         "tags": [
-          "Products"
+          "Companies"
         ],
         "responses": {
           "200": {
@@ -757,17 +620,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListResultOfProductDto"
+                  "$ref": "#/components/schemas/ListResultOfCompanyDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListResultOfProductDto"
+                  "$ref": "#/components/schemas/ListResultOfCompanyDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListResultOfProductDto"
+                  "$ref": "#/components/schemas/ListResultOfCompanyDto"
                 }
               }
             }
@@ -776,23 +639,23 @@
       },
       "post": {
         "tags": [
-          "Products"
+          "Companies"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateProductRequest"
+                "$ref": "#/components/schemas/CreateCompanyRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateProductRequest"
+                "$ref": "#/components/schemas/CreateCompanyRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateProductRequest"
+                "$ref": "#/components/schemas/CreateCompanyRequest"
               }
             }
           },
@@ -804,17 +667,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductDto"
+                  "$ref": "#/components/schemas/CompanyDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductDto"
+                  "$ref": "#/components/schemas/CompanyDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductDto"
+                  "$ref": "#/components/schemas/CompanyDto"
                 }
               }
             }
@@ -865,10 +728,10 @@
         ]
       }
     },
-    "/api/v1/Products/{id}": {
+    "/api/v1/Companies/{id}": {
       "get": {
         "tags": [
-          "Products"
+          "Companies"
         ],
         "parameters": [
           {
@@ -887,17 +750,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductDto"
+                  "$ref": "#/components/schemas/CompanyDetailDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductDto"
+                  "$ref": "#/components/schemas/CompanyDetailDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductDto"
+                  "$ref": "#/components/schemas/CompanyDetailDto"
                 }
               }
             }
@@ -926,7 +789,7 @@
       },
       "put": {
         "tags": [
-          "Products"
+          "Companies"
         ],
         "parameters": [
           {
@@ -943,17 +806,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateProductRequest"
+                "$ref": "#/components/schemas/UpdateCompanyRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateProductRequest"
+                "$ref": "#/components/schemas/UpdateCompanyRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateProductRequest"
+                "$ref": "#/components/schemas/UpdateCompanyRequest"
               }
             }
           },
@@ -965,17 +828,37 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductDto"
+                  "$ref": "#/components/schemas/CompanyDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductDto"
+                  "$ref": "#/components/schemas/CompanyDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductDto"
+                  "$ref": "#/components/schemas/CompanyDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1027,7 +910,7 @@
       },
       "delete": {
         "tags": [
-          "Products"
+          "Companies"
         ],
         "parameters": [
           {
@@ -1090,50 +973,10 @@
         ]
       }
     },
-    "/api/v1/Products/category/{categoryId}": {
+    "/api/v1/Companies/search": {
       "get": {
         "tags": [
-          "Products"
-        ],
-        "parameters": [
-          {
-            "name": "categoryId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListResultOfProductDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListResultOfProductDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListResultOfProductDto"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/Products/search": {
-      "get": {
-        "tags": [
-          "Products"
+          "Companies"
         ],
         "parameters": [
           {
@@ -1150,141 +993,1302 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListResultOfProductDto"
+                  "$ref": "#/components/schemas/ListResultOfCompanyDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListResultOfProductDto"
+                  "$ref": "#/components/schemas/ListResultOfCompanyDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListResultOfProductDto"
+                  "$ref": "#/components/schemas/ListResultOfCompanyDto"
                 }
               }
             }
           }
         }
       }
+    },
+    "/api/v1/audit-log/recent": {
+      "get": {
+        "tags": [
+          "AuditLog"
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfAuditLogDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfAuditLogDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfAuditLogDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { }
+        ]
+      }
+    },
+    "/api/v1/audit-log/{entityType}/{entityId}": {
+      "get": {
+        "tags": [
+          "AuditLog"
+        ],
+        "parameters": [
+          {
+            "name": "entityType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfAuditLogDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfAuditLogDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfAuditLogDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { }
+        ]
+      }
+    },
+    "/api/v1/Lookups/{type}": {
+      "get": {
+        "tags": [
+          "Lookups"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfLookupDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfLookupDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfLookupDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Persons": {
+      "get": {
+        "tags": [
+          "Persons"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfPersonDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfPersonDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfPersonDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Persons"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePersonRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePersonRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePersonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { }
+        ]
+      }
+    },
+    "/api/v1/Persons/{id}": {
+      "get": {
+        "tags": [
+          "Persons"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Persons"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePersonRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePersonRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePersonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Persons"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { }
+        ]
+      }
+    },
+    "/api/v1/Persons/search": {
+      "get": {
+        "tags": [
+          "Persons"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfPersonDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfPersonDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResultOfPersonDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { }
+        ]
+      }
     }
   },
   "components": {
     "schemas": {
-      "CategoryDto": {
+      "AssignRoleRequest": {
+        "required": [
+          "roleId"
+        ],
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "string",
+            "description": "Gets the role identifier to assign.",
+            "format": "uuid"
+          }
+        },
+        "description": "Request payload for assigning a role to a user."
+      },
+      "AuditLogDto": {
         "required": [
           "id",
-          "name",
-          "isActive"
+          "entityType",
+          "entityId",
+          "action",
+          "timestamp"
         ],
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "description": "The category identifier.",
+            "description": "Gets the unique identifier.",
             "format": "uuid"
           },
-          "name": {
+          "entityType": {
             "type": "string",
-            "description": "The category name."
+            "description": "Gets the CLR type name of the audited entity."
           },
-          "description": {
+          "entityId": {
+            "type": "string",
+            "description": "Gets the identifier of the audited entity.",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string",
+            "description": "Gets the action performed."
+          },
+          "propertyName": {
             "type": [
               "null",
               "string"
             ],
-            "description": "The category description."
+            "description": "Gets the name of the changed property."
           },
-          "isActive": {
-            "type": "boolean",
-            "description": "Whether the category is active."
+          "oldValue": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Gets the old value before the change."
+          },
+          "newValue": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Gets the new value after the change."
+          },
+          "userId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Gets the identifier of the user who performed the action.",
+            "format": "uuid"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Gets the UTC timestamp when the action was performed.",
+            "format": "date-time"
           }
         },
-        "description": "Data transfer object for category information."
+        "description": "Data transfer object for audit log entries."
       },
-      "CreateCategoryRequest": {
+      "CompanyDetailDto": {
+        "required": [
+          "id",
+          "name",
+          "locations",
+          "personCompanies"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the company.",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the company."
+          },
+          "legalFormId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The legal form identifier, or null if not specified.",
+            "format": "uuid"
+          },
+          "industryId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The industry identifier, or null if not specified.",
+            "format": "uuid"
+          },
+          "website": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company website URL."
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company email address."
+          },
+          "phone": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company phone number."
+          },
+          "taxNumber": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company tax number."
+          },
+          "vatId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company VAT identification number."
+          },
+          "commercialRegisterNumber": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The commercial register number."
+          },
+          "foundingDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The founding date of the company.",
+            "format": "date-time"
+          },
+          "employeeCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "The number of employees, or null if not specified.",
+            "format": "int32"
+          },
+          "revenue": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "description": "The company revenue, or null if not specified.",
+            "format": "double"
+          },
+          "parentCompanyId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The parent company identifier for hierarchical relationships.",
+            "format": "uuid"
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Additional notes about the company."
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompanyLocationDto"
+            },
+            "description": "The collection of locations associated with this company."
+          },
+          "personCompanies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonCompanyDto"
+            },
+            "description": "The collection of person-company associations."
+          }
+        },
+        "description": "Detailed data transfer object for a company including locations and person associations."
+      },
+      "CompanyDto": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the company.",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the company."
+          },
+          "legalForm": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The legal form of the company, or null if not specified."
+          },
+          "industry": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The industry of the company, or null if not specified."
+          },
+          "website": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company website URL."
+          },
+          "city": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The primary city of the company, or null if no location is available."
+          },
+          "employeeCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "The number of employees, or null if not specified.",
+            "format": "int32"
+          }
+        },
+        "description": "Summary data transfer object for a company."
+      },
+      "CompanyLocationDto": {
+        "required": [
+          "id",
+          "name",
+          "street",
+          "city",
+          "postalCode",
+          "countryId"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the location.",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the location."
+          },
+          "street": {
+            "type": "string",
+            "description": "The primary street address."
+          },
+          "street2": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The secondary street address line."
+          },
+          "city": {
+            "type": "string",
+            "description": "The city name."
+          },
+          "postalCode": {
+            "type": "string",
+            "description": "The postal code."
+          },
+          "state": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The state or region name."
+          },
+          "countryId": {
+            "type": "string",
+            "description": "The country identifier.",
+            "format": "uuid"
+          },
+          "latitude": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "description": "The geographic latitude coordinate.",
+            "format": "double"
+          },
+          "longitude": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "description": "The geographic longitude coordinate.",
+            "format": "double"
+          },
+          "phone": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The phone number for this location."
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The email address for this location."
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "description": "Whether this is the primary location."
+          }
+        },
+        "description": "Data transfer object for a company location."
+      },
+      "CreateCompanyRequest": {
         "required": [
           "name"
         ],
         "type": "object",
         "properties": {
           "name": {
-            "minLength": 2,
+            "maxLength": 200,
             "type": "string",
-            "description": "The category name (minimum 2 characters)."
+            "description": "The company name (required, max 200 characters)."
           },
-          "description": {
+          "legalFormId": {
             "type": [
               "null",
               "string"
             ],
-            "description": "The category description."
-          }
-        },
-        "description": "Request payload for creating a new category."
-      },
-      "CreateProductRequest": {
-        "required": [
-          "name",
-          "price",
-          "stock",
-          "categoryId"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "minLength": 2,
-            "type": "string",
-            "description": "The product name (minimum 2 characters)."
+            "description": "The legal form identifier, or null if not specified.",
+            "format": "uuid"
           },
-          "description": {
+          "industryId": {
             "type": [
               "null",
               "string"
             ],
-            "description": "The product description."
+            "description": "The industry identifier, or null if not specified.",
+            "format": "uuid"
           },
-          "price": {
-            "minimum": 0.01,
+          "website": {
+            "maxLength": 256,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company website URL."
+          },
+          "email": {
+            "maxLength": 256,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company email address."
+          },
+          "phone": {
+            "maxLength": 256,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company phone number."
+          },
+          "taxNumber": {
+            "maxLength": 100,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company tax number."
+          },
+          "vatId": {
+            "maxLength": 100,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company VAT identification number."
+          },
+          "commercialRegisterNumber": {
+            "maxLength": 100,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The commercial register number."
+          },
+          "foundingDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The founding date of the company.",
+            "format": "date-time"
+          },
+          "employeeCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "The number of employees.",
+            "format": "int32"
+          },
+          "revenue": {
             "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
+              "null",
               "number",
               "string"
             ],
-            "description": "The product price (must be greater than 0).",
+            "description": "The company revenue.",
             "format": "double"
           },
-          "stock": {
-            "maximum": 2147483647,
-            "minimum": 0,
+          "parentCompanyId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The parent company identifier for hierarchical relationships.",
+            "format": "uuid"
+          },
+          "notes": {
+            "maxLength": 2000,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Additional notes about the company."
+          }
+        },
+        "description": "Request payload for creating a new company."
+      },
+      "CreatePersonRequest": {
+        "required": [
+          "firstName",
+          "lastName"
+        ],
+        "type": "object",
+        "properties": {
+          "salutationId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to a salutation lookup entry.",
+            "format": "uuid"
+          },
+          "title": {
+            "maxLength": 50,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional academic or professional title."
+          },
+          "firstName": {
+            "maxLength": 100,
+            "type": "string",
+            "description": "The person's first name."
+          },
+          "lastName": {
+            "maxLength": 100,
+            "type": "string",
+            "description": "The person's last name."
+          },
+          "dateOfBirth": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional date of birth.",
+            "format": "date-time"
+          },
+          "genderId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to a gender lookup entry.",
+            "format": "uuid"
+          },
+          "nationalityId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to a nationality lookup entry.",
+            "format": "uuid"
+          },
+          "maritalStatusId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to a marital status lookup entry.",
+            "format": "uuid"
+          },
+          "notes": {
+            "maxLength": 2000,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Optional free-text notes about the person."
+          }
+        },
+        "description": "Request payload for creating a new person."
+      },
+      "DashboardStatsDto": {
+        "required": [
+          "totalPersons",
+          "totalCompanies",
+          "activeAssignments",
+          "newPersonsThisMonth",
+          "newCompaniesThisMonth"
+        ],
+        "type": "object",
+        "properties": {
+          "totalPersons": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "description": "The available stock quantity (must be non-negative).",
+            "description": "Gets the total number of persons.",
             "format": "int32"
           },
-          "imageUrl": {
+          "totalCompanies": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
-              "null",
+              "integer",
               "string"
             ],
-            "description": "The product image URL."
+            "description": "Gets the total number of companies.",
+            "format": "int32"
           },
-          "categoryId": {
-            "type": "string",
-            "description": "The category identifier.",
-            "format": "uuid"
+          "activeAssignments": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Gets the number of active person-company assignments.",
+            "format": "int32"
+          },
+          "newPersonsThisMonth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Gets the number of persons created this month.",
+            "format": "int32"
+          },
+          "newCompaniesThisMonth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Gets the number of companies created this month.",
+            "format": "int32"
           }
         },
-        "description": "Request payload for creating a new product."
+        "description": "Data transfer object containing aggregate statistics for the dashboard."
       },
-      "IFormFile": {
-        "type": "string",
-        "format": "binary"
-      },
-      "ListResultOfCategoryDto": {
+      "ListResultOfAuditLogDto": {
         "required": [
           "totalCount",
           "data"
@@ -1303,14 +2307,14 @@
           "data": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CategoryDto"
+              "$ref": "#/components/schemas/AuditLogDto"
             },
             "description": "The collection of elements for the current page."
           }
         },
         "description": "Wrapper for collection responses including total count for pagination."
       },
-      "ListResultOfProductDto": {
+      "ListResultOfCompanyDto": {
         "required": [
           "totalCount",
           "data"
@@ -1329,7 +2333,59 @@
           "data": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ProductDto"
+              "$ref": "#/components/schemas/CompanyDto"
+            },
+            "description": "The collection of elements for the current page."
+          }
+        },
+        "description": "Wrapper for collection responses including total count for pagination."
+      },
+      "ListResultOfLookupDto": {
+        "required": [
+          "totalCount",
+          "data"
+        ],
+        "type": "object",
+        "properties": {
+          "totalCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "The total number of elements matching the query.",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LookupDto"
+            },
+            "description": "The collection of elements for the current page."
+          }
+        },
+        "description": "Wrapper for collection responses including total count for pagination."
+      },
+      "ListResultOfPersonDto": {
+        "required": [
+          "totalCount",
+          "data"
+        ],
+        "type": "object",
+        "properties": {
+          "totalCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "The total number of elements matching the query.",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonDto"
             },
             "description": "The collection of elements for the current page."
           }
@@ -1379,6 +2435,479 @@
         },
         "description": "Response payload after successful authentication."
       },
+      "LookupDto": {
+        "required": [
+          "id",
+          "code",
+          "value",
+          "sortOrder"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Gets the unique identifier of the lookup entry.",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string",
+            "description": "Gets the unique code of the lookup entry."
+          },
+          "value": {
+            "type": "string",
+            "description": "Gets the translated display value."
+          },
+          "sortOrder": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Gets the sort order for display purposes.",
+            "format": "int32"
+          }
+        },
+        "description": "Represents a translated lookup entry for API responses."
+      },
+      "PersonAddressDto": {
+        "required": [
+          "id",
+          "street",
+          "city",
+          "postalCode",
+          "countryId"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the address.",
+            "format": "uuid"
+          },
+          "addressTypeId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to an address type lookup entry.",
+            "format": "uuid"
+          },
+          "street": {
+            "type": "string",
+            "description": "The primary street line of the address."
+          },
+          "street2": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional secondary street line."
+          },
+          "city": {
+            "type": "string",
+            "description": "The city name."
+          },
+          "postalCode": {
+            "type": "string",
+            "description": "The postal or ZIP code."
+          },
+          "state": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional state or province."
+          },
+          "countryId": {
+            "type": "string",
+            "description": "The reference to a country lookup entry.",
+            "format": "uuid"
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "description": "Indicates whether this is the primary address."
+          }
+        },
+        "description": "Data transfer object for a person's postal address."
+      },
+      "PersonBankAccountDto": {
+        "required": [
+          "id",
+          "iban"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the bank account entry.",
+            "format": "uuid"
+          },
+          "iban": {
+            "type": "string",
+            "description": "The International Bank Account Number (IBAN)."
+          },
+          "bic": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional Bank Identifier Code (BIC/SWIFT)."
+          },
+          "bankName": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional name of the bank."
+          },
+          "label": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "An optional descriptive label."
+          }
+        },
+        "description": "Data transfer object for a person's bank account."
+      },
+      "PersonCompanyDto": {
+        "required": [
+          "id",
+          "personId",
+          "companyId"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the association.",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": "string",
+            "description": "The person identifier.",
+            "format": "uuid"
+          },
+          "companyId": {
+            "type": "string",
+            "description": "The company identifier.",
+            "format": "uuid"
+          },
+          "positionId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The position identifier, or null if not specified.",
+            "format": "uuid"
+          },
+          "departmentId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The department identifier, or null if not specified.",
+            "format": "uuid"
+          },
+          "startDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The start date of the association.",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The end date of the association, or null if still active.",
+            "format": "date-time"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether this person-company association is currently active."
+          }
+        },
+        "description": "Data transfer object for a person-company association."
+      },
+      "PersonDetailDto": {
+        "required": [
+          "id",
+          "firstName",
+          "lastName",
+          "fullName",
+          "createdAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the person.",
+            "format": "uuid"
+          },
+          "salutationId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to a salutation lookup entry.",
+            "format": "uuid"
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional academic or professional title."
+          },
+          "firstName": {
+            "type": "string",
+            "description": "The person's first name."
+          },
+          "lastName": {
+            "type": "string",
+            "description": "The person's last name."
+          },
+          "fullName": {
+            "type": "string",
+            "description": "The computed full name combining first and last name."
+          },
+          "dateOfBirth": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional date of birth.",
+            "format": "date-time"
+          },
+          "genderId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to a gender lookup entry.",
+            "format": "uuid"
+          },
+          "nationalityId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to a nationality lookup entry.",
+            "format": "uuid"
+          },
+          "maritalStatusId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to a marital status lookup entry.",
+            "format": "uuid"
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Optional free-text notes about the person."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "The creation timestamp.",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The last update timestamp, or null if never updated.",
+            "format": "date-time"
+          },
+          "addresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonAddressDto"
+            },
+            "description": "The collection of postal addresses."
+          },
+          "emailAddresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonEmailDto"
+            },
+            "description": "The collection of email addresses."
+          },
+          "phoneNumbers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonPhoneDto"
+            },
+            "description": "The collection of phone numbers."
+          },
+          "bankAccounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonBankAccountDto"
+            },
+            "description": "The collection of bank accounts."
+          },
+          "socialMediaLinks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonSocialMediaDto"
+            },
+            "description": "The collection of social media links."
+          }
+        },
+        "description": "Detailed data transfer object for a person, including all sub-entity collections."
+      },
+      "PersonDto": {
+        "required": [
+          "id",
+          "firstName",
+          "lastName"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the person.",
+            "format": "uuid"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "The person's first name."
+          },
+          "lastName": {
+            "type": "string",
+            "description": "The person's last name."
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional academic or professional title."
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The primary email address, if available."
+          },
+          "phone": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The primary phone number, if available."
+          },
+          "city": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The city from the primary address, if available."
+          }
+        },
+        "description": "Summary data transfer object for a person, used in list views."
+      },
+      "PersonEmailDto": {
+        "required": [
+          "id",
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the email address entry.",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "description": "The email address value."
+          },
+          "label": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "An optional descriptive label."
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "description": "Indicates whether this is the primary email address."
+          }
+        },
+        "description": "Data transfer object for a person's email address."
+      },
+      "PersonPhoneDto": {
+        "required": [
+          "id",
+          "number"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the phone number entry.",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "string",
+            "description": "The phone number value."
+          },
+          "contactTypeId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to a contact type lookup entry.",
+            "format": "uuid"
+          },
+          "label": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "An optional descriptive label."
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "description": "Indicates whether this is the primary phone number."
+          }
+        },
+        "description": "Data transfer object for a person's phone number."
+      },
+      "PersonSocialMediaDto": {
+        "required": [
+          "id",
+          "platform",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the social media link entry.",
+            "format": "uuid"
+          },
+          "platform": {
+            "type": "string",
+            "description": "The social media platform name."
+          },
+          "url": {
+            "type": "string",
+            "description": "The URL of the social media profile."
+          }
+        },
+        "description": "Data transfer object for a person's social media link."
+      },
       "ProblemDetails": {
         "type": "object",
         "properties": {
@@ -1417,77 +2946,6 @@
           }
         }
       },
-      "ProductDto": {
-        "required": [
-          "id",
-          "name",
-          "price",
-          "stock",
-          "categoryId",
-          "isActive"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "The product identifier.",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string",
-            "description": "The product name."
-          },
-          "description": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "The product description."
-          },
-          "price": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-            "type": [
-              "number",
-              "string"
-            ],
-            "description": "The product price.",
-            "format": "double"
-          },
-          "stock": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "description": "The available stock quantity.",
-            "format": "int32"
-          },
-          "imageUrl": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "The product image URL."
-          },
-          "categoryId": {
-            "type": "string",
-            "description": "The category identifier.",
-            "format": "uuid"
-          },
-          "categoryName": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "The category name."
-          },
-          "isActive": {
-            "type": "boolean",
-            "description": "Whether the product is active."
-          }
-        },
-        "description": "Data transfer object for product information."
-      },
       "RegisterRequest": {
         "required": [
           "email",
@@ -1517,93 +2975,229 @@
         },
         "description": "Request payload for user registration."
       },
-      "UpdateCategoryRequest": {
+      "RoleDto": {
         "required": [
-          "name",
-          "isActive"
+          "id",
+          "name"
         ],
         "type": "object",
         "properties": {
-          "name": {
-            "minLength": 2,
+          "id": {
             "type": "string",
-            "description": "The category name (minimum 2 characters)."
+            "description": "Gets the role identifier.",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Gets the role name."
           },
           "description": {
             "type": [
               "null",
               "string"
             ],
-            "description": "The category description."
-          },
-          "isActive": {
-            "type": "boolean",
-            "description": "Whether the category is active."
+            "description": "Gets the role description."
           }
         },
-        "description": "Request payload for updating an existing category."
+        "description": "Data transfer object for a role."
       },
-      "UpdateProductRequest": {
+      "UpdateCompanyRequest": {
         "required": [
-          "name",
-          "price",
-          "stock",
-          "categoryId",
-          "isActive"
+          "name"
         ],
         "type": "object",
         "properties": {
           "name": {
-            "minLength": 2,
+            "maxLength": 200,
             "type": "string",
-            "description": "The product name (minimum 2 characters)."
+            "description": "The company name (required, max 200 characters)."
           },
-          "description": {
+          "legalFormId": {
             "type": [
               "null",
               "string"
             ],
-            "description": "The product description."
+            "description": "The legal form identifier, or null if not specified.",
+            "format": "uuid"
           },
-          "price": {
-            "minimum": 0.01,
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+          "industryId": {
             "type": [
-              "number",
+              "null",
               "string"
             ],
-            "description": "The product price (must be greater than 0).",
-            "format": "double"
+            "description": "The industry identifier, or null if not specified.",
+            "format": "uuid"
           },
-          "stock": {
-            "maximum": 2147483647,
-            "minimum": 0,
+          "website": {
+            "maxLength": 256,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company website URL."
+          },
+          "email": {
+            "maxLength": 256,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company email address."
+          },
+          "phone": {
+            "maxLength": 256,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company phone number."
+          },
+          "taxNumber": {
+            "maxLength": 100,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company tax number."
+          },
+          "vatId": {
+            "maxLength": 100,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The company VAT identification number."
+          },
+          "commercialRegisterNumber": {
+            "maxLength": 100,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The commercial register number."
+          },
+          "foundingDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The founding date of the company.",
+            "format": "date-time"
+          },
+          "employeeCount": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
+              "null",
               "integer",
               "string"
             ],
-            "description": "The available stock quantity (must be non-negative).",
+            "description": "The number of employees.",
             "format": "int32"
           },
-          "imageUrl": {
+          "revenue": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "description": "The company revenue.",
+            "format": "double"
+          },
+          "parentCompanyId": {
             "type": [
               "null",
               "string"
             ],
-            "description": "The product image URL."
-          },
-          "categoryId": {
-            "type": "string",
-            "description": "The category identifier.",
+            "description": "The parent company identifier for hierarchical relationships.",
             "format": "uuid"
           },
-          "isActive": {
-            "type": "boolean",
-            "description": "Whether the product is active."
+          "notes": {
+            "maxLength": 2000,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Additional notes about the company."
           }
         },
-        "description": "Request payload for updating an existing product."
+        "description": "Request payload for updating an existing company."
+      },
+      "UpdatePersonRequest": {
+        "required": [
+          "firstName",
+          "lastName"
+        ],
+        "type": "object",
+        "properties": {
+          "salutationId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to a salutation lookup entry.",
+            "format": "uuid"
+          },
+          "title": {
+            "maxLength": 50,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional academic or professional title."
+          },
+          "firstName": {
+            "maxLength": 100,
+            "type": "string",
+            "description": "The person's first name."
+          },
+          "lastName": {
+            "maxLength": 100,
+            "type": "string",
+            "description": "The person's last name."
+          },
+          "dateOfBirth": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional date of birth.",
+            "format": "date-time"
+          },
+          "genderId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to a gender lookup entry.",
+            "format": "uuid"
+          },
+          "nationalityId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to a nationality lookup entry.",
+            "format": "uuid"
+          },
+          "maritalStatusId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The optional reference to a marital status lookup entry.",
+            "format": "uuid"
+          },
+          "notes": {
+            "maxLength": 2000,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Optional free-text notes about the person."
+          }
+        },
+        "description": "Request payload for updating an existing person."
       },
       "UserDto": {
         "required": [
@@ -1630,6 +3224,13 @@
           "lastName": {
             "type": "string",
             "description": "The user's last name."
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The user's assigned role names."
           }
         },
         "description": "Data transfer object for user information."
@@ -1638,16 +3239,22 @@
   },
   "tags": [
     {
+      "name": "Dashboard"
+    },
+    {
       "name": "Auth"
     },
     {
-      "name": "Categories"
+      "name": "Companies"
     },
     {
-      "name": "ProductImages"
+      "name": "AuditLog"
     },
     {
-      "name": "Products"
+      "name": "Lookups"
+    },
+    {
+      "name": "Persons"
     }
   ]
 }
