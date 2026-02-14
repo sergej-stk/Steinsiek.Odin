@@ -8,17 +8,15 @@
     <DataAnnotationsValidator />
     <div class="d-flex flex-column gap-3">
         <ErrorAlert Message="@_errorMessage" Visible="@(_errorMessage is not null)" />
-        <div class="row g-2">
-            <div class="col-6">
-                <label class="form-label">First Name</label>
-                <InputText @bind-Value="_model.FirstName" class="form-control" />
-                <ValidationMessage For="@(() => _model.FirstName)" />
-            </div>
-            <div class="col-6">
-                <label class="form-label">Last Name</label>
-                <InputText @bind-Value="_model.LastName" class="form-control" />
-                <ValidationMessage For="@(() => _model.LastName)" />
-            </div>
+        <div>
+            <label class="form-label">First Name</label>
+            <InputText @bind-Value="_model.FirstName" class="form-control" />
+            <ValidationMessage For="@(() => _model.FirstName)" />
+        </div>
+        <div>
+            <label class="form-label">Last Name</label>
+            <InputText @bind-Value="_model.LastName" class="form-control" />
+            <ValidationMessage For="@(() => _model.LastName)" />
         </div>
         <div>
             <label class="form-label">Email</label>
