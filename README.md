@@ -29,6 +29,29 @@ Steinsiek.Odin is a modular Employee and Company Management platform built with 
 - **Modular Architecture** - Clean domain separation (Auth, Persons, Companies, Core)
 - **Aspire Orchestration** - Service discovery and health monitoring
 
+## Preview
+
+![Dashboard](assets/screenshots/dashboard.png)
+
+<table>
+<tr>
+<td width="50%"><img src="assets/screenshots/landing-page.png" alt="Landing Page"></td>
+<td width="50%"><img src="assets/screenshots/login.png" alt="Login"></td>
+</tr>
+<tr>
+<td align="center"><sub>Landing Page</sub></td>
+<td align="center"><sub>Login</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="assets/screenshots/register.png" alt="Register"></td>
+<td width="50%"><img src="assets/screenshots/aspire-dashboard.png" alt="Aspire Dashboard"></td>
+</tr>
+<tr>
+<td align="center"><sub>Register</sub></td>
+<td align="center"><sub>Aspire Dashboard</sub></td>
+</tr>
+</table>
+
 ## Tech Stack
 
 | Category | Technology |
