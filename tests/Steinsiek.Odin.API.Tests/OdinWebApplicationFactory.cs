@@ -9,5 +9,6 @@ public sealed class OdinWebApplicationFactory : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:cache", "localhost:0,abortConnect=false,connectTimeout=1");
+        builder.UseSetting("DatabaseProvider", "InMemory");
     }
 }

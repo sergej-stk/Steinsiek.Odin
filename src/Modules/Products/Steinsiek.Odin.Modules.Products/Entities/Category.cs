@@ -19,4 +19,9 @@ public class Category : BaseEntity
     /// Gets or sets whether the category is active.
     /// </summary>
     public bool IsActive { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the collection of products in this category.
+    /// </summary>
+    public ICollection<Product> Products { get; set; } = [];
 }

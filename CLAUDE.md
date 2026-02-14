@@ -8,6 +8,9 @@ Steinsiek.Odin is a modular .NET Aspire E-Commerce platform. The backend follows
 
 - **.NET 10** with C# 13
 - **.NET Aspire** for orchestration and service discovery
+- **Entity Framework Core 10** with PostgreSQL (Npgsql) and InMemory provider
+- **PostgreSQL** as primary database (via Aspire)
+- **BCrypt.Net-Next** for password hashing
 - **Bootstrap 5.3.8** for the Blazor Web App frontend (via CDN)
 - **Bootstrap Icons 1.13** for iconography (via CDN)
 - **Serilog** for structured logging
@@ -57,7 +60,8 @@ Modules/{ModuleName}/
 │   ├── {ModuleName}Module.cs                  # IModule Implementation (DI Registration)
 │   ├── Controllers/                           # API Endpoints
 │   ├── Entities/                              # Domain Entities (inherit from BaseEntity)
-│   ├── Repositories/                          # I{Name}Repository + InMemory Implementation
+│   ├── Persistence/Configurations/            # IEntityTypeConfiguration<T> (Fluent API)
+│   ├── Repositories/                          # I{Name}Repository + EF Implementation
 │   └── Services/                              # I{Name}Service + Implementation
 ├── Steinsiek.Odin.Modules.{ModuleName}.Shared/    # Shared Contracts
 │   └── DTOs/                                  # Request/Response Records
@@ -70,7 +74,7 @@ Modules/{ModuleName}/
 
 | Project | Contains | Does NOT Contain |
 |---------|----------|------------------|
-| `{ModuleName}` | Controllers, Services, Repositories, Entities, Application logic | DTOs, Shared contracts |
+| `{ModuleName}` | Controllers, Services, Repositories, Entities, Entity Configurations, Application logic | DTOs, Shared contracts |
 | `{ModuleName}.Shared` | DTOs, Contracts, Interfaces, Enums, Value objects, Constants | Controllers, Services, Business logic |
 | `{ModuleName}.Tests` | Unit tests, Integration tests | Business logic, Production code |
 
@@ -89,8 +93,9 @@ public sealed class AuthModule : IModule
 {
     public static void RegisterServices(IServiceCollection services)
     {
-        services.AddSingleton<IUserRepository, InMemoryUserRepository>();
+        services.AddScoped<IUserRepository, EfUserRepository>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
     }
 }
 ```
@@ -161,9 +166,9 @@ public record class ProductDto { ... } // ❌
 
 ### Repositories
 - Interface in `I{Name}Repository.cs`
-- InMemory implementation with `ConcurrentDictionary`
-- Singleton lifetime for InMemory repositories
-- Demo data seeded in constructor via `SeedData()`
+- EF Core implementation using `OdinDbContext` via `context.Set<T>()`
+- Scoped lifetime (matching DbContext lifetime)
+- Demo data seeded via `HasData()` in entity configurations
 - All async methods must accept `CancellationToken` as the last parameter (required, no default value)
 
 ### Services
@@ -668,6 +673,99 @@ dotnet add src/Modules/{Name}/Steinsiek.Odin.Modules.{Name}.Tests reference src/
 .AddApplicationPart(typeof(Steinsiek.Odin.Modules.{Name}.{Name}Module).Assembly)
 ```
 
+11. Create entity type configurations in `Persistence/Configurations/` folder
+
+12. Register module assembly in `ServiceCollectionExtensions.AddDatabase()`:
+```csharp
+options.ModuleAssemblies.Add(typeof(Steinsiek.Odin.Modules.{Name}.{Name}Module).Assembly);
+```
+
+13. Generate migration:
+```bash
+dotnet ef migrations add Add{Name}Module --project src/Modules/Core/Steinsiek.Odin.Modules.Core --startup-project src/Steinsiek.Odin.API --output-dir Migrations
+```
+
+## Database Configuration
+
+### Provider Switch
+The application supports two database providers, configured via `DatabaseProvider` in `appsettings.json`:
+
+| Provider | Value | Use Case |
+|----------|-------|----------|
+| PostgreSQL | `"PostgreSQL"` | Production, Aspire orchestration |
+| EF InMemory | `"InMemory"` | Development without DB, integration tests |
+
+When running via Aspire AppHost, `DatabaseProvider` is set to `"PostgreSQL"` via environment variable.
+
+### Connection Strings
+- PostgreSQL connection string is provided by Aspire via `ConnectionStrings:odindb`
+- InMemory mode requires no connection string
+
+### Database Schemas
+Each module owns a dedicated schema:
+
+| Module | Schema | Tables |
+|--------|--------|--------|
+| Auth | `auth` | `Users` |
+| Products | `products` | `Products`, `Categories`, `ProductImages` |
+
+### Auto-Migration
+- **PostgreSQL**: `Database.Migrate()` runs at startup, applying pending migrations
+- **InMemory**: `Database.EnsureCreated()` creates the schema from the model
+
+## Entity Framework Core
+
+### OdinDbContext
+- Central `DbContext` in `Steinsiek.Odin.Modules.Core.Persistence`
+- No direct `DbSet<T>` properties - modules use `context.Set<T>()`
+- Entity configurations are discovered via `ApplyConfigurationsFromAssembly()` from registered module assemblies
+- Module assemblies registered via `OdinDbContextOptions`
+
+### Entity Type Configurations
+Each entity has an `IEntityTypeConfiguration<T>` in its module's `Persistence/Configurations/` folder:
+- Table name and schema assignment
+- Property constraints (MaxLength, Precision, Required)
+- Relationships and foreign keys
+- Unique indexes
+- Seed data via `HasData()`
+
+### Migrations
+- Stored in `src/Modules/Core/Steinsiek.Odin.Modules.Core/Migrations/`
+- Generated via `dotnet ef` CLI with the API as startup project
+- `DesignTimeDbContextFactory` in the API project provides migration tooling support
+
+### Migration Commands
+```bash
+# Add a new migration
+dotnet ef migrations add {MigrationName} --project src/Modules/Core/Steinsiek.Odin.Modules.Core --startup-project src/Steinsiek.Odin.API --output-dir Migrations
+
+# Remove last migration (if not applied)
+dotnet ef migrations remove --project src/Modules/Core/Steinsiek.Odin.Modules.Core --startup-project src/Steinsiek.Odin.API
+
+# List migrations
+dotnet ef migrations list --project src/Modules/Core/Steinsiek.Odin.Modules.Core --startup-project src/Steinsiek.Odin.API
+```
+
+### Repository Pattern with EF Core
+- Repositories use `OdinDbContext` injected via primary constructor
+- Access entities via `context.Set<T>()` (no typed DbSet properties)
+- All repositories are **Scoped** (not Singleton)
+- `SaveChangesAsync()` called within each repository method
+
+## Password Hashing
+
+### IPasswordHasher Interface
+- `Hash(string password)` - creates a BCrypt hash
+- `Verify(string password, string hash)` - verifies password against hash
+
+### Implementation
+- `BcryptPasswordHasher` uses BCrypt.Net-Next (registered as Singleton)
+- Password hashing happens in the `AuthService`, not in the repository
+- Seed data uses a pre-computed BCrypt hash constant for migration stability
+
+### Migration from SHA256
+The project previously used SHA256 hashing. All password hashes are now BCrypt format (`$2a$11$...`).
+
 ## Frontend Architecture
 
 ### Overview
@@ -793,17 +891,29 @@ After starting: `https://localhost:{port}/scalar/v1`
     "Issuer": "Steinsiek.Odin",
     "Audience": "Steinsiek.Odin.API",
     "ExpirationHours": 24
-  }
+  },
+  "DatabaseProvider": "InMemory"
 }
 ```
 
+- `DatabaseProvider`: `"InMemory"` (default) or `"PostgreSQL"` (set by Aspire)
+- `ConnectionStrings:odindb`: Provided automatically by Aspire when using PostgreSQL
+
 ### Aspire AppHost
-Redis, API, and Web frontend are orchestrated in `AppHost.cs`:
+Redis, PostgreSQL, API, and Web frontend are orchestrated in `AppHost.cs`:
 ```csharp
 var redis = builder.AddRedis("cache");
+
+var postgres = builder.AddPostgres("postgres")
+    .WithPgAdmin();
+var odinDb = postgres.AddDatabase("odindb");
+
 var api = builder.AddProject<Projects.Steinsiek_Odin_API>("api")
     .WithReference(redis)
-    .WaitFor(redis);
+    .WithReference(odinDb)
+    .WaitFor(redis)
+    .WaitFor(postgres)
+    .WithEnvironment("DatabaseProvider", "PostgreSQL");
 
 builder.AddProject<Projects.Steinsiek_Odin_Web>("web")
     .WithReference(api)

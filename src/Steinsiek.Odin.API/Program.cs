@@ -78,7 +78,27 @@ try
     // Module Services
     builder.Services.AddModules();
 
+    // Database
+    builder.Services.AddDatabase(builder.Configuration);
+
     var app = builder.Build();
+
+    // Auto-migrate / ensure database
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<OdinDbContext>();
+        var databaseProvider = app.Configuration.GetValue<string>("DatabaseProvider") ?? "InMemory";
+        if (databaseProvider.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
+        {
+            dbContext.Database.Migrate();
+        }
+        else
+        {
+            dbContext.Database.EnsureCreated();
+        }
+
+        ProductImageSeeder.Seed(dbContext);
+    }
 
     // Log Context Enrichment
     app.UseLogContext();

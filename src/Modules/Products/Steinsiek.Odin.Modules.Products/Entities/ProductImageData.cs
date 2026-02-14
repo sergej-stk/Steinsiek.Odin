@@ -24,4 +24,9 @@ public sealed class ProductImageData
     /// Gets or sets the raw image bytes.
     /// </summary>
     public required byte[] Data { get; set; }
+
+    /// <summary>
+    /// Gets or sets the product this image belongs to.
+    /// </summary>
+    public Product? Product { get; set; }
 }

@@ -39,4 +39,9 @@ public class Product : BaseEntity
     /// Gets or sets whether the product is active.
     /// </summary>
     public bool IsActive { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the category this product belongs to.
+    /// </summary>
+    public Category? Category { get; set; }
 }
