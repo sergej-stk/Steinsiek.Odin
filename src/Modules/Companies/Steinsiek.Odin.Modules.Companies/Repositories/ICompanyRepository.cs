@@ -12,4 +12,13 @@ public interface ICompanyRepository : IRepository<Company>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A collection of companies matching the search term.</returns>
     Task<IEnumerable<Company>> Search(string searchTerm, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Retrieves a paged, filtered, and sorted collection of companies.
+    /// </summary>
+    /// <param name="query">The pagination and sorting parameters.</param>
+    /// <param name="filter">The filter criteria.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A tuple of matching companies and the total count before pagination.</returns>
+    Task<(IEnumerable<Company> Items, int TotalCount)> GetPaged(PagedQuery query, CompanyFilterQuery filter, CancellationToken cancellationToken);
 }

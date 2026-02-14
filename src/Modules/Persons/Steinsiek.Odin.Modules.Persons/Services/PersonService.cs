@@ -119,6 +119,46 @@ public sealed class PersonService(IPersonRepository personRepository, ILogger<Pe
         };
     }
 
+    /// <inheritdoc />
+    public async Task<PagedResult<PersonDto>> GetPaged(PagedQuery query, PersonFilterQuery filter, CancellationToken cancellationToken)
+    {
+        var allowedPageSizes = new[] { 25, 50, 100 };
+        var pageSize = allowedPageSizes.Contains(query.PageSize) ? query.PageSize : 25;
+        var clampedQuery = query with { PageSize = pageSize, Page = Math.Max(1, query.Page) };
+
+        _logger.LogInformation("Retrieving paged persons (Page={Page}, PageSize={PageSize})", clampedQuery.Page, clampedQuery.PageSize);
+
+        var (items, totalCount) = await _personRepository.GetPaged(clampedQuery, filter, cancellationToken);
+        var dtos = items.Select(MapToDto).ToList();
+
+        return new PagedResult<PersonDto>
+        {
+            TotalCount = totalCount,
+            Data = dtos,
+            CurrentPage = clampedQuery.Page,
+            PageSize = clampedQuery.PageSize
+        };
+    }
+
+    /// <inheritdoc />
+    public async Task<int> DeleteMany(IReadOnlyList<Guid> ids, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Bulk deleting {Count} persons", ids.Count);
+
+        var deletedCount = 0;
+        foreach (var id in ids)
+        {
+            var result = await _personRepository.Delete(id, cancellationToken);
+            if (result)
+            {
+                deletedCount++;
+            }
+        }
+
+        _logger.LogInformation("Bulk delete completed: {DeletedCount} of {RequestedCount} persons deleted", deletedCount, ids.Count);
+        return deletedCount;
+    }
+
     /// <summary>
     /// Maps a <see cref="Person"/> entity to a <see cref="PersonDto"/>.
     /// </summary>

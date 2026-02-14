@@ -67,4 +67,91 @@ public sealed class EfCompanyRepository(OdinDbContext context) : ICompanyReposit
             .ToListAsync(cancellationToken);
 #pragma warning restore RCS1155
     }
+
+    /// <inheritdoc />
+    public async Task<(IEnumerable<Company> Items, int TotalCount)> GetPaged(PagedQuery query, CompanyFilterQuery filter, CancellationToken cancellationToken)
+    {
+#pragma warning disable RCS1155 // ToLower is required for EF Core LINQ-to-SQL translation
+        var queryable = _context.Set<Company>()
+            .Include(c => c.Locations)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(query.Q))
+        {
+            var normalizedTerm = query.Q.ToLower(System.Globalization.CultureInfo.InvariantCulture);
+            queryable = queryable.Where(c => c.Name.ToLower().Contains(normalizedTerm));
+        }
+
+        if (filter.IndustryId.HasValue)
+        {
+            queryable = queryable.Where(c => c.IndustryId == filter.IndustryId.Value);
+        }
+
+        if (filter.LegalFormId.HasValue)
+        {
+            queryable = queryable.Where(c => c.LegalFormId == filter.LegalFormId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(filter.City))
+        {
+            var normalizedCity = filter.City.ToLower(System.Globalization.CultureInfo.InvariantCulture);
+            queryable = queryable.Where(c => c.Locations.Any(l => l.City.ToLower().Contains(normalizedCity)));
+        }
+
+        if (filter.EmployeeCountMin.HasValue)
+        {
+            queryable = queryable.Where(c => c.EmployeeCount >= filter.EmployeeCountMin.Value);
+        }
+
+        if (filter.EmployeeCountMax.HasValue)
+        {
+            queryable = queryable.Where(c => c.EmployeeCount <= filter.EmployeeCountMax.Value);
+        }
+
+        if (filter.FoundingDateFrom.HasValue)
+        {
+            queryable = queryable.Where(c => c.FoundingDate >= filter.FoundingDateFrom.Value);
+        }
+
+        if (filter.FoundingDateTo.HasValue)
+        {
+            queryable = queryable.Where(c => c.FoundingDate <= filter.FoundingDateTo.Value);
+        }
+
+        var totalCount = await queryable.CountAsync(cancellationToken);
+
+        var desc = query.SortDir == SortDirection.Desc;
+
+        if (string.Equals(query.Sort, nameof(CompanyDto.Name), StringComparison.OrdinalIgnoreCase))
+        {
+            queryable = desc ? queryable.OrderByDescending(c => c.Name) : queryable.OrderBy(c => c.Name);
+        }
+        else if (string.Equals(query.Sort, nameof(CompanyDto.City), StringComparison.OrdinalIgnoreCase))
+        {
+            queryable = desc
+                ? queryable.OrderByDescending(c => c.Locations.OrderByDescending(l => l.IsPrimary).Select(l => l.City).FirstOrDefault())
+                : queryable.OrderBy(c => c.Locations.OrderByDescending(l => l.IsPrimary).Select(l => l.City).FirstOrDefault());
+        }
+        else if (string.Equals(query.Sort, nameof(CompanyDto.EmployeeCount), StringComparison.OrdinalIgnoreCase))
+        {
+            queryable = desc ? queryable.OrderByDescending(c => c.EmployeeCount) : queryable.OrderBy(c => c.EmployeeCount);
+        }
+        else if (string.Equals(query.Sort, nameof(Company.FoundingDate), StringComparison.OrdinalIgnoreCase))
+        {
+            queryable = desc ? queryable.OrderByDescending(c => c.FoundingDate) : queryable.OrderBy(c => c.FoundingDate);
+        }
+        else
+        {
+            queryable = desc ? queryable.OrderByDescending(c => c.Name) : queryable.OrderBy(c => c.Name);
+        }
+
+        var page = Math.Max(1, query.Page);
+        var items = await queryable
+            .Skip((page - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .ToListAsync(cancellationToken);
+
+        return (items, totalCount);
+#pragma warning restore RCS1155
+    }
 }
