@@ -1,0 +1,99 @@
+@page "/persons"
+@attribute [Authorize]
+@inject IPersonApiClient PersonApi
+@inject NavigationManager Navigation
+@inject IToastService Toast
+
+<PageTitle>Persons - Odin</PageTitle>
+
+<PageHeader Title="Persons" Subtitle="Manage contacts, employees and their details">
+    <Actions>
+        <AuthorizeView Roles="Admin,Manager">
+            <Authorized>
+                <a href="/persons/create" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i> Create Person
+                </a>
+            </Authorized>
+        </AuthorizeView>
+    </Actions>
+</PageHeader>
+
+<DataGrid TItem="PersonDto"
+          Items="_persons"
+          TotalCount="_totalCount"
+          ShowSearch="true"
+          OnSearch="HandleSearch"
+          OnRowClick="HandleRowClick">
+    <HeaderTemplate>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>City</th>
+    </HeaderTemplate>
+    <RowTemplate Context="person">
+        <td>@person.FirstName @person.LastName</td>
+        <td>@(person.Email ?? "\u2014")</td>
+        <td>@(person.Phone ?? "\u2014")</td>
+        <td>@(person.City ?? "\u2014")</td>
+    </RowTemplate>
+</DataGrid>
+
+@code {
+    private IReadOnlyList<PersonDto>? _persons;
+    private int _totalCount;
+    private string _searchTerm = "";
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPersons();
+    }
+
+    /// <summary>
+    /// Loads the person list from the API, optionally filtered by a search term.
+    /// </summary>
+    private async Task LoadPersons()
+    {
+        ListResult<PersonDto>? result;
+
+        if (string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            result = await PersonApi.GetAll(CancellationToken.None);
+        }
+        else
+        {
+            result = await PersonApi.Search(_searchTerm, CancellationToken.None);
+        }
+
+        if (result is not null)
+        {
+            _persons = result.Data;
+            _totalCount = result.TotalCount;
+        }
+        else
+        {
+            _persons = [];
+            _totalCount = 0;
+            Toast.Show("Failed to load persons.", ToastLevel.Error);
+        }
+    }
+
+    /// <summary>
+    /// Handles the search callback from the DataGrid.
+    /// </summary>
+    /// <param name="searchTerm">The search term entered by the user.</param>
+    private async Task HandleSearch(string searchTerm)
+    {
+        _searchTerm = searchTerm;
+        await LoadPersons();
+    }
+
+    /// <summary>
+    /// Navigates to the detail page when a row is clicked.
+    /// </summary>
+    /// <param name="person">The clicked person.</param>
+    private void HandleRowClick(PersonDto person)
+    {
+        Navigation.NavigateTo($"/persons/{person.Id}");
+    }
+}
