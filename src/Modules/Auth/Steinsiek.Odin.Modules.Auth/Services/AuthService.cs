@@ -6,6 +6,7 @@ namespace Steinsiek.Odin.Modules.Auth.Services;
 public sealed class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IPasswordHasher _passwordHasher;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthService> _logger;
 
@@ -13,14 +14,17 @@ public sealed class AuthService : IAuthService
     /// Initializes a new instance of the <see cref="AuthService"/> class.
     /// </summary>
     /// <param name="userRepository">The user repository.</param>
+    /// <param name="passwordHasher">The password hasher.</param>
     /// <param name="configuration">The application configuration.</param>
     /// <param name="logger">The logger instance.</param>
     public AuthService(
         IUserRepository userRepository,
+        IPasswordHasher passwordHasher,
         IConfiguration configuration,
         ILogger<AuthService> logger)
     {
         _userRepository = userRepository;
+        _passwordHasher = passwordHasher;
         _configuration = configuration;
         _logger = logger;
     }
@@ -37,8 +41,7 @@ public sealed class AuthService : IAuthService
             return null;
         }
 
-        var passwordHash = InMemoryUserRepository.ComputeHash(request.Password);
-        if (user.PasswordHash != passwordHash)
+        if (!_passwordHasher.Verify(request.Password, user.PasswordHash))
         {
             _logger.LogWarning("Login failed: Invalid password for {Email}", request.Email);
             return null;
@@ -69,7 +72,7 @@ public sealed class AuthService : IAuthService
         var user = new User
         {
             Email = request.Email,
-            PasswordHash = request.Password,
+            PasswordHash = _passwordHasher.Hash(request.Password),
             FirstName = request.FirstName,
             LastName = request.LastName
         };

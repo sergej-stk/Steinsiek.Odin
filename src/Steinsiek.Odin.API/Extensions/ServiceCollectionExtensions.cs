@@ -18,6 +18,37 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
+    /// Registers the <see cref="OdinDbContext"/> with the appropriate database provider based on configuration.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The application configuration.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<OdinDbContextOptions>(options =>
+        {
+            options.ModuleAssemblies.Add(typeof(AuthModule).Assembly);
+            options.ModuleAssemblies.Add(typeof(Steinsiek.Odin.Modules.Products.ProductsModule).Assembly);
+        });
+
+        var provider = configuration.GetValue<string>("DatabaseProvider") ?? "InMemory";
+
+        services.AddDbContext<OdinDbContext>((_, options) =>
+        {
+            if (provider.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
+            {
+                options.UseNpgsql(configuration.GetConnectionString("odindb"));
+            }
+            else
+            {
+                options.UseInMemoryDatabase("OdinDb");
+            }
+        });
+
+        return services;
+    }
+
+    /// <summary>
     /// Configures URL-based API versioning for the application.
     /// </summary>
     /// <param name="services">The service collection.</param>

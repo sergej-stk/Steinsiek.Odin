@@ -8,7 +8,8 @@ public sealed class AuthModule : IModule
     /// <inheritdoc />
     public static void RegisterServices(IServiceCollection services)
     {
-        services.AddSingleton<IUserRepository, InMemoryUserRepository>();
+        services.AddScoped<IUserRepository, EfUserRepository>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
     }
 }
