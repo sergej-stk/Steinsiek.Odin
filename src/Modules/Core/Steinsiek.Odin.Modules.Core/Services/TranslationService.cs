@@ -11,7 +11,7 @@ public sealed class TranslationService(OdinDbContext context, ILogger<Translatio
     /// <summary>
     /// Maps lowercase lookup type names to their corresponding entity type names used in translations.
     /// </summary>
-    private static readonly Dictionary<string, string> LookupTypeMap = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly Dictionary<string, string> _lookupTypeMap = new(StringComparer.OrdinalIgnoreCase)
     {
         ["salutation"] = "Salutation",
         ["gender"] = "Gender",
@@ -28,7 +28,7 @@ public sealed class TranslationService(OdinDbContext context, ILogger<Translatio
     /// <inheritdoc />
     public async Task<ListResult<LookupDto>> GetLookups(string lookupType, string languageCode, CancellationToken cancellationToken)
     {
-        if (!LookupTypeMap.TryGetValue(lookupType, out var entityTypeName))
+        if (!_lookupTypeMap.TryGetValue(lookupType, out var entityTypeName))
         {
             _logger.LogWarning("Unknown lookup type requested: {LookupType}", lookupType);
 
