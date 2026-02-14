@@ -28,6 +28,7 @@ global using Microsoft.Extensions.Logging;
 global using Serilog;
 global using Steinsiek.Odin.Modules.Auth.Shared.DTOs;
 global using Steinsiek.Odin.Modules.Companies.Shared.DTOs;
+global using Steinsiek.Odin.Modules.Core.Shared;
 global using Steinsiek.Odin.Modules.Core.Shared.DTOs;
 global using Steinsiek.Odin.Modules.Persons.Shared.DTOs;
 global using Steinsiek.Odin.Web.Auth;

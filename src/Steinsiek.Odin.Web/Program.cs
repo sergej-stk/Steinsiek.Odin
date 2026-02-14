@@ -2,7 +2,7 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
-Log.Information("Starting Steinsiek.Odin Web...");
+Log.Information($"Starting {AppInfo.ProductName} Web...");
 
 try
 {
@@ -99,7 +99,7 @@ try
     // Aspire Default Endpoints
     app.MapDefaultEndpoints();
 
-    Log.Information("Steinsiek.Odin Web started successfully");
+    Log.Information($"{AppInfo.ProductName} Web started successfully");
     app.Run();
 }
 catch (Exception ex)

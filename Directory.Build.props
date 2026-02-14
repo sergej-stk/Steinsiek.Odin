@@ -10,6 +10,10 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <Company>Steinsiek</Company>
+    <Authors>Sergej Steinsiek</Authors>
+    <Copyright>Copyright © 2026 Steinsiek</Copyright>
+    <Product>Steinsiek</Product>
   </PropertyGroup>
 
   <ItemGroup>

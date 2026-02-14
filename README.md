@@ -1,9 +1,9 @@
 <div align="center">
   <a href="https://github.com/sergej-stk/Steinsiek.Odin">
-    <img src="assets/logo.svg" alt="Steinsiek.Odin Logo" width="400">
+    <img src="assets/logo.svg" alt="Steinsiek Logo" width="400">
   </a>
 
-  <h3>Steinsiek.Odin</h3>
+  <h3>Steinsiek</h3>
 
   <p>A modular .NET Aspire Employee and Company Management platform</p>
 
@@ -18,7 +18,7 @@
 
 ## About
 
-Steinsiek.Odin is a modular Employee and Company Management platform built with .NET 10 and ASP.NET Aspire. The project follows a **Modular Monolith** architecture where each domain (Auth, Persons, Companies) is encapsulated in a separate module, enabling clean separation of concerns while maintaining the simplicity of a monolithic deployment. The frontend is a Blazor Web App with Bootstrap 5.
+Steinsiek is a modular Employee and Company Management platform built with .NET 10 and ASP.NET Aspire. The project follows a **Modular Monolith** architecture where each domain (Auth, Persons, Companies) is encapsulated in a separate module, enabling clean separation of concerns while maintaining the simplicity of a monolithic deployment. The frontend is a Blazor Web App with Bootstrap 5.
 
 ## Features
 

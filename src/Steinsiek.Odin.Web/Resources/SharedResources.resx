@@ -303,7 +303,7 @@
 
   <!-- Dashboard -->
   <data name="WelcomeMessage" xml:space="preserve">
-    <value>Welcome to Steinsiek.Odin</value>
+    <value>Welcome to Steinsiek</value>
   </data>
   <data name="QuickAccess" xml:space="preserve">
     <value>Quick Access</value>

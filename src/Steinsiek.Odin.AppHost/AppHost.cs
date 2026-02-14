@@ -2,7 +2,7 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
-Log.Information("Starting Steinsiek.Odin AppHost...");
+Log.Information($"Starting {AppInfo.ProductName} AppHost...");
 
 try
 {
