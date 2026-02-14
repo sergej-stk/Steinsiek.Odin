@@ -37,6 +37,11 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Ignore(u => u.FullName);
 
+        builder.Property(u => u.PreferredLanguage)
+            .IsRequired()
+            .HasMaxLength(10)
+            .HasDefaultValue("en");
+
         builder.HasData(new User
         {
             Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
@@ -45,6 +50,7 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             FirstName = "Demo",
             LastName = "User",
             IsActive = true,
+            PreferredLanguage = "en",
             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         });
     }

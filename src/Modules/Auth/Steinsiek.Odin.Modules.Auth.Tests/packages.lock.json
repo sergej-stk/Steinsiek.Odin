@@ -420,9 +420,9 @@
       "steinsiek.odin.modules.core": {
         "type": "Project",
         "dependencies": {
+          "Asp.Versioning.Mvc": "[8.1.1, )",
           "Microsoft.EntityFrameworkCore": "[10.0.3, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.0.3, )",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.0.3, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )",
           "Steinsiek.Odin.Modules.Core.Shared": "[1.0.0, )"
         }

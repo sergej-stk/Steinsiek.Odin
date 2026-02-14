@@ -45,4 +45,9 @@ public sealed record class UserDto
     /// The user's last name.
     /// </summary>
     public required string LastName { get; init; }
+
+    /// <summary>
+    /// The user's assigned role names.
+    /// </summary>
+    public IReadOnlyList<string> Roles { get; init; } = [];
 }
