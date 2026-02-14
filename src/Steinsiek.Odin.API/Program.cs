@@ -95,8 +95,8 @@ try
     using (var scope = app.Services.CreateScope())
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<OdinDbContext>();
-        var databaseProvider = app.Configuration.GetValue<string>("DatabaseProvider") ?? "InMemory";
-        if (databaseProvider.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
+        var databaseProvider = app.Configuration.GetValue<string>(ConfigKeys.DatabaseProvider) ?? ConfigKeys.DatabaseProviders.InMemory;
+        if (databaseProvider.Equals(ConfigKeys.DatabaseProviders.PostgreSql, StringComparison.OrdinalIgnoreCase))
         {
             dbContext.Database.Migrate();
         }

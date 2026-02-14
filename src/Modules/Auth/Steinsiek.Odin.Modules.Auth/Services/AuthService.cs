@@ -89,10 +89,10 @@ public sealed class AuthService : IAuthService
         await Task.CompletedTask;
         return
         [
-            new RoleDto { Id = Persistence.Configurations.RoleConfiguration.AdminRoleId, Name = "Admin", Description = "Full access including audit log, user management and roles" },
-            new RoleDto { Id = Persistence.Configurations.RoleConfiguration.ManagerRoleId, Name = "Manager", Description = "CRUD access to persons and companies" },
-            new RoleDto { Id = Persistence.Configurations.RoleConfiguration.UserRoleId, Name = "User", Description = "Limited CRUD access to persons and companies" },
-            new RoleDto { Id = Persistence.Configurations.RoleConfiguration.ReadOnlyRoleId, Name = "ReadOnly", Description = "Read-only access to all data" }
+            new RoleDto { Id = Persistence.Configurations.RoleConfiguration.AdminRoleId, Name = OdinRoles.Admin, Description = "Full access including audit log, user management and roles" },
+            new RoleDto { Id = Persistence.Configurations.RoleConfiguration.ManagerRoleId, Name = OdinRoles.Manager, Description = "CRUD access to persons and companies" },
+            new RoleDto { Id = Persistence.Configurations.RoleConfiguration.UserRoleId, Name = OdinRoles.User, Description = "Limited CRUD access to persons and companies" },
+            new RoleDto { Id = Persistence.Configurations.RoleConfiguration.ReadOnlyRoleId, Name = OdinRoles.ReadOnly, Description = "Read-only access to all data" }
         ];
     }
 
@@ -111,7 +111,7 @@ public sealed class AuthService : IAuthService
     private async Task<LoginResponse> GenerateTokenResponse(User user, CancellationToken cancellationToken)
     {
         var expiresAt = DateTime.UtcNow.AddHours(
-            _configuration.GetValue("Jwt:ExpirationHours", 24));
+            _configuration.GetValue(ConfigKeys.Jwt.ExpirationHours, ConfigKeys.Jwt.DefaultExpirationHours));
 
         var roles = await _userRepository.GetRoles(user.Id, cancellationToken);
         var token = GenerateJwtToken(user, roles, expiresAt);
@@ -133,10 +133,10 @@ public sealed class AuthService : IAuthService
 
     private string GenerateJwtToken(User user, IReadOnlyList<string> roles, DateTime expiresAt)
     {
-        var key = _configuration["Jwt:Key"]
+        var key = _configuration[ConfigKeys.Jwt.Key]
             ?? throw new InvalidOperationException("JWT Key is not configured");
-        var issuer = _configuration["Jwt:Issuer"] ?? "Steinsiek.Odin";
-        var audience = _configuration["Jwt:Audience"] ?? "Steinsiek.Odin.API";
+        var issuer = _configuration[ConfigKeys.Jwt.Issuer] ?? ConfigKeys.Jwt.DefaultIssuer;
+        var audience = _configuration[ConfigKeys.Jwt.Audience] ?? ConfigKeys.Jwt.DefaultAudience;
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

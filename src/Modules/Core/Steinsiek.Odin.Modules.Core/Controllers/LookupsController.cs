@@ -18,7 +18,7 @@ public sealed class LookupsController(ITranslationService translationService, IL
     [ProducesResponseType(typeof(ListResult<LookupDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<ListResult<LookupDto>>> GetByType(string type, [FromQuery] string? lang, CancellationToken cancellationToken)
     {
-        var languageCode = lang ?? "de";
+        var languageCode = lang ?? LanguageCodes.Default;
 
         _logger.LogInformation("Retrieving lookups for type {LookupType} in language {LanguageCode}", type, languageCode);
 

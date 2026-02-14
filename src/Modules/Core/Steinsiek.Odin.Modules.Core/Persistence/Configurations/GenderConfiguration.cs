@@ -8,7 +8,7 @@ public sealed class GenderConfiguration : IEntityTypeConfiguration<Gender>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Gender> builder)
     {
-        builder.ToTable("Genders", "core");
+        builder.ToTable("Genders", OdinSchemas.Core);
 
         builder.HasKey(e => e.Id);
 

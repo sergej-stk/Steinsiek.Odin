@@ -8,7 +8,7 @@ public sealed class LanguageConfiguration : IEntityTypeConfiguration<Language>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Language> builder)
     {
-        builder.ToTable("Languages", "core");
+        builder.ToTable("Languages", OdinSchemas.Core);
 
         builder.HasKey(e => e.Id);
 

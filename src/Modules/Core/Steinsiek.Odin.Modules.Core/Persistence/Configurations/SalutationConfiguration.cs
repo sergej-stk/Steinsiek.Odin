@@ -8,7 +8,7 @@ public sealed class SalutationConfiguration : IEntityTypeConfiguration<Salutatio
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Salutation> builder)
     {
-        builder.ToTable("Salutations", "core");
+        builder.ToTable("Salutations", OdinSchemas.Core);
 
         builder.HasKey(e => e.Id);
 

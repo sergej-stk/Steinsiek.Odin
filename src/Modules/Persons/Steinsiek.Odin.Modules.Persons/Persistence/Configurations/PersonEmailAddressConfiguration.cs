@@ -8,7 +8,7 @@ public sealed class PersonEmailAddressConfiguration : IEntityTypeConfiguration<P
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<PersonEmailAddress> builder)
     {
-        builder.ToTable("PersonEmailAddresses", "persons");
+        builder.ToTable("PersonEmailAddresses", OdinSchemas.Persons);
 
         builder.HasKey(e => e.Id);
 

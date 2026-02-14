@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Steinsiek.Odin.Modules.Core.Shared\Steinsiek.Odin.Modules.Core.Shared.csproj" />
+    <ProjectReference Include="..\..\Auth\Steinsiek.Odin.Modules.Auth.Shared\Steinsiek.Odin.Modules.Auth.Shared.csproj" />
   </ItemGroup>
 
 </Project>

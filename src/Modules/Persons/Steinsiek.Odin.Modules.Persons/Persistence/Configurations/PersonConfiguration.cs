@@ -8,7 +8,7 @@ public sealed class PersonConfiguration : IEntityTypeConfiguration<Person>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Person> builder)
     {
-        builder.ToTable("Persons", "persons");
+        builder.ToTable("Persons", OdinSchemas.Persons);
 
         builder.HasKey(p => p.Id);
 

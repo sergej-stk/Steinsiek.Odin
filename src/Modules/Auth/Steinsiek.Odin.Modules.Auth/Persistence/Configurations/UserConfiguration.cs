@@ -13,7 +13,7 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.ToTable("Users", "auth");
+        builder.ToTable("Users", OdinSchemas.Auth);
 
         builder.HasKey(u => u.Id);
 

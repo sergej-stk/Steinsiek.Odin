@@ -231,9 +231,9 @@
     {
         return action switch
         {
-            "Created" => "bg-success",
-            "Updated" => "bg-primary",
-            "Deleted" => "bg-danger",
+            AuditActions.Created => "bg-success",
+            AuditActions.Updated => "bg-primary",
+            AuditActions.Deleted => "bg-danger",
             _ => "bg-secondary"
         };
     }

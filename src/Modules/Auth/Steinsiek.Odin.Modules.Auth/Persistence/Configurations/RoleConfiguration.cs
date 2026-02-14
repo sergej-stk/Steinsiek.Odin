@@ -28,7 +28,7 @@ public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Role> builder)
     {
-        builder.ToTable("Roles", "auth");
+        builder.ToTable("Roles", OdinSchemas.Auth);
 
         builder.HasKey(r => r.Id);
 
@@ -46,28 +46,28 @@ public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
             new Role
             {
                 Id = AdminRoleId,
-                Name = "Admin",
+                Name = OdinRoles.Admin,
                 Description = "Full access including audit log, user management and roles",
                 CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             },
             new Role
             {
                 Id = ManagerRoleId,
-                Name = "Manager",
+                Name = OdinRoles.Manager,
                 Description = "CRUD access to persons and companies",
                 CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             },
             new Role
             {
                 Id = UserRoleId,
-                Name = "User",
+                Name = OdinRoles.User,
                 Description = "Limited CRUD access to persons and companies",
                 CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             },
             new Role
             {
                 Id = ReadOnlyRoleId,
-                Name = "ReadOnly",
+                Name = OdinRoles.ReadOnly,
                 Description = "Read-only access to all data",
                 CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             });

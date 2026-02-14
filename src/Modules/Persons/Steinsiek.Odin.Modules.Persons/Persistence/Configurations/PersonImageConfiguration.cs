@@ -8,7 +8,7 @@ public sealed class PersonImageConfiguration : IEntityTypeConfiguration<PersonIm
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<PersonImage> builder)
     {
-        builder.ToTable("PersonImages", "persons");
+        builder.ToTable("PersonImages", OdinSchemas.Persons);
 
         builder.HasKey(i => i.PersonId);
 

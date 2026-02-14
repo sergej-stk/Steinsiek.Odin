@@ -13,16 +13,16 @@ public sealed class TranslationService(OdinDbContext context, ILogger<Translatio
     /// </summary>
     private static readonly Dictionary<string, string> _lookupTypeMap = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["salutation"] = "Salutation",
-        ["gender"] = "Gender",
-        ["maritalstatus"] = "MaritalStatus",
-        ["country"] = "Country",
-        ["addresstype"] = "AddressType",
-        ["contacttype"] = "ContactType",
-        ["industry"] = "Industry",
-        ["legalform"] = "LegalForm",
-        ["department"] = "Department",
-        ["position"] = "Position"
+        [nameof(Salutation)] = nameof(Salutation),
+        [nameof(Gender)] = nameof(Gender),
+        [nameof(MaritalStatus)] = nameof(MaritalStatus),
+        [nameof(Country)] = nameof(Country),
+        [nameof(AddressType)] = nameof(AddressType),
+        [nameof(ContactType)] = nameof(ContactType),
+        [nameof(Industry)] = nameof(Industry),
+        [nameof(LegalForm)] = nameof(LegalForm),
+        [nameof(Department)] = nameof(Department),
+        [nameof(Position)] = nameof(Position)
     };
 
     /// <inheritdoc />
@@ -65,16 +65,16 @@ public sealed class TranslationService(OdinDbContext context, ILogger<Translatio
 
         return entityTypeName switch
         {
-            "Salutation" => await BuildLookupDtos<Salutation>(translationMap, cancellationToken),
-            "Gender" => await BuildLookupDtos<Gender>(translationMap, cancellationToken),
-            "MaritalStatus" => await BuildLookupDtos<MaritalStatus>(translationMap, cancellationToken),
-            "Country" => await BuildLookupDtos<Country>(translationMap, cancellationToken),
-            "AddressType" => await BuildLookupDtos<AddressType>(translationMap, cancellationToken),
-            "ContactType" => await BuildLookupDtos<ContactType>(translationMap, cancellationToken),
-            "Industry" => await BuildLookupDtos<Industry>(translationMap, cancellationToken),
-            "LegalForm" => await BuildLookupDtos<LegalForm>(translationMap, cancellationToken),
-            "Department" => await BuildLookupDtos<Department>(translationMap, cancellationToken),
-            "Position" => await BuildLookupDtos<Position>(translationMap, cancellationToken),
+            nameof(Salutation) => await BuildLookupDtos<Salutation>(translationMap, cancellationToken),
+            nameof(Gender) => await BuildLookupDtos<Gender>(translationMap, cancellationToken),
+            nameof(MaritalStatus) => await BuildLookupDtos<MaritalStatus>(translationMap, cancellationToken),
+            nameof(Country) => await BuildLookupDtos<Country>(translationMap, cancellationToken),
+            nameof(AddressType) => await BuildLookupDtos<AddressType>(translationMap, cancellationToken),
+            nameof(ContactType) => await BuildLookupDtos<ContactType>(translationMap, cancellationToken),
+            nameof(Industry) => await BuildLookupDtos<Industry>(translationMap, cancellationToken),
+            nameof(LegalForm) => await BuildLookupDtos<LegalForm>(translationMap, cancellationToken),
+            nameof(Department) => await BuildLookupDtos<Department>(translationMap, cancellationToken),
+            nameof(Position) => await BuildLookupDtos<Position>(translationMap, cancellationToken),
             _ => []
         };
     }

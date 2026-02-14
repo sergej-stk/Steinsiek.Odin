@@ -49,17 +49,17 @@ public static class ServiceCollectionExtensions
             options.ModuleAssemblies.Add(typeof(CompaniesModule).Assembly);
         });
 
-        var provider = configuration.GetValue<string>("DatabaseProvider") ?? "InMemory";
+        var provider = configuration.GetValue<string>(ConfigKeys.DatabaseProvider) ?? ConfigKeys.DatabaseProviders.InMemory;
 
         services.AddDbContext<OdinDbContext>((_, options) =>
         {
-            if (provider.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
+            if (provider.Equals(ConfigKeys.DatabaseProviders.PostgreSql, StringComparison.OrdinalIgnoreCase))
             {
-                options.UseNpgsql(configuration.GetConnectionString("odindb"));
+                options.UseNpgsql(configuration.GetConnectionString(ConfigKeys.ConnectionStrings.OdinDb));
             }
             else
             {
-                options.UseInMemoryDatabase("OdinDb");
+                options.UseInMemoryDatabase(ConfigKeys.ConnectionStrings.InMemoryDbName);
             }
         });
 
@@ -99,10 +99,10 @@ public static class ServiceCollectionExtensions
     /// <exception cref="InvalidOperationException">Thrown when JWT Key is not configured.</exception>
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        var jwtKey = configuration["Jwt:Key"]
+        var jwtKey = configuration[ConfigKeys.Jwt.Key]
             ?? throw new InvalidOperationException("JWT Key is not configured");
-        var jwtIssuer = configuration["Jwt:Issuer"] ?? "Steinsiek.Odin";
-        var jwtAudience = configuration["Jwt:Audience"] ?? "Steinsiek.Odin.API";
+        var jwtIssuer = configuration[ConfigKeys.Jwt.Issuer] ?? ConfigKeys.Jwt.DefaultIssuer;
+        var jwtAudience = configuration[ConfigKeys.Jwt.Audience] ?? ConfigKeys.Jwt.DefaultAudience;
 
         services.AddAuthentication(options =>
         {

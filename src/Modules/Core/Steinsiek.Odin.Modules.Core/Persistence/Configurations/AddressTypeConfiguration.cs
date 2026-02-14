@@ -8,7 +8,7 @@ public sealed class AddressTypeConfiguration : IEntityTypeConfiguration<AddressT
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<AddressType> builder)
     {
-        builder.ToTable("AddressTypes", "core");
+        builder.ToTable("AddressTypes", OdinSchemas.Core);
 
         builder.HasKey(e => e.Id);
 

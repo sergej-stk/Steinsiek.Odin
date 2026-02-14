@@ -8,7 +8,7 @@ public sealed class LegalFormConfiguration : IEntityTypeConfiguration<LegalForm>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<LegalForm> builder)
     {
-        builder.ToTable("LegalForms", "core");
+        builder.ToTable("LegalForms", OdinSchemas.Core);
 
         builder.HasKey(e => e.Id);
 

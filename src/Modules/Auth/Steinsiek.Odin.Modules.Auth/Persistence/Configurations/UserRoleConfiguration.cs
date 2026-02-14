@@ -8,7 +8,7 @@ public sealed class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<UserRole> builder)
     {
-        builder.ToTable("UserRoles", "auth");
+        builder.ToTable("UserRoles", OdinSchemas.Auth);
 
         builder.HasKey(ur => ur.Id);
 

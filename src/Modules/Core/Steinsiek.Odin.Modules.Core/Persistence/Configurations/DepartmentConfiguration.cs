@@ -8,7 +8,7 @@ public sealed class DepartmentConfiguration : IEntityTypeConfiguration<Departmen
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Department> builder)
     {
-        builder.ToTable("Departments", "core");
+        builder.ToTable("Departments", OdinSchemas.Core);
 
         builder.HasKey(e => e.Id);
 

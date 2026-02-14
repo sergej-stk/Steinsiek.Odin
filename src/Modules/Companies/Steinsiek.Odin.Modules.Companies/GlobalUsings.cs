@@ -15,6 +15,7 @@ global using Steinsiek.Odin.Modules.Core;
 global using Steinsiek.Odin.Modules.Core.Entities;
 global using Steinsiek.Odin.Modules.Core.Persistence;
 global using Steinsiek.Odin.Modules.Core.Repositories;
+global using Steinsiek.Odin.Modules.Core.Shared;
 global using Steinsiek.Odin.Modules.Core.Shared.DTOs;
 global using Steinsiek.Odin.Modules.Companies.Entities;
 global using Steinsiek.Odin.Modules.Companies.Repositories;

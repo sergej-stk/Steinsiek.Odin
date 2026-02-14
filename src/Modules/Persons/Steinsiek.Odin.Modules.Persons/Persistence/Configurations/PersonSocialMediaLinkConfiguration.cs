@@ -8,7 +8,7 @@ public sealed class PersonSocialMediaLinkConfiguration : IEntityTypeConfiguratio
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<PersonSocialMediaLink> builder)
     {
-        builder.ToTable("PersonSocialMediaLinks", "persons");
+        builder.ToTable("PersonSocialMediaLinks", OdinSchemas.Persons);
 
         builder.HasKey(s => s.Id);
 

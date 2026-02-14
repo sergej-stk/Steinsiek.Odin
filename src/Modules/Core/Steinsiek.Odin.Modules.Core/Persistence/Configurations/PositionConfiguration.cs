@@ -8,7 +8,7 @@ public sealed class PositionConfiguration : IEntityTypeConfiguration<Position>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Position> builder)
     {
-        builder.ToTable("Positions", "core");
+        builder.ToTable("Positions", OdinSchemas.Core);
 
         builder.HasKey(e => e.Id);
 

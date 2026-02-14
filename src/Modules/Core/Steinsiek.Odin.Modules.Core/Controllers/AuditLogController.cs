@@ -6,7 +6,7 @@ namespace Steinsiek.Odin.Modules.Core.Controllers;
 [ApiController]
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/audit-log")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = OdinRoles.Admin)]
 public sealed class AuditLogController(IAuditLogService auditLogService) : ControllerBase, IAuditLogController
 {
     private readonly IAuditLogService _auditLogService = auditLogService;

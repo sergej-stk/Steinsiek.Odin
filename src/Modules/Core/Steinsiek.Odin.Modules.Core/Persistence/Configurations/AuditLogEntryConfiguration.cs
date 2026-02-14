@@ -8,7 +8,7 @@ public sealed class AuditLogEntryConfiguration : IEntityTypeConfiguration<AuditL
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<AuditLogEntry> builder)
     {
-        builder.ToTable("AuditLog", "core");
+        builder.ToTable("AuditLog", OdinSchemas.Core);
 
         builder.HasKey(e => e.Id);
 

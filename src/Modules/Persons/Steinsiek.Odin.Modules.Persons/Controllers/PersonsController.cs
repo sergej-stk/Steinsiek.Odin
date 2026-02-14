@@ -57,7 +57,7 @@ public sealed class PersonsController(IPersonService personService, ILogger<Pers
 
     /// <inheritdoc />
     [HttpPost]
-    [Authorize(Roles = "Admin,Manager")]
+    [Authorize(Roles = OdinRoles.AdminOrManager)]
     [ProducesResponseType(typeof(PersonDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -69,7 +69,7 @@ public sealed class PersonsController(IPersonService personService, ILogger<Pers
 
     /// <inheritdoc />
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "Admin,Manager")]
+    [Authorize(Roles = OdinRoles.AdminOrManager)]
     [ProducesResponseType(typeof(PersonDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -87,7 +87,7 @@ public sealed class PersonsController(IPersonService personService, ILogger<Pers
 
     /// <inheritdoc />
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Admin,Manager")]
+    [Authorize(Roles = OdinRoles.AdminOrManager)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -8,7 +8,7 @@ public sealed class ContactTypeConfiguration : IEntityTypeConfiguration<ContactT
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<ContactType> builder)
     {
-        builder.ToTable("ContactTypes", "core");
+        builder.ToTable("ContactTypes", OdinSchemas.Core);
 
         builder.HasKey(e => e.Id);
 

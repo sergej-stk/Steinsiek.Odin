@@ -8,7 +8,7 @@ public sealed class CountryConfiguration : IEntityTypeConfiguration<Country>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Country> builder)
     {
-        builder.ToTable("Countries", "core");
+        builder.ToTable("Countries", OdinSchemas.Core);
 
         builder.HasKey(e => e.Id);
 

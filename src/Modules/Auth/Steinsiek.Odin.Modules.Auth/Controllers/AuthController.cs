@@ -42,13 +42,13 @@ public sealed class AuthController(IAuthService authService) : ControllerBase, I
         await Task.CompletedTask;
 
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? User.FindFirst("sub")?.Value;
+            ?? User.FindFirst(JwtClaimNames.Subject)?.Value;
         var email = User.FindFirst(ClaimTypes.Email)?.Value
-            ?? User.FindFirst("email")?.Value;
+            ?? User.FindFirst(JwtClaimNames.Email)?.Value;
         var firstName = User.FindFirst(ClaimTypes.GivenName)?.Value
-            ?? User.FindFirst("given_name")?.Value ?? "";
+            ?? User.FindFirst(JwtClaimNames.GivenName)?.Value ?? "";
         var lastName = User.FindFirst(ClaimTypes.Surname)?.Value
-            ?? User.FindFirst("family_name")?.Value ?? "";
+            ?? User.FindFirst(JwtClaimNames.FamilyName)?.Value ?? "";
         var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
 
         return string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email)
@@ -65,7 +65,7 @@ public sealed class AuthController(IAuthService authService) : ControllerBase, I
 
     /// <inheritdoc />
     [HttpGet("roles")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = OdinRoles.Admin)]
     [ProducesResponseType(typeof(IReadOnlyList<RoleDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IReadOnlyList<RoleDto>>> GetRoles(CancellationToken cancellationToken)
@@ -76,7 +76,7 @@ public sealed class AuthController(IAuthService authService) : ControllerBase, I
 
     /// <inheritdoc />
     [HttpPost("users/{userId:guid}/roles")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = OdinRoles.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -88,7 +88,7 @@ public sealed class AuthController(IAuthService authService) : ControllerBase, I
 
     /// <inheritdoc />
     [HttpDelete("users/{userId:guid}/roles/{roleId:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = OdinRoles.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

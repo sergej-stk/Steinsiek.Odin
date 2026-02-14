@@ -8,7 +8,7 @@ public sealed class TranslationConfiguration : IEntityTypeConfiguration<Translat
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Translation> builder)
     {
-        builder.ToTable("Translations", "core");
+        builder.ToTable("Translations", OdinSchemas.Core);
 
         builder.HasKey(e => e.Id);
 

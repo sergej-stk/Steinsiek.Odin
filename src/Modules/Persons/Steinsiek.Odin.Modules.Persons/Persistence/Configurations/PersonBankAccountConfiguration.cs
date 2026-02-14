@@ -8,7 +8,7 @@ public sealed class PersonBankAccountConfiguration : IEntityTypeConfiguration<Pe
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<PersonBankAccount> builder)
     {
-        builder.ToTable("PersonBankAccounts", "persons");
+        builder.ToTable("PersonBankAccounts", OdinSchemas.Persons);
 
         builder.HasKey(b => b.Id);
 

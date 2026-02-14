@@ -24,7 +24,7 @@ try
         .WithReference(odinDb)
         .WaitFor(redis)
         .WaitFor(postgres)
-        .WithEnvironment("DatabaseProvider", "PostgreSQL")
+        .WithEnvironment(ConfigKeys.DatabaseProvider, ConfigKeys.DatabaseProviders.PostgreSql)
         .WithIconName("People", IconVariant.Filled);
 
     builder.AddProject<Projects.Steinsiek_Odin_Web>("web")

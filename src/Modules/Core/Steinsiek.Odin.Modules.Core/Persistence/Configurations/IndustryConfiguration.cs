@@ -8,7 +8,7 @@ public sealed class IndustryConfiguration : IEntityTypeConfiguration<Industry>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Industry> builder)
     {
-        builder.ToTable("Industries", "core");
+        builder.ToTable("Industries", OdinSchemas.Core);
 
         builder.HasKey(e => e.Id);
 

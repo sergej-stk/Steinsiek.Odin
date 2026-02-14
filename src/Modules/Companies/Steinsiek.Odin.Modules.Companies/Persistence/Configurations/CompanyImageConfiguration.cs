@@ -8,7 +8,7 @@ public sealed class CompanyImageConfiguration : IEntityTypeConfiguration<Company
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<CompanyImage> builder)
     {
-        builder.ToTable("CompanyImages", "companies");
+        builder.ToTable("CompanyImages", OdinSchemas.Companies);
 
         builder.HasKey(ci => ci.CompanyId);
 

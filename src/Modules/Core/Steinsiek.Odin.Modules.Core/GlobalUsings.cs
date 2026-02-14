@@ -20,5 +20,6 @@ global using Steinsiek.Odin.Modules.Core.Entities.Lookups;
 global using Steinsiek.Odin.Modules.Core.Persistence;
 global using Steinsiek.Odin.Modules.Core.Repositories;
 global using Steinsiek.Odin.Modules.Core.Services;
+global using Steinsiek.Odin.Modules.Auth.Shared;
 global using Steinsiek.Odin.Modules.Core.Shared;
 global using Steinsiek.Odin.Modules.Core.Shared.DTOs;

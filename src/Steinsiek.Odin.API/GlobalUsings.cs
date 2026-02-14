@@ -28,6 +28,7 @@ global using Serilog.Context;
 global using Steinsiek.Odin.API.Extensions;
 global using Steinsiek.Odin.API.Middleware;
 global using Steinsiek.Odin.Modules.Auth;
+global using Steinsiek.Odin.Modules.Auth.Shared;
 global using Steinsiek.Odin.Modules.Core.Exceptions;
 global using Steinsiek.Odin.Modules.Core.Persistence;
 global using Steinsiek.Odin.Modules.Core.Shared;

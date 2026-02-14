@@ -8,7 +8,7 @@ public sealed class MaritalStatusConfiguration : IEntityTypeConfiguration<Marita
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<MaritalStatus> builder)
     {
-        builder.ToTable("MaritalStatuses", "core");
+        builder.ToTable("MaritalStatuses", OdinSchemas.Core);
 
         builder.HasKey(e => e.Id);
 

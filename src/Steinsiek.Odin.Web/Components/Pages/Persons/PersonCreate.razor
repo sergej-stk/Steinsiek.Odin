@@ -1,5 +1,5 @@
 @page "/persons/create"
-@attribute [Authorize(Roles = "Admin,Manager")]
+@attribute [Authorize(Roles = OdinRoles.AdminOrManager)]
 @inject IPersonApiClient PersonApi
 @inject NavigationManager Navigation
 @inject IToastService Toast

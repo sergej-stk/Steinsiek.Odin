@@ -8,7 +8,7 @@ public sealed class CompanyLocationConfiguration : IEntityTypeConfiguration<Comp
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<CompanyLocation> builder)
     {
-        builder.ToTable("CompanyLocations", "companies");
+        builder.ToTable("CompanyLocations", OdinSchemas.Companies);
 
         builder.HasKey(cl => cl.Id);
 

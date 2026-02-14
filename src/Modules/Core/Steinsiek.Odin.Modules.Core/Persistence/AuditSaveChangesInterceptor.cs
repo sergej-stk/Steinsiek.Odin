@@ -44,7 +44,7 @@ public sealed class AuditSaveChangesInterceptor
                     {
                         EntityType = entityType,
                         EntityId = entityId,
-                        Action = "Created",
+                        Action = AuditActions.Created,
                         UserId = userId,
                         Timestamp = DateTime.UtcNow
                     });
@@ -63,7 +63,7 @@ public sealed class AuditSaveChangesInterceptor
                         {
                             EntityType = entityType,
                             EntityId = entityId,
-                            Action = "Updated",
+                            Action = AuditActions.Updated,
                             PropertyName = prop.Metadata.Name,
                             OldValue = prop.OriginalValue?.ToString(),
                             NewValue = prop.CurrentValue?.ToString(),
@@ -78,7 +78,7 @@ public sealed class AuditSaveChangesInterceptor
                     {
                         EntityType = entityType,
                         EntityId = entityId,
-                        Action = "Deleted",
+                        Action = AuditActions.Deleted,
                         UserId = userId,
                         Timestamp = DateTime.UtcNow
                     });
@@ -94,7 +94,7 @@ public sealed class AuditSaveChangesInterceptor
     /// </summary>
     private Guid? GetCurrentUserId()
     {
-        var sub = _httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value;
+        var sub = _httpContextAccessor.HttpContext?.User?.FindFirst(JwtClaimNames.Subject)?.Value;
         if (sub is not null && Guid.TryParse(sub, out var userId))
         {
             return userId;
