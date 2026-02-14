@@ -3,9 +3,13 @@ namespace Steinsiek.Odin.Web.Services;
 /// <summary>
 /// HTTP client implementation for authentication API operations.
 /// </summary>
-public sealed class AuthApiClient(HttpClient httpClient, ILogger<AuthApiClient> logger) : IAuthApiClient
+public sealed class AuthApiClient(
+    HttpClient httpClient,
+    ITokenStorageService tokenStorage,
+    ILogger<AuthApiClient> logger) : IAuthApiClient
 {
     private readonly HttpClient _httpClient = httpClient;
+    private readonly ITokenStorageService _tokenStorage = tokenStorage;
     private readonly ILogger<AuthApiClient> _logger = logger;
 
     /// <inheritdoc />
@@ -37,6 +41,7 @@ public sealed class AuthApiClient(HttpClient httpClient, ILogger<AuthApiClient> 
     /// <inheritdoc />
     public async Task<UserDto?> GetCurrentUser(CancellationToken cancellationToken)
     {
+        await ApplyAuthHeader(cancellationToken);
         var response = await _httpClient.GetAsync("/api/v1/auth/me", cancellationToken);
         if (!response.IsSuccessStatusCode)
         {
@@ -44,5 +49,17 @@ public sealed class AuthApiClient(HttpClient httpClient, ILogger<AuthApiClient> 
         }
 
         return await response.Content.ReadFromJsonAsync<UserDto>(cancellationToken);
+    }
+
+    /// <summary>
+    /// Applies the JWT Bearer token from session storage to the HTTP client.
+    /// </summary>
+    private async Task ApplyAuthHeader(CancellationToken cancellationToken)
+    {
+        var token = await _tokenStorage.GetToken(cancellationToken);
+        if (!string.IsNullOrEmpty(token))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
     }
 }

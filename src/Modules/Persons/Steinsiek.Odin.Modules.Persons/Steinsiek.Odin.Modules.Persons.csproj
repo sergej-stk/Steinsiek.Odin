@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Steinsiek.Odin.Modules.Core\Steinsiek.Odin.Modules.Core.csproj" />
+    <ProjectReference Include="..\Steinsiek.Odin.Modules.Persons.Shared\Steinsiek.Odin.Modules.Persons.Shared.csproj" />
+    <ProjectReference Include="..\..\Auth\Steinsiek.Odin.Modules.Auth.Shared\Steinsiek.Odin.Modules.Auth.Shared.csproj" />
+  </ItemGroup>
+</Project>

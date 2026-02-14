@@ -25,8 +25,10 @@ try
 
     // Controllers from all modules
     builder.Services.AddControllers()
+        .AddApplicationPart(typeof(Steinsiek.Odin.Modules.Core.Entities.BaseEntity).Assembly)
         .AddApplicationPart(typeof(Steinsiek.Odin.Modules.Auth.AuthModule).Assembly)
-        .AddApplicationPart(typeof(Steinsiek.Odin.Modules.Products.ProductsModule).Assembly);
+        .AddApplicationPart(typeof(Steinsiek.Odin.Modules.Persons.PersonsModule).Assembly)
+        .AddApplicationPart(typeof(Steinsiek.Odin.Modules.Companies.CompaniesModule).Assembly);
 
     // OpenAPI with API version support
     builder.Services.AddOpenApi("v1", options =>
@@ -35,7 +37,7 @@ try
         {
             document.Info.Title = "Steinsiek.Odin API";
             document.Info.Version = "v1";
-            document.Info.Description = "E-Commerce REST API - Version 1";
+            document.Info.Description = "Employee Management REST API - Version 1";
 
             document.Components ??= new OpenApiComponents();
             if (document.Components.SecuritySchemes is not null)
@@ -75,8 +77,14 @@ try
     builder.Services.AddJwtAuthentication(builder.Configuration);
     builder.Services.AddAuthorization();
 
+    // Core Infrastructure
+    builder.Services.AddCoreInfrastructure();
+
     // Module Services
     builder.Services.AddModules();
+
+    // Dashboard (cross-module aggregation)
+    builder.Services.AddScoped<IDashboardService, DashboardService>();
 
     // Database
     builder.Services.AddDatabase(builder.Configuration);
@@ -87,8 +95,8 @@ try
     using (var scope = app.Services.CreateScope())
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<OdinDbContext>();
-        var databaseProvider = app.Configuration.GetValue<string>("DatabaseProvider") ?? "InMemory";
-        if (databaseProvider.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
+        var databaseProvider = app.Configuration.GetValue<string>(ConfigKeys.DatabaseProvider) ?? ConfigKeys.DatabaseProviders.InMemory;
+        if (databaseProvider.Equals(ConfigKeys.DatabaseProviders.PostgreSql, StringComparison.OrdinalIgnoreCase))
         {
             dbContext.Database.Migrate();
         }
@@ -97,7 +105,6 @@ try
             dbContext.Database.EnsureCreated();
         }
 
-        ProductImageSeeder.Seed(dbContext);
     }
 
     // Log Context Enrichment

@@ -1,0 +1,57 @@
+<ul class="nav nav-tabs mb-3" role="tablist">
+    @for (var i = 0; i < Tabs.Count; i++)
+    {
+        var index = i;
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == index ? "active" : "")"
+                    type="button" role="tab"
+                    @onclick="() => SetActiveTab(index)">
+                @if (!string.IsNullOrEmpty(Tabs[index].Icon))
+                {
+                    <i class="bi @Tabs[index].Icon me-1"></i>
+                }
+                @Tabs[index].Title
+                @if (Tabs[index].Badge > 0)
+                {
+                    <span class="badge bg-primary ms-1">@Tabs[index].Badge</span>
+                }
+            </button>
+        </li>
+    }
+</ul>
+<div class="tab-content">
+    @if (ActiveTab >= 0 && ActiveTab < Tabs.Count)
+    {
+        @Tabs[ActiveTab].Content
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// The list of tab items to render.
+    /// </summary>
+    [Parameter]
+    public List<TabItem> Tabs { get; set; } = [];
+
+    /// <summary>
+    /// The zero-based index of the currently active tab.
+    /// </summary>
+    [Parameter]
+    public int ActiveTab { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the active tab changes, enabling two-way binding.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> ActiveTabChanged { get; set; }
+
+    /// <summary>
+    /// Sets the active tab and notifies the parent component via the callback.
+    /// </summary>
+    /// <param name="index">The zero-based index of the tab to activate.</param>
+    private async Task SetActiveTab(int index)
+    {
+        ActiveTab = index;
+        await ActiveTabChanged.InvokeAsync(index);
+    }
+}

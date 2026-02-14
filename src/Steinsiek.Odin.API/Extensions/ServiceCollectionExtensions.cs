@@ -13,7 +13,23 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddModules(this IServiceCollection services)
     {
         AuthModule.RegisterServices(services);
-        ProductsModule.RegisterServices(services);
+        PersonsModule.RegisterServices(services);
+        CompaniesModule.RegisterServices(services);
+        return services;
+    }
+
+    /// <summary>
+    /// Registers core infrastructure services including audit logging.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddCoreInfrastructure(this IServiceCollection services)
+    {
+        services.AddHttpContextAccessor();
+        services.AddScoped<Steinsiek.Odin.Modules.Core.Persistence.AuditSaveChangesInterceptor>();
+        services.AddScoped<Steinsiek.Odin.Modules.Core.Repositories.IAuditLogRepository, Steinsiek.Odin.Modules.Core.Repositories.EfAuditLogRepository>();
+        services.AddScoped<Steinsiek.Odin.Modules.Core.Services.IAuditLogService, Steinsiek.Odin.Modules.Core.Services.AuditLogService>();
+        services.AddScoped<Steinsiek.Odin.Modules.Core.Services.ITranslationService, Steinsiek.Odin.Modules.Core.Services.TranslationService>();
         return services;
     }
 
@@ -27,21 +43,23 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<OdinDbContextOptions>(options =>
         {
+            options.ModuleAssemblies.Add(typeof(Steinsiek.Odin.Modules.Core.Entities.BaseEntity).Assembly);
             options.ModuleAssemblies.Add(typeof(AuthModule).Assembly);
-            options.ModuleAssemblies.Add(typeof(Steinsiek.Odin.Modules.Products.ProductsModule).Assembly);
+            options.ModuleAssemblies.Add(typeof(PersonsModule).Assembly);
+            options.ModuleAssemblies.Add(typeof(CompaniesModule).Assembly);
         });
 
-        var provider = configuration.GetValue<string>("DatabaseProvider") ?? "InMemory";
+        var provider = configuration.GetValue<string>(ConfigKeys.DatabaseProvider) ?? ConfigKeys.DatabaseProviders.InMemory;
 
         services.AddDbContext<OdinDbContext>((_, options) =>
         {
-            if (provider.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
+            if (provider.Equals(ConfigKeys.DatabaseProviders.PostgreSql, StringComparison.OrdinalIgnoreCase))
             {
-                options.UseNpgsql(configuration.GetConnectionString("odindb"));
+                options.UseNpgsql(configuration.GetConnectionString(ConfigKeys.ConnectionStrings.OdinDb));
             }
             else
             {
-                options.UseInMemoryDatabase("OdinDb");
+                options.UseInMemoryDatabase(ConfigKeys.ConnectionStrings.InMemoryDbName);
             }
         });
 
@@ -81,10 +99,10 @@ public static class ServiceCollectionExtensions
     /// <exception cref="InvalidOperationException">Thrown when JWT Key is not configured.</exception>
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        var jwtKey = configuration["Jwt:Key"]
+        var jwtKey = configuration[ConfigKeys.Jwt.Key]
             ?? throw new InvalidOperationException("JWT Key is not configured");
-        var jwtIssuer = configuration["Jwt:Issuer"] ?? "Steinsiek.Odin";
-        var jwtAudience = configuration["Jwt:Audience"] ?? "Steinsiek.Odin.API";
+        var jwtIssuer = configuration[ConfigKeys.Jwt.Issuer] ?? ConfigKeys.Jwt.DefaultIssuer;
+        var jwtAudience = configuration[ConfigKeys.Jwt.Audience] ?? ConfigKeys.Jwt.DefaultAudience;
 
         services.AddAuthentication(options =>
         {

@@ -1,0 +1,189 @@
+@page "/persons/{Id:guid}/edit"
+@attribute [Authorize(Roles = OdinRoles.AdminOrManager)]
+@inject IPersonApiClient PersonApi
+@inject NavigationManager Navigation
+@inject IToastService Toast
+
+<PageTitle>Edit Person - Odin</PageTitle>
+
+@if (_model is null && !_error)
+{
+    <div class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (_error)
+{
+    <div class="alert alert-danger mb-4">
+        Failed to load person details. Please try again later.
+    </div>
+}
+else if (_model is not null)
+{
+    <PageHeader Title="Edit Person" Subtitle="@($"Editing {_originalName}")">
+        <Actions>
+            <a href="/persons/@Id" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Back to Detail
+            </a>
+        </Actions>
+    </PageHeader>
+
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <EditForm Model="_model" OnValidSubmit="HandleSubmit" FormName="EditPersonForm">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger mb-3" />
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                <InputText class="form-control" @bind-Value="_model.FirstName" />
+                                <ValidationMessage For="() => _model.FirstName" class="text-danger small" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <InputText class="form-control" @bind-Value="_model.LastName" />
+                                <ValidationMessage For="() => _model.LastName" class="text-danger small" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Title</label>
+                                <InputText class="form-control" @bind-Value="_model.Title" />
+                                <ValidationMessage For="() => _model.Title" class="text-danger small" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Date of Birth</label>
+                                <InputDate class="form-control" @bind-Value="_model.DateOfBirth" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <InputTextArea class="form-control" @bind-Value="_model.Notes" rows="4" />
+                            <ValidationMessage For="() => _model.Notes" class="text-danger small" />
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary" disabled="@_saving">
+                                @if (_saving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                                }
+                                <i class="bi bi-check-lg me-1"></i> Save Changes
+                            </button>
+                            <a href="/persons/@Id" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// The person identifier from the route parameter.
+    /// </summary>
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private PersonFormModel? _model;
+    private bool _error;
+    private bool _saving;
+    private string _originalName = "";
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        var person = await PersonApi.GetById(Id, CancellationToken.None);
+        if (person is null)
+        {
+            _error = true;
+            return;
+        }
+
+        _originalName = person.FullName;
+        _model = new PersonFormModel
+        {
+            FirstName = person.FirstName,
+            LastName = person.LastName,
+            Title = person.Title,
+            DateOfBirth = person.DateOfBirth,
+            Notes = person.Notes
+        };
+    }
+
+    /// <summary>
+    /// Handles the valid form submission by updating the person via the API.
+    /// </summary>
+    private async Task HandleSubmit()
+    {
+        if (_model is null) return;
+
+        _saving = true;
+
+        var request = new UpdatePersonRequest
+        {
+            FirstName = _model.FirstName,
+            LastName = _model.LastName,
+            Title = string.IsNullOrWhiteSpace(_model.Title) ? null : _model.Title,
+            DateOfBirth = _model.DateOfBirth,
+            Notes = string.IsNullOrWhiteSpace(_model.Notes) ? null : _model.Notes
+        };
+
+        var result = await PersonApi.Update(Id, request, CancellationToken.None);
+        if (result is not null)
+        {
+            Toast.Show("Person updated successfully.", ToastLevel.Success);
+            Navigation.NavigateTo($"/persons/{Id}");
+        }
+        else
+        {
+            Toast.Show("Failed to update person.", ToastLevel.Error);
+            _saving = false;
+        }
+    }
+
+    /// <summary>
+    /// Form model for editing a person with data annotations for validation.
+    /// </summary>
+    private sealed class PersonFormModel
+    {
+        /// <summary>
+        /// The person's first name.
+        /// </summary>
+        [Required(ErrorMessage = "First name is required.")]
+        [MaxLength(100, ErrorMessage = "First name cannot exceed 100 characters.")]
+        public string FirstName { get; set; } = "";
+
+        /// <summary>
+        /// The person's last name.
+        /// </summary>
+        [Required(ErrorMessage = "Last name is required.")]
+        [MaxLength(100, ErrorMessage = "Last name cannot exceed 100 characters.")]
+        public string LastName { get; set; } = "";
+
+        /// <summary>
+        /// The optional academic or professional title.
+        /// </summary>
+        [MaxLength(50, ErrorMessage = "Title cannot exceed 50 characters.")]
+        public string? Title { get; set; }
+
+        /// <summary>
+        /// The optional date of birth.
+        /// </summary>
+        public DateTime? DateOfBirth { get; set; }
+
+        /// <summary>
+        /// Optional free-text notes about the person.
+        /// </summary>
+        [MaxLength(2000, ErrorMessage = "Notes cannot exceed 2000 characters.")]
+        public string? Notes { get; set; }
+    }
+}

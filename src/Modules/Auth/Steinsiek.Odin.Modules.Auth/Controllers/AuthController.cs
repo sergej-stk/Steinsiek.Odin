@@ -1,7 +1,7 @@
 namespace Steinsiek.Odin.Modules.Auth.Controllers;
 
 /// <summary>
-/// API controller for authentication operations.
+/// API controller for authentication and role management operations.
 /// </summary>
 [ApiController]
 [ApiVersion(1)]
@@ -42,13 +42,14 @@ public sealed class AuthController(IAuthService authService) : ControllerBase, I
         await Task.CompletedTask;
 
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? User.FindFirst("sub")?.Value;
+            ?? User.FindFirst(JwtClaimNames.Subject)?.Value;
         var email = User.FindFirst(ClaimTypes.Email)?.Value
-            ?? User.FindFirst("email")?.Value;
+            ?? User.FindFirst(JwtClaimNames.Email)?.Value;
         var firstName = User.FindFirst(ClaimTypes.GivenName)?.Value
-            ?? User.FindFirst("given_name")?.Value ?? "";
+            ?? User.FindFirst(JwtClaimNames.GivenName)?.Value ?? "";
         var lastName = User.FindFirst(ClaimTypes.Surname)?.Value
-            ?? User.FindFirst("family_name")?.Value ?? "";
+            ?? User.FindFirst(JwtClaimNames.FamilyName)?.Value ?? "";
+        var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
 
         return string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email)
             ? (ActionResult<UserDto>)Unauthorized()
@@ -57,7 +58,43 @@ public sealed class AuthController(IAuthService authService) : ControllerBase, I
                 Id = Guid.Parse(userId),
                 Email = email,
                 FirstName = firstName,
-                LastName = lastName
+                LastName = lastName,
+                Roles = roles
             };
+    }
+
+    /// <inheritdoc />
+    [HttpGet("roles")]
+    [Authorize(Roles = OdinRoles.Admin)]
+    [ProducesResponseType(typeof(IReadOnlyList<RoleDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<IReadOnlyList<RoleDto>>> GetRoles(CancellationToken cancellationToken)
+    {
+        var roles = await _authService.GetAllRoles(cancellationToken);
+        return Ok(roles);
+    }
+
+    /// <inheritdoc />
+    [HttpPost("users/{userId:guid}/roles")]
+    [Authorize(Roles = OdinRoles.Admin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> AssignRole(Guid userId, [FromBody] AssignRoleRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _authService.AssignRole(userId, request.RoleId, cancellationToken);
+        return result ? NoContent() : BadRequest(new { message = "Role already assigned" });
+    }
+
+    /// <inheritdoc />
+    [HttpDelete("users/{userId:guid}/roles/{roleId:guid}")]
+    [Authorize(Roles = OdinRoles.Admin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoveRole(Guid userId, Guid roleId, CancellationToken cancellationToken)
+    {
+        var result = await _authService.RemoveRole(userId, roleId, cancellationToken);
+        return result ? NoContent() : NotFound();
     }
 }

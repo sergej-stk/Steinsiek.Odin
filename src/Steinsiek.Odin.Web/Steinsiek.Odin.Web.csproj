@@ -9,7 +9,8 @@
     <ProjectReference Include="..\Steinsiek.Odin.ServiceDefaults\Steinsiek.Odin.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Modules\Core\Steinsiek.Odin.Modules.Core.Shared\Steinsiek.Odin.Modules.Core.Shared.csproj" />
     <ProjectReference Include="..\Modules\Auth\Steinsiek.Odin.Modules.Auth.Shared\Steinsiek.Odin.Modules.Auth.Shared.csproj" />
-    <ProjectReference Include="..\Modules\Products\Steinsiek.Odin.Modules.Products.Shared\Steinsiek.Odin.Modules.Products.Shared.csproj" />
+    <ProjectReference Include="..\Modules\Persons\Steinsiek.Odin.Modules.Persons.Shared\Steinsiek.Odin.Modules.Persons.Shared.csproj" />
+    <ProjectReference Include="..\Modules\Companies\Steinsiek.Odin.Modules.Companies.Shared\Steinsiek.Odin.Modules.Companies.Shared.csproj" />
   </ItemGroup>
 
 </Project>

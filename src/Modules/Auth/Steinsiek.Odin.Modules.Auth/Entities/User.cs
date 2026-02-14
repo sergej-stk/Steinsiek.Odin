@@ -34,4 +34,14 @@ public class User : BaseEntity
     /// Gets or sets whether the user account is active.
     /// </summary>
     public bool IsActive { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the user's preferred language code (e.g. "de", "en").
+    /// </summary>
+    public string PreferredLanguage { get; set; } = "en";
+
+    /// <summary>
+    /// Gets or sets the user-role assignments for this user.
+    /// </summary>
+    public ICollection<UserRole> UserRoles { get; set; } = [];
 }

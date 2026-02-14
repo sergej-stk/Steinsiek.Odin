@@ -672,29 +672,44 @@
           "System.ComponentModel.Annotations": "[5.0.0, )"
         }
       },
+      "steinsiek.odin.modules.companies": {
+        "type": "Project",
+        "dependencies": {
+          "Asp.Versioning.Mvc": "[8.1.1, )",
+          "Steinsiek.Odin.Modules.Companies.Shared": "[1.0.0, )",
+          "Steinsiek.Odin.Modules.Core": "[1.0.0, )"
+        }
+      },
+      "steinsiek.odin.modules.companies.shared": {
+        "type": "Project",
+        "dependencies": {
+          "System.ComponentModel.Annotations": "[5.0.0, )"
+        }
+      },
       "steinsiek.odin.modules.core": {
         "type": "Project",
         "dependencies": {
+          "Asp.Versioning.Mvc": "[8.1.1, )",
           "Microsoft.EntityFrameworkCore": "[10.0.3, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.0.3, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )",
+          "Steinsiek.Odin.Modules.Auth.Shared": "[1.0.0, )",
           "Steinsiek.Odin.Modules.Core.Shared": "[1.0.0, )"
         }
       },
       "steinsiek.odin.modules.core.shared": {
         "type": "Project"
       },
-      "steinsiek.odin.modules.products": {
+      "steinsiek.odin.modules.persons": {
         "type": "Project",
         "dependencies": {
           "Asp.Versioning.Mvc": "[8.1.1, )",
-          "Microsoft.EntityFrameworkCore": "[10.0.3, )",
+          "Steinsiek.Odin.Modules.Auth.Shared": "[1.0.0, )",
           "Steinsiek.Odin.Modules.Core": "[1.0.0, )",
-          "Steinsiek.Odin.Modules.Core.Shared": "[1.0.0, )",
-          "Steinsiek.Odin.Modules.Products.Shared": "[1.0.0, )"
+          "Steinsiek.Odin.Modules.Persons.Shared": "[1.0.0, )"
         }
       },
-      "steinsiek.odin.modules.products.shared": {
+      "steinsiek.odin.modules.persons.shared": {
         "type": "Project",
         "dependencies": {
           "System.ComponentModel.Annotations": "[5.0.0, )"

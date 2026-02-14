@@ -54,7 +54,7 @@ public sealed class AuthService : IAuthService
         }
 
         _logger.LogInformation("Login successful for {Email}", request.Email);
-        return GenerateTokenResponse(user);
+        return await GenerateTokenResponse(user, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -80,15 +80,41 @@ public sealed class AuthService : IAuthService
         await _userRepository.Add(user, cancellationToken);
         _logger.LogInformation("Registration successful for {Email}", request.Email);
 
-        return GenerateTokenResponse(user);
+        return await GenerateTokenResponse(user, cancellationToken);
     }
 
-    private LoginResponse GenerateTokenResponse(User user)
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<RoleDto>> GetAllRoles(CancellationToken cancellationToken)
+    {
+        await Task.CompletedTask;
+        return
+        [
+            new RoleDto { Id = Persistence.Configurations.RoleConfiguration.AdminRoleId, Name = OdinRoles.Admin, Description = "Full access including audit log, user management and roles" },
+            new RoleDto { Id = Persistence.Configurations.RoleConfiguration.ManagerRoleId, Name = OdinRoles.Manager, Description = "CRUD access to persons and companies" },
+            new RoleDto { Id = Persistence.Configurations.RoleConfiguration.UserRoleId, Name = OdinRoles.User, Description = "Limited CRUD access to persons and companies" },
+            new RoleDto { Id = Persistence.Configurations.RoleConfiguration.ReadOnlyRoleId, Name = OdinRoles.ReadOnly, Description = "Read-only access to all data" }
+        ];
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> AssignRole(Guid userId, Guid roleId, CancellationToken cancellationToken)
+    {
+        return await _userRepository.AssignRole(userId, roleId, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> RemoveRole(Guid userId, Guid roleId, CancellationToken cancellationToken)
+    {
+        return await _userRepository.RemoveRole(userId, roleId, cancellationToken);
+    }
+
+    private async Task<LoginResponse> GenerateTokenResponse(User user, CancellationToken cancellationToken)
     {
         var expiresAt = DateTime.UtcNow.AddHours(
-            _configuration.GetValue("Jwt:ExpirationHours", 24));
+            _configuration.GetValue(ConfigKeys.Jwt.ExpirationHours, ConfigKeys.Jwt.DefaultExpirationHours));
 
-        var token = GenerateJwtToken(user, expiresAt);
+        var roles = await _userRepository.GetRoles(user.Id, cancellationToken);
+        var token = GenerateJwtToken(user, roles, expiresAt);
 
         return new LoginResponse
         {
@@ -99,29 +125,35 @@ public sealed class AuthService : IAuthService
                 Id = user.Id,
                 Email = user.Email,
                 FirstName = user.FirstName,
-                LastName = user.LastName
+                LastName = user.LastName,
+                Roles = roles
             }
         };
     }
 
-    private string GenerateJwtToken(User user, DateTime expiresAt)
+    private string GenerateJwtToken(User user, IReadOnlyList<string> roles, DateTime expiresAt)
     {
-        var key = _configuration["Jwt:Key"]
+        var key = _configuration[ConfigKeys.Jwt.Key]
             ?? throw new InvalidOperationException("JWT Key is not configured");
-        var issuer = _configuration["Jwt:Issuer"] ?? "Steinsiek.Odin";
-        var audience = _configuration["Jwt:Audience"] ?? "Steinsiek.Odin.API";
+        var issuer = _configuration[ConfigKeys.Jwt.Issuer] ?? ConfigKeys.Jwt.DefaultIssuer;
+        var audience = _configuration[ConfigKeys.Jwt.Audience] ?? ConfigKeys.Jwt.DefaultAudience;
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
-            new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Email, user.Email),
+            new(JwtRegisteredClaimNames.GivenName, user.FirstName),
+            new(JwtRegisteredClaimNames.FamilyName, user.LastName),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         var token = new JwtSecurityToken(
             issuer: issuer,

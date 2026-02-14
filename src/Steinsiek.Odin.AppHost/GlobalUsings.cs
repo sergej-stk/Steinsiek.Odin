@@ -5,3 +5,4 @@ global using System.Threading.Tasks;
 global using Aspire.Hosting;
 global using Aspire.Hosting.ApplicationModel;
 global using Serilog;
+global using Steinsiek.Odin.Modules.Core.Shared;

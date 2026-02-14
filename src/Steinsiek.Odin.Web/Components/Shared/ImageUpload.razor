@@ -1,0 +1,68 @@
+<div class="text-center">
+    @if (!string.IsNullOrEmpty(ImageUrl))
+    {
+        <img src="@ImageUrl" alt="Image" class="rounded mb-2" style="max-width: 200px; max-height: 200px; object-fit: cover;" />
+    }
+    else
+    {
+        <div class="bg-light rounded d-flex align-items-center justify-content-center mb-2" style="width: 200px; height: 200px; margin: 0 auto;">
+            <i class="bi bi-image fs-1 text-muted"></i>
+        </div>
+    }
+    <div>
+        <InputFile OnChange="OnFileSelected" accept="image/*" class="form-control form-control-sm" style="max-width: 300px; margin: 0 auto;" />
+    </div>
+    @if (!string.IsNullOrEmpty(ImageUrl))
+    {
+        <button class="btn btn-outline-danger btn-sm mt-2" @onclick="OnRemove">
+            <i class="bi bi-trash me-1"></i> Remove
+        </button>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// The URL of the currently displayed image.
+    /// </summary>
+    [Parameter]
+    public string? ImageUrl { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the user selects a new image file.
+    /// </summary>
+    [Parameter]
+    public EventCallback<IBrowserFile> OnFileChanged { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the user removes the current image.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnRemoveImage { get; set; }
+
+    /// <summary>
+    /// The maximum allowed file size in bytes. Defaults to 5 MB.
+    /// </summary>
+    [Parameter]
+    public long MaxFileSize { get; set; } = 5 * 1024 * 1024;
+
+    /// <summary>
+    /// Handles file selection and invokes the callback if the file is within the size limit.
+    /// </summary>
+    /// <param name="e">The file change event arguments.</param>
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file.Size <= MaxFileSize)
+        {
+            await OnFileChanged.InvokeAsync(file);
+        }
+    }
+
+    /// <summary>
+    /// Invokes the remove image callback.
+    /// </summary>
+    private async Task OnRemove()
+    {
+        await OnRemoveImage.InvokeAsync();
+    }
+}

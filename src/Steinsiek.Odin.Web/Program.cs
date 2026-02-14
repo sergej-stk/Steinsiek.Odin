@@ -21,6 +21,9 @@ try
     builder.Services.AddRazorComponents()
         .AddInteractiveServerComponents();
 
+    // Localization
+    builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
     // Toast Notifications
     builder.Services.AddScoped<IToastService, ToastService>();
 
@@ -30,25 +33,33 @@ try
         sp.GetRequiredService<JwtAuthenticationStateProvider>());
     builder.Services.AddScoped<ITokenStorageService, TokenStorageService>();
     builder.Services.AddCascadingAuthenticationState();
-    builder.Services.AddAuthorizationCore();
+    builder.Services.AddAuthentication();
+    builder.Services.AddAuthorization();
+    builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, BlazorAuthorizationMiddlewareResultHandler>();
 
     // API Clients via Aspire service discovery
-    builder.Services.AddTransient<ApiAuthenticationHandler>();
-
+    // Note: Auth header is set by each client directly (not via DelegatingHandler)
+    // because IHttpClientFactory handler scopes cannot access the circuit's ProtectedSessionStorage.
     builder.Services.AddHttpClient<IAuthApiClient, AuthApiClient>(client =>
     {
         client.BaseAddress = new Uri("https+http://api");
-    }).AddHttpMessageHandler<ApiAuthenticationHandler>();
+    });
 
-    builder.Services.AddHttpClient<IProductApiClient, ProductApiClient>(client =>
+    builder.Services.AddHttpClient<IPersonApiClient, PersonApiClient>(client =>
     {
         client.BaseAddress = new Uri("https+http://api");
-    }).AddHttpMessageHandler<ApiAuthenticationHandler>();
+    });
 
-    builder.Services.AddHttpClient<ICategoryApiClient, CategoryApiClient>(client =>
+    builder.Services.AddHttpClient<ICompanyApiClient, CompanyApiClient>(client =>
     {
         client.BaseAddress = new Uri("https+http://api");
-    }).AddHttpMessageHandler<ApiAuthenticationHandler>();
+    });
+
+    builder.Services.AddHttpClient<IDashboardApiClient, DashboardApiClient>(client =>
+    {
+        client.BaseAddress = new Uri("https+http://api");
+    });
+
 
     var app = builder.Build();
 
@@ -62,6 +73,18 @@ try
     }
 
     app.UseHttpsRedirection();
+
+    // Request Localization
+    var supportedCultures = new[] { "en", "de" };
+    app.UseRequestLocalization(options =>
+    {
+        options.SetDefaultCulture("en");
+        options.AddSupportedCultures(supportedCultures);
+        options.AddSupportedUICultures(supportedCultures);
+    });
+
+    app.UseAuthentication();
+    app.UseAuthorization();
     app.MapStaticAssets();
     app.UseAntiforgery();
 

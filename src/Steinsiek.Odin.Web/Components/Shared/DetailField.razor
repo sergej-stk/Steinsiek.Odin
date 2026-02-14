@@ -1,0 +1,18 @@
+<div class="row mb-2">
+    <div class="col-sm-4 text-muted fw-medium">@Label</div>
+    <div class="col-sm-8">@(string.IsNullOrEmpty(Value) ? "\u2014" : Value)</div>
+</div>
+
+@code {
+    /// <summary>
+    /// The field label displayed on the left side.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <summary>
+    /// The field value displayed on the right side. Shows an em dash when empty.
+    /// </summary>
+    [Parameter]
+    public string? Value { get; set; }
+}

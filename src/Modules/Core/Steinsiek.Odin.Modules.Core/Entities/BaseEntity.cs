@@ -1,7 +1,7 @@
 namespace Steinsiek.Odin.Modules.Core.Entities;
 
 /// <summary>
-/// Base class for all domain entities providing common audit properties.
+/// Base class for all domain entities providing common audit and soft-delete properties.
 /// </summary>
 public abstract class BaseEntity
 {
@@ -19,4 +19,14 @@ public abstract class BaseEntity
     /// Gets or sets the last update timestamp in UTC, or null if never updated.
     /// </summary>
     public DateTime? UpdatedAt { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this entity has been soft-deleted.
+    /// </summary>
+    public bool IsDeleted { get; set; }
+
+    /// <summary>
+    /// Gets or sets the soft-delete timestamp in UTC, or null if not deleted.
+    /// </summary>
+    public DateTime? DeletedAt { get; set; }
 }

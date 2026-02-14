@@ -1,0 +1,98 @@
+@if (TotalPages > 1)
+{
+    <nav aria-label="Page navigation">
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">Showing @StartItem-@EndItem of @TotalCount</small>
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item @(CurrentPage <= 1 ? "disabled" : "")">
+                    <button class="page-link" @onclick="() => ChangePage(CurrentPage - 1)" disabled="@(CurrentPage <= 1)">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                </li>
+                @foreach (var pageNumber in GetPageNumbers())
+                {
+                    var current = pageNumber;
+                    <li class="page-item @(current == CurrentPage ? "active" : "")">
+                        <button class="page-link" @onclick="() => ChangePage(current)">@current</button>
+                    </li>
+                }
+                <li class="page-item @(CurrentPage >= TotalPages ? "disabled" : "")">
+                    <button class="page-link" @onclick="() => ChangePage(CurrentPage + 1)" disabled="@(CurrentPage >= TotalPages)">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+}
+
+@code {
+    /// <summary>
+    /// The total number of items across all pages.
+    /// </summary>
+    [Parameter]
+    public int TotalCount { get; set; }
+
+    /// <summary>
+    /// The number of items displayed per page.
+    /// </summary>
+    [Parameter]
+    public int PageSize { get; set; } = 20;
+
+    /// <summary>
+    /// The currently active page number (1-based).
+    /// </summary>
+    [Parameter]
+    public int CurrentPage { get; set; } = 1;
+
+    /// <summary>
+    /// Callback invoked when the user navigates to a different page.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> OnPageChanged { get; set; }
+
+    /// <summary>
+    /// The total number of pages calculated from total count and page size.
+    /// </summary>
+    private int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
+
+    /// <summary>
+    /// The 1-based index of the first item on the current page.
+    /// </summary>
+    private int StartItem => (CurrentPage - 1) * PageSize + 1;
+
+    /// <summary>
+    /// The 1-based index of the last item on the current page.
+    /// </summary>
+    private int EndItem => Math.Min(CurrentPage * PageSize, TotalCount);
+
+    /// <summary>
+    /// Navigates to the specified page if it is valid and different from the current page.
+    /// </summary>
+    /// <param name="page">The target page number.</param>
+    private async Task ChangePage(int page)
+    {
+        if (page >= 1 && page <= TotalPages && page != CurrentPage)
+        {
+            await OnPageChanged.InvokeAsync(page);
+        }
+    }
+
+    /// <summary>
+    /// Calculates the visible page numbers centered around the current page.
+    /// </summary>
+    /// <returns>A sequence of page numbers to display.</returns>
+    private IEnumerable<int> GetPageNumbers()
+    {
+        var start = Math.Max(1, CurrentPage - 2);
+        var end = Math.Min(TotalPages, CurrentPage + 2);
+
+        if (end - start < 4)
+        {
+            start = Math.Max(1, end - 4);
+            end = Math.Min(TotalPages, start + 4);
+        }
+
+        return Enumerable.Range(start, end - start + 1);
+    }
+}

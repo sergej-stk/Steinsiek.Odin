@@ -1,0 +1,136 @@
+@typeparam TItem
+
+<div class="card">
+    @if (ShowSearch)
+    {
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="card-title mb-0">@Title</h5>
+                </div>
+                <div class="col-auto">
+                    <SearchBar OnSearch="OnSearch" />
+                </div>
+            </div>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(Title))
+    {
+        <div class="card-header">
+            <h5 class="card-title mb-0">@Title</h5>
+        </div>
+    }
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    @HeaderTemplate
+                </tr>
+            </thead>
+            <tbody>
+                @if (Items is null)
+                {
+                    <tr>
+                        <td colspan="100" class="text-center py-4">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading...
+                        </td>
+                    </tr>
+                }
+                else if (!Items.Any())
+                {
+                    <tr>
+                        <td colspan="100" class="text-center py-4 text-muted">
+                            <i class="bi bi-inbox fs-4 d-block mb-2"></i>No data found
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var item in Items)
+                    {
+                        <tr style="cursor: pointer" @onclick="() => OnRowClick.InvokeAsync(item)">
+                            @if (RowTemplate is not null)
+                            {
+                                @RowTemplate(item)
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (TotalCount > PageSize)
+    {
+        <div class="card-footer">
+            <Pagination TotalCount="TotalCount" PageSize="PageSize" CurrentPage="CurrentPage" OnPageChanged="OnPageChanged" />
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// The collection of items to display in the grid.
+    /// </summary>
+    [Parameter]
+    public IReadOnlyList<TItem>? Items { get; set; }
+
+    /// <summary>
+    /// Template for rendering table header columns.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? HeaderTemplate { get; set; }
+
+    /// <summary>
+    /// Template for rendering each row based on the item.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<TItem>? RowTemplate { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a row is clicked, passing the associated item.
+    /// </summary>
+    [Parameter]
+    public EventCallback<TItem> OnRowClick { get; set; }
+
+    /// <summary>
+    /// The total number of items across all pages for pagination.
+    /// </summary>
+    [Parameter]
+    public int TotalCount { get; set; }
+
+    /// <summary>
+    /// The number of items displayed per page.
+    /// </summary>
+    [Parameter]
+    public int PageSize { get; set; } = 20;
+
+    /// <summary>
+    /// The currently active page number (1-based).
+    /// </summary>
+    [Parameter]
+    public int CurrentPage { get; set; } = 1;
+
+    /// <summary>
+    /// Callback invoked when the user navigates to a different page.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> OnPageChanged { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the user performs a search.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnSearch { get; set; }
+
+    /// <summary>
+    /// The title displayed in the card header.
+    /// </summary>
+    [Parameter]
+    public string? Title { get; set; }
+
+    /// <summary>
+    /// Whether to display the search bar in the header.
+    /// </summary>
+    [Parameter]
+    public bool ShowSearch { get; set; } = true;
+}

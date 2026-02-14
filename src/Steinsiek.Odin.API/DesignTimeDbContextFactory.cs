@@ -12,8 +12,10 @@ public sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<Odi
         optionsBuilder.UseNpgsql("Host=localhost;Database=odindb;Username=postgres;Password=postgres");
 
         var moduleOptions = Microsoft.Extensions.Options.Options.Create(new OdinDbContextOptions());
+        moduleOptions.Value.ModuleAssemblies.Add(typeof(Steinsiek.Odin.Modules.Core.Entities.BaseEntity).Assembly);
         moduleOptions.Value.ModuleAssemblies.Add(typeof(Steinsiek.Odin.Modules.Auth.AuthModule).Assembly);
-        moduleOptions.Value.ModuleAssemblies.Add(typeof(Steinsiek.Odin.Modules.Products.ProductsModule).Assembly);
+        moduleOptions.Value.ModuleAssemblies.Add(typeof(Steinsiek.Odin.Modules.Persons.PersonsModule).Assembly);
+        moduleOptions.Value.ModuleAssemblies.Add(typeof(Steinsiek.Odin.Modules.Companies.CompaniesModule).Assembly);
 
         return new OdinDbContext(optionsBuilder.Options, moduleOptions);
     }
