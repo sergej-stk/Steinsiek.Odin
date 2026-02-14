@@ -47,20 +47,20 @@ Each entity has an `IEntityTypeConfiguration<T>` in its module's `Persistence/Co
 - Seed data via `HasData()`
 
 ### Migrations
-- Stored in `src/Modules/Core/Steinsiek.Odin.Modules.Core/Migrations/`
+- Stored in `src/Steinsiek.Odin.API/Modules/Core/Steinsiek.Odin.Modules.Core/Migrations/`
 - Generated via `dotnet ef` CLI with the API as startup project
 - `DesignTimeDbContextFactory` in the API project provides migration tooling support
 
 ### Migration Commands
 ```bash
 # Add a new migration
-dotnet ef migrations add {MigrationName} --project src/Modules/Core/Steinsiek.Odin.Modules.Core --startup-project src/Steinsiek.Odin.API --output-dir Migrations
+dotnet ef migrations add {MigrationName} --project src/Steinsiek.Odin.API/Modules/Core/Steinsiek.Odin.Modules.Core --startup-project src/Steinsiek.Odin.API/Steinsiek.Odin.API --output-dir Migrations
 
 # Remove last migration (if not applied)
-dotnet ef migrations remove --project src/Modules/Core/Steinsiek.Odin.Modules.Core --startup-project src/Steinsiek.Odin.API
+dotnet ef migrations remove --project src/Steinsiek.Odin.API/Modules/Core/Steinsiek.Odin.Modules.Core --startup-project src/Steinsiek.Odin.API/Steinsiek.Odin.API
 
 # List migrations
-dotnet ef migrations list --project src/Modules/Core/Steinsiek.Odin.Modules.Core --startup-project src/Steinsiek.Odin.API
+dotnet ef migrations list --project src/Steinsiek.Odin.API/Modules/Core/Steinsiek.Odin.Modules.Core --startup-project src/Steinsiek.Odin.API/Steinsiek.Odin.API
 ```
 
 ### Repository Pattern with EF Core

@@ -2,21 +2,24 @@
 
 ## Module Architecture
 
-Each module follows this internal structure:
+Each module's code is split across two submodule repos:
 
+**API submodule** (`src/Steinsiek.Odin.API/Modules/{ModuleName}/`):
 ```
-Modules/{ModuleName}/
-├── {ModuleName}.slnx                          # Module-specific solution
-├── Steinsiek.Odin.Modules.{ModuleName}/       # Core Class Library
-│   ├── {ModuleName}Module.cs                  # IModule Implementation (DI Registration)
-│   ├── Controllers/                           # API Endpoints
-│   ├── Entities/                              # Domain Entities (inherit from BaseEntity)
-│   ├── Persistence/Configurations/            # IEntityTypeConfiguration<T> (Fluent API)
-│   ├── Repositories/                          # I{Name}Repository + EF Implementation
-│   └── Services/                              # I{Name}Service + Implementation
-├── Steinsiek.Odin.Modules.{ModuleName}.Shared/    # Shared Contracts
-│   └── DTOs/                                  # Request/Response Records
-└── Steinsiek.Odin.Modules.{ModuleName}.Tests/     # Unit Tests
+Steinsiek.Odin.Modules.{ModuleName}/       # Core Class Library
+├── {ModuleName}Module.cs                  # IModule Implementation (DI Registration)
+├── Controllers/                           # API Endpoints
+├── Entities/                              # Domain Entities (inherit from BaseEntity)
+├── Persistence/Configurations/            # IEntityTypeConfiguration<T> (Fluent API)
+├── Repositories/                          # I{Name}Repository + EF Implementation
+└── Services/                              # I{Name}Service + Implementation
+Steinsiek.Odin.Modules.{ModuleName}.Tests/ # Unit Tests
+```
+
+**Shared submodule** (`src/Steinsiek.Odin.Shared/`):
+```
+Steinsiek.Odin.Modules.{ModuleName}.Shared/    # Shared Contracts
+└── DTOs/                                      # Request/Response Records
 ```
 
 ### Module Responsibility Rules
@@ -65,45 +68,35 @@ public static IServiceCollection AddModules(this IServiceCollection services)
 
 ## Adding a New Module
 
-1. Create module folder and projects:
+1. Create module projects in the API submodule:
 ```bash
-cd src/Modules
+cd src/Steinsiek.Odin.API/Modules
 mkdir {Name}
 cd {Name}
 
 # Create module projects
 dotnet new classlib -n Steinsiek.Odin.Modules.{Name}
-dotnet new classlib -n Steinsiek.Odin.Modules.{Name}.Shared
 dotnet new mstest -n Steinsiek.Odin.Modules.{Name}.Tests
-
-# Create module solution
-dotnet new sln -n {Name}
-dotnet sln {Name}.slnx add Steinsiek.Odin.Modules.{Name}/Steinsiek.Odin.Modules.{Name}.csproj
-dotnet sln {Name}.slnx add Steinsiek.Odin.Modules.{Name}.Shared/Steinsiek.Odin.Modules.{Name}.Shared.csproj
-dotnet sln {Name}.slnx add Steinsiek.Odin.Modules.{Name}.Tests/Steinsiek.Odin.Modules.{Name}.Tests.csproj
 ```
 
-2. Add to main solution:
+2. Create Shared project in the Shared submodule:
+```bash
+cd src/Steinsiek.Odin.Shared
+dotnet new classlib -n Steinsiek.Odin.Modules.{Name}.Shared
+```
+
+3. Add to main solution (`Steinsiek.Odin.slnx`):
 ```bash
 cd C:\Development\Steinsiek.Odin
-dotnet sln add src/Modules/{Name}/Steinsiek.Odin.Modules.{Name}/Steinsiek.Odin.Modules.{Name}.csproj
-dotnet sln add src/Modules/{Name}/Steinsiek.Odin.Modules.{Name}.Shared/Steinsiek.Odin.Modules.{Name}.Shared.csproj
-dotnet sln add src/Modules/{Name}/Steinsiek.Odin.Modules.{Name}.Tests/Steinsiek.Odin.Modules.{Name}.Tests.csproj
+dotnet sln add src/Steinsiek.Odin.API/Modules/{Name}/Steinsiek.Odin.Modules.{Name}/Steinsiek.Odin.Modules.{Name}.csproj
+dotnet sln add src/Steinsiek.Odin.API/Modules/{Name}/Steinsiek.Odin.Modules.{Name}.Tests/Steinsiek.Odin.Modules.{Name}.Tests.csproj
+dotnet sln add src/Steinsiek.Odin.Shared/Steinsiek.Odin.Modules.{Name}.Shared/Steinsiek.Odin.Modules.{Name}.Shared.csproj
 ```
 
-3. Add project references:
+4. Add project references (paths relative to each .csproj):
 ```bash
-# Module references Core and its own Shared
-dotnet add src/Modules/{Name}/Steinsiek.Odin.Modules.{Name} reference src/Modules/Core/Steinsiek.Odin.Modules.Core
-dotnet add src/Modules/{Name}/Steinsiek.Odin.Modules.{Name} reference src/Modules/{Name}/Steinsiek.Odin.Modules.{Name}.Shared
-
-# API references both Module and Shared
-dotnet add src/Steinsiek.Odin.API reference src/Modules/{Name}/Steinsiek.Odin.Modules.{Name}
-dotnet add src/Steinsiek.Odin.API reference src/Modules/{Name}/Steinsiek.Odin.Modules.{Name}.Shared
-
-# Tests reference Module and Shared
-dotnet add src/Modules/{Name}/Steinsiek.Odin.Modules.{Name}.Tests reference src/Modules/{Name}/Steinsiek.Odin.Modules.{Name}
-dotnet add src/Modules/{Name}/Steinsiek.Odin.Modules.{Name}.Tests reference src/Modules/{Name}/Steinsiek.Odin.Modules.{Name}.Shared
+# Module references Core (within API submodule) and its own Shared (in Shared submodule)
+# Edit .csproj directly — ProjectReference paths cross submodule boundaries
 ```
 
 4. Update module `.csproj` with ASP.NET Core framework reference:
@@ -142,5 +135,5 @@ options.ModuleAssemblies.Add(typeof(Steinsiek.Odin.Modules.{Name}.{Name}Module).
 
 13. Generate migration:
 ```bash
-dotnet ef migrations add Add{Name}Module --project src/Modules/Core/Steinsiek.Odin.Modules.Core --startup-project src/Steinsiek.Odin.API --output-dir Migrations
+dotnet ef migrations add Add{Name}Module --project src/Steinsiek.Odin.API/Modules/Core/Steinsiek.Odin.Modules.Core --startup-project src/Steinsiek.Odin.API/Steinsiek.Odin.API --output-dir Migrations
 ```

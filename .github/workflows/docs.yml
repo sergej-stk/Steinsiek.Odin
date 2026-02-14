@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'src/Steinsiek.Odin.API/**'
-      - 'src/Modules/**'
+      - 'src/Steinsiek.Odin.Shared/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          submodules: recursive
 
       - uses: actions/setup-dotnet@v5
         with:
@@ -41,7 +43,7 @@ jobs:
       - name: Copy OpenAPI spec to docs
         run: |
           mkdir -p docs
-          cp src/Steinsiek.Odin.API/obj/Steinsiek.Odin.API.json docs/openapi.json
+          cp src/Steinsiek.Odin.API/Steinsiek.Odin.API/obj/Steinsiek.Odin.API.json docs/openapi.json
 
       - name: Commit updated docs
         run: |

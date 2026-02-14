@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Steinsiek.Odin.API\Steinsiek.Odin.API.csproj" />
-    <ProjectReference Include="..\Steinsiek.Odin.Web\Steinsiek.Odin.Web.csproj" />
-    <ProjectReference Include="..\Modules\Core\Steinsiek.Odin.Modules.Core.Shared\Steinsiek.Odin.Modules.Core.Shared.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\Steinsiek.Odin.API\Steinsiek.Odin.API\Steinsiek.Odin.API.csproj" />
+    <ProjectReference Include="..\Steinsiek.Odin.Web\Steinsiek.Odin.Web\Steinsiek.Odin.Web.csproj" />
+    <ProjectReference Include="..\Steinsiek.Odin.Shared\Steinsiek.Odin.Modules.Core.Shared\Steinsiek.Odin.Modules.Core.Shared.csproj" IsAspireProjectResource="false" />
   </ItemGroup>
 
   <ItemGroup>
