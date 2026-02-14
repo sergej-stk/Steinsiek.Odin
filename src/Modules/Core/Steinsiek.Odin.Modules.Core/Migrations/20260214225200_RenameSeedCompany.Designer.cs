@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Steinsiek.Odin.Modules.Core.Persistence;
@@ -11,9 +12,11 @@ using Steinsiek.Odin.Modules.Core.Persistence;
 namespace Steinsiek.Odin.Modules.Core.Migrations
 {
     [DbContext(typeof(OdinDbContext))]
-    partial class OdinDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260214225200_RenameSeedCompany")]
+    partial class RenameSeedCompany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

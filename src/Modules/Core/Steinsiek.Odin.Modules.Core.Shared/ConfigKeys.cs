@@ -38,12 +38,12 @@ public static class ConfigKeys
         /// <summary>
         /// Default JWT issuer value when not configured.
         /// </summary>
-        public const string DefaultIssuer = "Steinsiek.Odin";
+        public const string DefaultIssuer = AppInfo.ProductName;
 
         /// <summary>
         /// Default JWT audience value when not configured.
         /// </summary>
-        public const string DefaultAudience = "Steinsiek.Odin.API";
+        public const string DefaultAudience = AppInfo.ProductName + ".API";
     }
 
     /// <summary>

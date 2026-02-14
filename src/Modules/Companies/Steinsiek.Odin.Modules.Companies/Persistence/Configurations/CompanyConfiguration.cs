@@ -59,10 +59,10 @@ public sealed class CompanyConfiguration : IEntityTypeConfiguration<Company>
             new Company
             {
                 Id = Guid.Parse("33333333-0001-0001-0001-000000000002"),
-                Name = "Odin Consulting Ltd",
+                Name = "Steinsiek Consulting Ltd",
                 LegalFormId = Guid.Parse("00000080-0001-0001-0001-000000000004"),
                 IndustryId = Guid.Parse("00000070-0001-0001-0001-000000000003"),
-                Website = "https://odin-consulting.com",
+                Website = "https://steinsiek-consulting.com",
                 FoundingDate = new DateTime(2018, 6, 15, 0, 0, 0, DateTimeKind.Utc),
                 CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             });

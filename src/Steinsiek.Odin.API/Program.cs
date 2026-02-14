@@ -2,7 +2,7 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
-Log.Information("Starting Steinsiek.Odin API...");
+Log.Information($"Starting {AppInfo.ProductName} API...");
 
 try
 {
@@ -35,7 +35,7 @@ try
     {
         options.AddDocumentTransformer((document, context, cancellationToken) =>
         {
-            document.Info.Title = "Steinsiek.Odin API";
+            document.Info.Title = $"{AppInfo.ProductName} API";
             document.Info.Version = "v1";
             document.Info.Description = "Employee Management REST API - Version 1";
 
@@ -125,7 +125,7 @@ try
         app.MapOpenApi("/openapi/{documentName}/openapi.json");
         app.MapScalarApiReference(options =>
         {
-            options.Title = "Steinsiek.Odin API";
+            options.Title = $"{AppInfo.ProductName} API";
             options.Theme = ScalarTheme.Purple;
             options.Favicon = "/images/logo.svg";
             options.AddDocument("v1", "API v1", "/openapi/v1/openapi.json");
@@ -142,7 +142,7 @@ try
     // Aspire Default Endpoints
     app.MapDefaultEndpoints();
 
-    Log.Information("Steinsiek.Odin API started successfully");
+    Log.Information($"{AppInfo.ProductName} API started successfully");
     app.Run();
 }
 catch (Exception ex)
