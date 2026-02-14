@@ -12,7 +12,8 @@ build/
 
 .vscode/
 
-.claude/
+.claude/*
+!.claude/rules/
 
 .idea/
 *.sln.iml
