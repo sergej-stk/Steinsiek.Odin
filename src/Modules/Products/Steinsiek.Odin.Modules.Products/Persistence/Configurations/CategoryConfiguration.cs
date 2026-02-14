@@ -5,12 +5,12 @@ namespace Steinsiek.Odin.Modules.Products.Persistence.Configurations;
 /// </summary>
 public sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
 {
-    private static readonly Guid ElectronicsId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-    private static readonly Guid ClothingId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
-    private static readonly Guid BooksId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
-    private static readonly Guid HouseholdId = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
+    private static readonly Guid _electronicsId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+    private static readonly Guid _clothingId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+    private static readonly Guid _booksId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+    private static readonly Guid _householdId = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
 
-    private static readonly DateTime SeedDate = new(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime _seedDate = new(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Category> builder)
@@ -32,10 +32,10 @@ public sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasData(
-            new Category { Id = ElectronicsId, Name = "Electronics", Description = "Smartphones, laptops and more", CreatedAt = SeedDate },
-            new Category { Id = ClothingId, Name = "Clothing", Description = "Fashion for every occasion", CreatedAt = SeedDate },
-            new Category { Id = BooksId, Name = "Books", Description = "Non-fiction and fiction", CreatedAt = SeedDate },
-            new Category { Id = HouseholdId, Name = "Household", Description = "Everything for your home", CreatedAt = SeedDate }
+            new Category { Id = _electronicsId, Name = "Electronics", Description = "Smartphones, laptops and more", CreatedAt = _seedDate },
+            new Category { Id = _clothingId, Name = "Clothing", Description = "Fashion for every occasion", CreatedAt = _seedDate },
+            new Category { Id = _booksId, Name = "Books", Description = "Non-fiction and fiction", CreatedAt = _seedDate },
+            new Category { Id = _householdId, Name = "Household", Description = "Everything for your home", CreatedAt = _seedDate }
         );
     }
 }

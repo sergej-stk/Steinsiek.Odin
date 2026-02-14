@@ -5,12 +5,12 @@ namespace Steinsiek.Odin.Modules.Products.Persistence.Configurations;
 /// </summary>
 public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
 {
-    private static readonly Guid ElectronicsId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-    private static readonly Guid ClothingId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
-    private static readonly Guid BooksId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
-    private static readonly Guid HouseholdId = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
+    private static readonly Guid _electronicsId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+    private static readonly Guid _clothingId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+    private static readonly Guid _booksId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+    private static readonly Guid _householdId = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
 
-    private static readonly DateTime SeedDate = new(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime _seedDate = new(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Product> builder)
@@ -39,9 +39,9 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
                 Description = "The latest iPhone with titanium case",
                 Price = 1199.00m,
                 Stock = 50,
-                CategoryId = ElectronicsId,
+                CategoryId = _electronicsId,
                 ImageUrl = "/images/products/iphone-15-pro.jpg",
-                CreatedAt = SeedDate
+                CreatedAt = _seedDate
             },
             new Product
             {
@@ -50,9 +50,9 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
                 Description = "Lightweight notebook with Apple M3 chip",
                 Price = 1299.00m,
                 Stock = 30,
-                CategoryId = ElectronicsId,
+                CategoryId = _electronicsId,
                 ImageUrl = "/images/products/macbook-air-m3.jpg",
-                CreatedAt = SeedDate
+                CreatedAt = _seedDate
             },
             new Product
             {
@@ -61,9 +61,9 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
                 Description = "Flagship smartphone with S Pen",
                 Price = 1449.00m,
                 Stock = 25,
-                CategoryId = ElectronicsId,
+                CategoryId = _electronicsId,
                 ImageUrl = "/images/products/galaxy-s24-ultra.jpg",
-                CreatedAt = SeedDate
+                CreatedAt = _seedDate
             },
             new Product
             {
@@ -72,9 +72,9 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
                 Description = "Comfortable hoodie made of organic cotton",
                 Price = 79.99m,
                 Stock = 100,
-                CategoryId = ClothingId,
+                CategoryId = _clothingId,
                 ImageUrl = "/images/products/premium-hoodie.jpg",
-                CreatedAt = SeedDate
+                CreatedAt = _seedDate
             },
             new Product
             {
@@ -83,9 +83,9 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
                 Description = "High-quality denim jeans",
                 Price = 129.99m,
                 Stock = 75,
-                CategoryId = ClothingId,
+                CategoryId = _clothingId,
                 ImageUrl = "/images/products/designer-jeans.jpg",
-                CreatedAt = SeedDate
+                CreatedAt = _seedDate
             },
             new Product
             {
@@ -94,9 +94,9 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
                 Description = "Robert C. Martin - A Handbook of Agile Software Craftsmanship",
                 Price = 39.99m,
                 Stock = 200,
-                CategoryId = BooksId,
+                CategoryId = _booksId,
                 ImageUrl = "/images/products/clean-code.jpg",
-                CreatedAt = SeedDate
+                CreatedAt = _seedDate
             },
             new Product
             {
@@ -105,9 +105,9 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
                 Description = "Gang of Four - Elements of Reusable Object-Oriented Software",
                 Price = 49.99m,
                 Stock = 150,
-                CategoryId = BooksId,
+                CategoryId = _booksId,
                 ImageUrl = "/images/products/design-patterns.jpg",
-                CreatedAt = SeedDate
+                CreatedAt = _seedDate
             },
             new Product
             {
@@ -116,9 +116,9 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
                 Description = "Fully automatic espresso machine",
                 Price = 599.00m,
                 Stock = 20,
-                CategoryId = HouseholdId,
+                CategoryId = _householdId,
                 ImageUrl = "/images/products/coffee-machine-deluxe.jpg",
-                CreatedAt = SeedDate
+                CreatedAt = _seedDate
             }
         );
     }
