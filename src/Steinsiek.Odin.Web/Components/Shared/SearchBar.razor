@@ -1,6 +1,6 @@
 @implements IDisposable
 
-<div class="input-group" style="max-width: 300px;">
+<div class="input-group">
     <span class="input-group-text"><i class="bi bi-search"></i></span>
     <input type="text" class="form-control" placeholder="Search..." @bind="SearchTerm" @bind:event="oninput" @onkeyup="OnKeyUp" />
     @if (!string.IsNullOrEmpty(SearchTerm))

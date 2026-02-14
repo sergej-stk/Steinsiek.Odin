@@ -60,6 +60,11 @@ try
         client.BaseAddress = new Uri("https+http://api");
     });
 
+    builder.Services.AddHttpClient<ILookupApiClient, LookupApiClient>(client =>
+    {
+        client.BaseAddress = new Uri("https+http://api");
+    });
+
 
     var app = builder.Build();
 

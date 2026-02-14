@@ -24,7 +24,17 @@
         <table class="table table-hover mb-0">
             <thead>
                 <tr>
+                    @if (ShowCheckboxes)
+                    {
+                        <th class="col-checkbox" style="width: 40px;">
+                            <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="ToggleSelectAll" />
+                        </th>
+                    }
                     @HeaderTemplate
+                    @if (ShowRowActions)
+                    {
+                        <th class="col-actions text-end" style="width: 100px;">Actions</th>
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -48,10 +58,34 @@
                 {
                     @foreach (var item in Items)
                     {
-                        <tr style="cursor: pointer" @onclick="() => OnRowClick.InvokeAsync(item)">
+                        var isSelected = ShowCheckboxes && SelectedItems is not null && ItemKey is not null && SelectedItems.Contains(ItemKey(item));
+                        <tr class="@(isSelected ? "table-active" : "")" style="cursor: pointer" @onclick="() => OnRowClick.InvokeAsync(item)">
+                            @if (ShowCheckboxes)
+                            {
+                                <td class="col-checkbox" @onclick:stopPropagation="true">
+                                    <input type="checkbox" class="form-check-input" checked="@isSelected" @onchange="() => ToggleItem(item)" />
+                                </td>
+                            }
                             @if (RowTemplate is not null)
                             {
                                 @RowTemplate(item)
+                            }
+                            @if (ShowRowActions)
+                            {
+                                <td class="col-actions text-end" @onclick:stopPropagation="true">
+                                    <AuthorizeView Roles="@OdinRoles.AdminOrManager">
+                                        <Authorized>
+                                            <div class="d-flex gap-1 justify-content-end">
+                                                <button class="btn btn-sm btn-outline-secondary" title="Edit" @onclick="() => OnEditItem.InvokeAsync(item)">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" title="Delete" @onclick="() => OnDeleteItem.InvokeAsync(item)">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </Authorized>
+                                    </AuthorizeView>
+                                </td>
                             }
                         </tr>
                     }
@@ -59,10 +93,13 @@
             </tbody>
         </table>
     </div>
-    @if (TotalCount > PageSize)
+    @if (TotalCount > 0)
     {
         <div class="card-footer">
-            <Pagination TotalCount="TotalCount" PageSize="PageSize" CurrentPage="CurrentPage" OnPageChanged="OnPageChanged" />
+            <Pagination TotalCount="TotalCount" PageSize="PageSize" CurrentPage="CurrentPage"
+                        OnPageChanged="OnPageChanged" ShowPageSizeSelector="ShowPageSizeSelector"
+                        PageSizeOptions="PageSizeOptions" OnPageSizeChanged="OnPageSizeChanged"
+                        SelectedCount="SelectedCount" />
         </div>
     }
 </div>
@@ -102,7 +139,7 @@
     /// The number of items displayed per page.
     /// </summary>
     [Parameter]
-    public int PageSize { get; set; } = 20;
+    public int PageSize { get; set; } = 25;
 
     /// <summary>
     /// The currently active page number (1-based).
@@ -133,4 +170,128 @@
     /// </summary>
     [Parameter]
     public bool ShowSearch { get; set; } = true;
+
+    /// <summary>
+    /// Whether to show checkbox column for multi-select.
+    /// </summary>
+    [Parameter]
+    public bool ShowCheckboxes { get; set; }
+
+    /// <summary>
+    /// The set of selected item keys.
+    /// </summary>
+    [Parameter]
+    public HashSet<Guid>? SelectedItems { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the selection changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<HashSet<Guid>> SelectedItemsChanged { get; set; }
+
+    /// <summary>
+    /// Function to extract a unique Guid key from an item.
+    /// </summary>
+    [Parameter]
+    public Func<TItem, Guid>? ItemKey { get; set; }
+
+    /// <summary>
+    /// Whether to show row action buttons (edit/delete).
+    /// </summary>
+    [Parameter]
+    public bool ShowRowActions { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the edit row action is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback<TItem> OnEditItem { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the delete row action is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback<TItem> OnDeleteItem { get; set; }
+
+    /// <summary>
+    /// Whether to show the page size selector.
+    /// </summary>
+    [Parameter]
+    public bool ShowPageSizeSelector { get; set; }
+
+    /// <summary>
+    /// The available page size options.
+    /// </summary>
+    [Parameter]
+    public int[] PageSizeOptions { get; set; } = [25, 50, 100];
+
+    /// <summary>
+    /// Callback invoked when the page size changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> OnPageSizeChanged { get; set; }
+
+    /// <summary>
+    /// The number of currently selected items to display in the pagination area.
+    /// </summary>
+    [Parameter]
+    public int SelectedCount { get; set; }
+
+    /// <summary>
+    /// Whether all items on the current page are selected.
+    /// </summary>
+    private bool IsAllSelected =>
+        Items is not null && Items.Count > 0 && SelectedItems is not null && ItemKey is not null
+        && Items.All(item => SelectedItems.Contains(ItemKey(item)));
+
+    /// <summary>
+    /// Toggles selection of all items on the current page.
+    /// </summary>
+    private async Task ToggleSelectAll()
+    {
+        if (Items is null || ItemKey is null)
+        {
+            return;
+        }
+
+        var newSelection = new HashSet<Guid>(SelectedItems ?? []);
+
+        if (IsAllSelected)
+        {
+            foreach (var item in Items)
+            {
+                newSelection.Remove(ItemKey(item));
+            }
+        }
+        else
+        {
+            foreach (var item in Items)
+            {
+                newSelection.Add(ItemKey(item));
+            }
+        }
+
+        await SelectedItemsChanged.InvokeAsync(newSelection);
+    }
+
+    /// <summary>
+    /// Toggles selection of a single item.
+    /// </summary>
+    private async Task ToggleItem(TItem item)
+    {
+        if (ItemKey is null)
+        {
+            return;
+        }
+
+        var key = ItemKey(item);
+        var newSelection = new HashSet<Guid>(SelectedItems ?? []);
+
+        if (!newSelection.Add(key))
+        {
+            newSelection.Remove(key);
+        }
+
+        await SelectedItemsChanged.InvokeAsync(newSelection);
+    }
 }
