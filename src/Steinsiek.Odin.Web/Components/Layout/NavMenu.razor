@@ -9,13 +9,13 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
-                        <i class="bi bi-speedometer2 me-1"></i> Dashboard
-                    </NavLink>
-                </li>
                 <AuthorizeView>
                     <Authorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                            </NavLink>
+                        </li>
                         <li class="nav-item">
                             <NavLink class="nav-link" href="/persons" Match="NavLinkMatch.Prefix">
                                 <i class="bi bi-people me-1"></i> Persons
