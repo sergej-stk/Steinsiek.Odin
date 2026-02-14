@@ -3,48 +3,57 @@
 @inject ICompanyApiClient CompanyApi
 @inject NavigationManager Navigation
 @inject IToastService Toast
+@inject IJSRuntime JS
 
 <PageTitle>Companies - Odin</PageTitle>
 
-<PageHeader Title="Companies" Subtitle="Manage companies, locations and assignments">
-    <Actions>
-        <AuthorizeView Roles="Admin,Manager">
-            <Authorized>
-                <a href="/companies/create" class="btn btn-primary btn-sm">
-                    <i class="bi bi-plus-lg me-1"></i> Create Company
-                </a>
-            </Authorized>
-        </AuthorizeView>
-    </Actions>
-</PageHeader>
+<PageHeader Title="Companies" Subtitle="Manage companies, locations and assignments" />
 
-<ErrorAlert Message="@_errorMessage" Visible="@_showError" VisibleChanged="@(v => _showError = v)" />
+<ListToolbar SelectedCount="_selectedItems.Count"
+             ActiveFilterCount="_activeFilterCount"
+             OnNew="HandleNew"
+             OnEdit="HandleEdit"
+             OnDelete="HandleDeleteSelected"
+             OnPrint="HandlePrint"
+             OnFilterToggle="() => _showFilterPanel = !_showFilterPanel"
+             OnSearch="HandleSearch" />
+
+<FilterChips Filters="_filterChips" OnRemove="HandleFilterRemove" OnClearAll="HandleFilterClearAll" />
 
 <DataGrid TItem="CompanyDto"
-          Items="@_companies"
-          Title="All Companies"
-          ShowSearch="true"
-          OnSearch="HandleSearch"
+          Items="_companies"
+          TotalCount="_totalCount"
+          PageSize="_pageSize"
+          CurrentPage="_currentPage"
+          ShowSearch="false"
+          ShowCheckboxes="true"
+          ShowRowActions="true"
+          ShowPageSizeSelector="true"
+          SelectedItems="_selectedItems"
+          SelectedItemsChanged="v => _selectedItems = v"
+          ItemKey="c => c.Id"
           OnRowClick="HandleRowClick"
-          TotalCount="@_totalCount"
-          CurrentPage="@_currentPage"
-          OnPageChanged="HandlePageChanged">
+          OnPageChanged="HandlePageChanged"
+          OnPageSizeChanged="HandlePageSizeChanged"
+          OnEditItem="HandleEditItem"
+          OnDeleteItem="HandleDeleteItem"
+          SelectedCount="_selectedItems.Count">
     <HeaderTemplate>
-        <th>Name</th>
+        <SortableHeader Title="Name" SortKey="@nameof(CompanyDto.Name)" CurrentSort="@_sort" CurrentSortDir="@_sortDir" OnSort="HandleSort" />
         <th>Industry</th>
-        <th>Location</th>
-        <th>Employees</th>
+        <SortableHeader Title="City" SortKey="@nameof(CompanyDto.City)" CurrentSort="@_sort" CurrentSortDir="@_sortDir" OnSort="HandleSort" />
+        <SortableHeader Title="Employees" SortKey="@nameof(CompanyDto.EmployeeCount)" CurrentSort="@_sort" CurrentSortDir="@_sortDir" OnSort="HandleSort" />
         <th>Website</th>
     </HeaderTemplate>
-    <RowTemplate>
-        <td class="fw-medium">@context.Name</td>
-        <td>@(context.Industry ?? "\u2014")</td>
-        <td>@(context.City ?? "\u2014")</td>
-        <td>@(context.EmployeeCount?.ToString() ?? "\u2014")</td>
+    <RowTemplate Context="company">
+        <td class="fw-medium">@company.Name</td>
+        <td>@(company.Industry ?? "\u2014")</td>
+        <td>@(company.City ?? "\u2014")</td>
+        <td>@(company.EmployeeCount?.ToString() ?? "\u2014")</td>
         <td>
-            @if (!string.IsNullOrEmpty(context.Website))
+            @if (!string.IsNullOrEmpty(company.Website))
             {
-                <span class="text-truncate d-inline-block" style="max-width: 200px;">@context.Website</span>
+                <span class="text-truncate d-inline-block" style="max-width: 200px;">@company.Website</span>
             }
             else
             {
@@ -54,58 +63,131 @@
     </RowTemplate>
 </DataGrid>
 
+<CompanyFilterPanel @bind-Visible="_showFilterPanel" Filter="_filter" OnApply="HandleFilterApply" />
+
+<ConfirmDialog Visible="_showDeleteConfirm"
+               Title="Confirm Delete"
+               ContentText="@_deleteConfirmText"
+               ButtonText="Delete"
+               OnConfirm="HandleDeleteConfirmed"
+               OnCancel="() => _showDeleteConfirm = false" />
+
 @code {
-    /// <summary>
-    /// The list of companies to display.
-    /// </summary>
     private IReadOnlyList<CompanyDto>? _companies;
-
-    /// <summary>
-    /// The total number of companies for pagination.
-    /// </summary>
     private int _totalCount;
-
-    /// <summary>
-    /// The current page number.
-    /// </summary>
     private int _currentPage = 1;
+    private int _pageSize = 25;
+    private string? _sort;
+    private SortDirection? _sortDir;
+    private string? _searchTerm;
+    private CompanyFilterQuery _filter = new();
+    private HashSet<Guid> _selectedItems = [];
+    private bool _showFilterPanel;
+    private bool _showDeleteConfirm;
+    private string _deleteConfirmText = "";
+    private IReadOnlyList<Guid>? _pendingDeleteIds;
+    private int _activeFilterCount;
+    private IReadOnlyList<FilterChipModel> _filterChips = [];
 
     /// <summary>
-    /// The current search term.
+    /// The query parameter for the current page.
     /// </summary>
-    private string _searchTerm = "";
+    [SupplyParameterFromQuery(Name = "page")]
+    public int? QueryPage { get; set; }
 
     /// <summary>
-    /// The error message to display.
+    /// The query parameter for the page size.
     /// </summary>
-    private string? _errorMessage;
+    [SupplyParameterFromQuery(Name = "pageSize")]
+    public int? QueryPageSize { get; set; }
 
     /// <summary>
-    /// Whether the error alert is visible.
+    /// The query parameter for the sort column.
     /// </summary>
-    private bool _showError;
+    [SupplyParameterFromQuery(Name = "sort")]
+    public string? QuerySort { get; set; }
+
+    /// <summary>
+    /// The query parameter for the sort direction.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "sortDir")]
+    public string? QuerySortDir { get; set; }
+
+    /// <summary>
+    /// The query parameter for the search term.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "q")]
+    public string? QueryQ { get; set; }
+
+    /// <summary>
+    /// The query parameter for the city filter.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "city")]
+    public string? QueryCity { get; set; }
+
+    /// <summary>
+    /// The query parameter for the industry filter.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "industryId")]
+    public Guid? QueryIndustryId { get; set; }
+
+    /// <summary>
+    /// The query parameter for the legal form filter.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "legalFormId")]
+    public Guid? QueryLegalFormId { get; set; }
+
+    /// <summary>
+    /// The query parameter for the minimum employee count filter.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "employeeCountMin")]
+    public int? QueryEmployeeCountMin { get; set; }
+
+    /// <summary>
+    /// The query parameter for the maximum employee count filter.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "employeeCountMax")]
+    public int? QueryEmployeeCountMax { get; set; }
+
+    /// <summary>
+    /// The query parameter for the founding date from filter.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "foundingDateFrom")]
+    public DateTime? QueryFoundingDateFrom { get; set; }
+
+    /// <summary>
+    /// The query parameter for the founding date to filter.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "foundingDateTo")]
+    public DateTime? QueryFoundingDateTo { get; set; }
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
+        _currentPage = QueryPage ?? 1;
+        _pageSize = QueryPageSize ?? 25;
+        _sort = QuerySort;
+        _sortDir = Enum.TryParse<SortDirection>(QuerySortDir, true, out var sd) ? sd : null;
+        _searchTerm = QueryQ;
+
+        _filter = new CompanyFilterQuery
+        {
+            City = QueryCity,
+            IndustryId = QueryIndustryId,
+            LegalFormId = QueryLegalFormId,
+            EmployeeCountMin = QueryEmployeeCountMin,
+            EmployeeCountMax = QueryEmployeeCountMax,
+            FoundingDateFrom = QueryFoundingDateFrom,
+            FoundingDateTo = QueryFoundingDateTo
+        };
+
+        UpdateFilterChips();
         await LoadCompanies();
     }
 
-    /// <summary>
-    /// Loads companies from the API, optionally filtered by search term.
-    /// </summary>
     private async Task LoadCompanies()
     {
-        ListResult<CompanyDto>? result;
-
-        if (string.IsNullOrWhiteSpace(_searchTerm))
-        {
-            result = await CompanyApi.GetAll(CancellationToken.None);
-        }
-        else
-        {
-            result = await CompanyApi.Search(_searchTerm, CancellationToken.None);
-        }
+        var result = await CompanyApi.GetPaged(_currentPage, _pageSize, _sort, _sortDir, _searchTerm, _filter, CancellationToken.None);
 
         if (result is not null)
         {
@@ -116,38 +198,216 @@
         {
             _companies = [];
             _totalCount = 0;
-            _errorMessage = "Failed to load companies. Please try again later.";
-            _showError = true;
+            Toast.Show("Failed to load companies.", ToastLevel.Error);
         }
     }
 
-    /// <summary>
-    /// Handles the search callback from the DataGrid.
-    /// </summary>
-    /// <param name="searchTerm">The search term entered by the user.</param>
+    private void UpdateUrl()
+    {
+        var queryParams = new Dictionary<string, object?>
+        {
+            ["page"] = _currentPage > 1 ? _currentPage : null,
+            ["pageSize"] = _pageSize != 25 ? _pageSize : null,
+            ["sort"] = _sort,
+            ["sortDir"] = _sortDir?.ToString(),
+            ["q"] = string.IsNullOrWhiteSpace(_searchTerm) ? null : _searchTerm,
+            ["city"] = _filter.City,
+            ["industryId"] = _filter.IndustryId,
+            ["legalFormId"] = _filter.LegalFormId,
+            ["employeeCountMin"] = _filter.EmployeeCountMin,
+            ["employeeCountMax"] = _filter.EmployeeCountMax,
+            ["foundingDateFrom"] = _filter.FoundingDateFrom,
+            ["foundingDateTo"] = _filter.FoundingDateTo
+        };
+
+        var uri = Navigation.GetUriWithQueryParameters(queryParams);
+        Navigation.NavigateTo(uri, replace: true);
+    }
+
+    private void UpdateFilterChips()
+    {
+        var chips = new List<FilterChipModel>();
+
+        if (!string.IsNullOrWhiteSpace(_filter.City))
+        {
+            chips.Add(new FilterChipModel { Key = "city", Label = "City", Value = _filter.City });
+        }
+
+        if (_filter.IndustryId.HasValue)
+        {
+            chips.Add(new FilterChipModel { Key = "industryId", Label = "Industry", Value = _filter.IndustryId.Value.ToString()[..8] });
+        }
+
+        if (_filter.LegalFormId.HasValue)
+        {
+            chips.Add(new FilterChipModel { Key = "legalFormId", Label = "Legal Form", Value = _filter.LegalFormId.Value.ToString()[..8] });
+        }
+
+        if (_filter.EmployeeCountMin.HasValue)
+        {
+            chips.Add(new FilterChipModel { Key = "employeeCountMin", Label = "Employees min", Value = _filter.EmployeeCountMin.Value.ToString() });
+        }
+
+        if (_filter.EmployeeCountMax.HasValue)
+        {
+            chips.Add(new FilterChipModel { Key = "employeeCountMax", Label = "Employees max", Value = _filter.EmployeeCountMax.Value.ToString() });
+        }
+
+        if (_filter.FoundingDateFrom.HasValue)
+        {
+            chips.Add(new FilterChipModel { Key = "foundingDateFrom", Label = "Founded from", Value = _filter.FoundingDateFrom.Value.ToString("d") });
+        }
+
+        if (_filter.FoundingDateTo.HasValue)
+        {
+            chips.Add(new FilterChipModel { Key = "foundingDateTo", Label = "Founded to", Value = _filter.FoundingDateTo.Value.ToString("d") });
+        }
+
+        _filterChips = chips;
+        _activeFilterCount = chips.Count;
+    }
+
     private async Task HandleSearch(string searchTerm)
     {
         _searchTerm = searchTerm;
         _currentPage = 1;
+        _selectedItems = [];
+        UpdateUrl();
         await LoadCompanies();
     }
 
-    /// <summary>
-    /// Handles row click by navigating to the company detail page.
-    /// </summary>
-    /// <param name="company">The clicked company.</param>
+    private async Task HandlePageChanged(int page)
+    {
+        _currentPage = page;
+        _selectedItems = [];
+        UpdateUrl();
+        await LoadCompanies();
+    }
+
+    private async Task HandlePageSizeChanged(int pageSize)
+    {
+        _pageSize = pageSize;
+        _currentPage = 1;
+        _selectedItems = [];
+        UpdateUrl();
+        await LoadCompanies();
+    }
+
+    private async Task HandleSort((string SortKey, SortDirection? SortDir) args)
+    {
+        _sort = args.SortDir.HasValue ? args.SortKey : null;
+        _sortDir = args.SortDir;
+        _currentPage = 1;
+        UpdateUrl();
+        await LoadCompanies();
+    }
+
+    private async Task HandleFilterApply(CompanyFilterQuery filter)
+    {
+        _filter = filter;
+        _currentPage = 1;
+        _selectedItems = [];
+        UpdateFilterChips();
+        UpdateUrl();
+        await LoadCompanies();
+    }
+
+    private async Task HandleFilterRemove(string key)
+    {
+        _filter = key switch
+        {
+            "city" => _filter with { City = null },
+            "industryId" => _filter with { IndustryId = null },
+            "legalFormId" => _filter with { LegalFormId = null },
+            "employeeCountMin" => _filter with { EmployeeCountMin = null },
+            "employeeCountMax" => _filter with { EmployeeCountMax = null },
+            "foundingDateFrom" => _filter with { FoundingDateFrom = null },
+            "foundingDateTo" => _filter with { FoundingDateTo = null },
+            _ => _filter
+        };
+
+        _currentPage = 1;
+        UpdateFilterChips();
+        UpdateUrl();
+        await LoadCompanies();
+    }
+
+    private async Task HandleFilterClearAll()
+    {
+        _filter = new CompanyFilterQuery();
+        _currentPage = 1;
+        UpdateFilterChips();
+        UpdateUrl();
+        await LoadCompanies();
+    }
+
     private void HandleRowClick(CompanyDto company)
     {
         Navigation.NavigateTo($"/companies/{company.Id}");
     }
 
-    /// <summary>
-    /// Handles page change events.
-    /// </summary>
-    /// <param name="page">The target page number.</param>
-    private async Task HandlePageChanged(int page)
+    private void HandleNew()
     {
-        _currentPage = page;
-        await LoadCompanies();
+        Navigation.NavigateTo("/companies/create");
+    }
+
+    private void HandleEdit()
+    {
+        if (_selectedItems.Count == 1)
+        {
+            Navigation.NavigateTo($"/companies/{_selectedItems.First()}/edit");
+        }
+    }
+
+    private void HandleEditItem(CompanyDto company)
+    {
+        Navigation.NavigateTo($"/companies/{company.Id}/edit");
+    }
+
+    private void HandleDeleteItem(CompanyDto company)
+    {
+        _pendingDeleteIds = [company.Id];
+        _deleteConfirmText = $"Are you sure you want to delete {company.Name}?";
+        _showDeleteConfirm = true;
+    }
+
+    private void HandleDeleteSelected()
+    {
+        if (_selectedItems.Count == 0)
+        {
+            return;
+        }
+
+        _pendingDeleteIds = _selectedItems.ToList();
+        _deleteConfirmText = $"Are you sure you want to delete {_selectedItems.Count} company/companies?";
+        _showDeleteConfirm = true;
+    }
+
+    private async Task HandleDeleteConfirmed()
+    {
+        _showDeleteConfirm = false;
+        if (_pendingDeleteIds is null || _pendingDeleteIds.Count == 0)
+        {
+            return;
+        }
+
+        var deleted = await CompanyApi.DeleteMany(_pendingDeleteIds, CancellationToken.None);
+        if (deleted > 0)
+        {
+            Toast.Show($"Successfully deleted {deleted} company/companies.", ToastLevel.Success);
+            _selectedItems = [];
+            await LoadCompanies();
+        }
+        else
+        {
+            Toast.Show("Failed to delete companies.", ToastLevel.Error);
+        }
+
+        _pendingDeleteIds = null;
+    }
+
+    private async Task HandlePrint()
+    {
+        await JS.InvokeVoidAsync("window.print");
     }
 }

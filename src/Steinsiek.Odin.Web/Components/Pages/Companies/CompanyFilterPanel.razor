@@ -1,0 +1,139 @@
+@inject ILookupApiClient LookupApi
+
+@if (Visible)
+{
+    <div class="offcanvas-backdrop fade show" @onclick="Close"></div>
+    <div class="offcanvas offcanvas-end show" tabindex="-1">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Filter Companies</h5>
+            <button type="button" class="btn-close" @onclick="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <LookupSelect Label="Industry" Items="_industries" Value="_industryId" ValueChanged="v => _industryId = v" />
+            <LookupSelect Label="Legal Form" Items="_legalForms" Value="_legalFormId" ValueChanged="v => _legalFormId = v" />
+
+            <div class="mb-3">
+                <label class="form-label">City</label>
+                <input type="text" class="form-control" @bind="_city" placeholder="Filter by city..." />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Employee count (min)</label>
+                <input type="number" class="form-control" @bind="_employeeCountMin" min="0" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Employee count (max)</label>
+                <input type="number" class="form-control" @bind="_employeeCountMax" min="0" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Founding date from</label>
+                <input type="date" class="form-control" @bind="_foundingDateFrom" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Founding date to</label>
+                <input type="date" class="form-control" @bind="_foundingDateTo" />
+            </div>
+        </div>
+        <div class="offcanvas-footer p-3 border-top d-flex gap-2">
+            <button class="btn btn-primary flex-fill" @onclick="Apply">Apply</button>
+            <button class="btn btn-outline-secondary flex-fill" @onclick="ClearAll">Clear all</button>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Whether the filter panel is visible.
+    /// </summary>
+    [Parameter]
+    public bool Visible { get; set; }
+
+    /// <summary>
+    /// Callback when the panel visibility changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<bool> VisibleChanged { get; set; }
+
+    /// <summary>
+    /// The current filter values.
+    /// </summary>
+    [Parameter]
+    public CompanyFilterQuery? Filter { get; set; }
+
+    /// <summary>
+    /// Callback when filters are applied.
+    /// </summary>
+    [Parameter]
+    public EventCallback<CompanyFilterQuery> OnApply { get; set; }
+
+    private IReadOnlyList<LookupDto>? _industries;
+    private IReadOnlyList<LookupDto>? _legalForms;
+
+    private Guid? _industryId;
+    private Guid? _legalFormId;
+    private string? _city;
+    private int? _employeeCountMin;
+    private int? _employeeCountMax;
+    private DateTime? _foundingDateFrom;
+    private DateTime? _foundingDateTo;
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        var cts = CancellationToken.None;
+        _industries = await LookupApi.GetByType("industries", cts);
+        _legalForms = await LookupApi.GetByType("legalforms", cts);
+    }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        if (Filter is not null)
+        {
+            _industryId = Filter.IndustryId;
+            _legalFormId = Filter.LegalFormId;
+            _city = Filter.City;
+            _employeeCountMin = Filter.EmployeeCountMin;
+            _employeeCountMax = Filter.EmployeeCountMax;
+            _foundingDateFrom = Filter.FoundingDateFrom;
+            _foundingDateTo = Filter.FoundingDateTo;
+        }
+    }
+
+    private async Task Apply()
+    {
+        var filter = new CompanyFilterQuery
+        {
+            IndustryId = _industryId,
+            LegalFormId = _legalFormId,
+            City = _city,
+            EmployeeCountMin = _employeeCountMin,
+            EmployeeCountMax = _employeeCountMax,
+            FoundingDateFrom = _foundingDateFrom,
+            FoundingDateTo = _foundingDateTo
+        };
+
+        await OnApply.InvokeAsync(filter);
+        await VisibleChanged.InvokeAsync(false);
+    }
+
+    private async Task ClearAll()
+    {
+        _industryId = null;
+        _legalFormId = null;
+        _city = null;
+        _employeeCountMin = null;
+        _employeeCountMax = null;
+        _foundingDateFrom = null;
+        _foundingDateTo = null;
+
+        await OnApply.InvokeAsync(new CompanyFilterQuery());
+        await VisibleChanged.InvokeAsync(false);
+    }
+
+    private async Task Close()
+    {
+        await VisibleChanged.InvokeAsync(false);
+    }
+}

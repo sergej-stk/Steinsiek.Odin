@@ -3,67 +3,168 @@
 @inject IPersonApiClient PersonApi
 @inject NavigationManager Navigation
 @inject IToastService Toast
+@inject IJSRuntime JS
 
 <PageTitle>Persons - Odin</PageTitle>
 
-<PageHeader Title="Persons" Subtitle="Manage contacts, employees and their details">
-    <Actions>
-        <AuthorizeView Roles="Admin,Manager">
-            <Authorized>
-                <a href="/persons/create" class="btn btn-primary btn-sm">
-                    <i class="bi bi-plus-lg me-1"></i> Create Person
-                </a>
-            </Authorized>
-        </AuthorizeView>
-    </Actions>
-</PageHeader>
+<PageHeader Title="Persons" Subtitle="Manage contacts, employees and their details" />
+
+<ListToolbar SelectedCount="_selectedItems.Count"
+             ActiveFilterCount="_activeFilterCount"
+             OnNew="HandleNew"
+             OnEdit="HandleEdit"
+             OnDelete="HandleDeleteSelected"
+             OnPrint="HandlePrint"
+             OnFilterToggle="() => _showFilterPanel = !_showFilterPanel"
+             OnSearch="HandleSearch" />
+
+<FilterChips Filters="_filterChips" OnRemove="HandleFilterRemove" OnClearAll="HandleFilterClearAll" />
 
 <DataGrid TItem="PersonDto"
           Items="_persons"
           TotalCount="_totalCount"
-          ShowSearch="true"
-          OnSearch="HandleSearch"
-          OnRowClick="HandleRowClick">
+          PageSize="_pageSize"
+          CurrentPage="_currentPage"
+          ShowSearch="false"
+          ShowCheckboxes="true"
+          ShowRowActions="true"
+          ShowPageSizeSelector="true"
+          SelectedItems="_selectedItems"
+          SelectedItemsChanged="v => _selectedItems = v"
+          ItemKey="p => p.Id"
+          OnRowClick="HandleRowClick"
+          OnPageChanged="HandlePageChanged"
+          OnPageSizeChanged="HandlePageSizeChanged"
+          OnEditItem="HandleEditItem"
+          OnDeleteItem="HandleDeleteItem"
+          SelectedCount="_selectedItems.Count">
     <HeaderTemplate>
-        <th>Name</th>
-        <th>Email</th>
+        <SortableHeader Title="Last Name" SortKey="@nameof(PersonDto.LastName)" CurrentSort="@_sort" CurrentSortDir="@_sortDir" OnSort="HandleSort" />
+        <SortableHeader Title="First Name" SortKey="@nameof(PersonDto.FirstName)" CurrentSort="@_sort" CurrentSortDir="@_sortDir" OnSort="HandleSort" />
+        <SortableHeader Title="Email" SortKey="@nameof(PersonDto.Email)" CurrentSort="@_sort" CurrentSortDir="@_sortDir" OnSort="HandleSort" />
         <th>Phone</th>
-        <th>City</th>
+        <SortableHeader Title="City" SortKey="@nameof(PersonDto.City)" CurrentSort="@_sort" CurrentSortDir="@_sortDir" OnSort="HandleSort" />
     </HeaderTemplate>
     <RowTemplate Context="person">
-        <td>@person.FirstName @person.LastName</td>
+        <td>@person.LastName</td>
+        <td>@person.FirstName</td>
         <td>@(person.Email ?? "\u2014")</td>
         <td>@(person.Phone ?? "\u2014")</td>
         <td>@(person.City ?? "\u2014")</td>
     </RowTemplate>
 </DataGrid>
 
+<PersonFilterPanel @bind-Visible="_showFilterPanel" Filter="_filter" OnApply="HandleFilterApply" />
+
+<ConfirmDialog Visible="_showDeleteConfirm"
+               Title="Confirm Delete"
+               ContentText="@_deleteConfirmText"
+               ButtonText="Delete"
+               OnConfirm="HandleDeleteConfirmed"
+               OnCancel="() => _showDeleteConfirm = false" />
+
 @code {
     private IReadOnlyList<PersonDto>? _persons;
     private int _totalCount;
-    private string _searchTerm = "";
+    private int _currentPage = 1;
+    private int _pageSize = 25;
+    private string? _sort;
+    private SortDirection? _sortDir;
+    private string? _searchTerm;
+    private PersonFilterQuery _filter = new();
+    private HashSet<Guid> _selectedItems = [];
+    private bool _showFilterPanel;
+    private bool _showDeleteConfirm;
+    private string _deleteConfirmText = "";
+    private IReadOnlyList<Guid>? _pendingDeleteIds;
+    private int _activeFilterCount;
+    private IReadOnlyList<FilterChipModel> _filterChips = [];
+
+    /// <summary>
+    /// The query parameter for the current page.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "page")]
+    public int? QueryPage { get; set; }
+
+    /// <summary>
+    /// The query parameter for the page size.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "pageSize")]
+    public int? QueryPageSize { get; set; }
+
+    /// <summary>
+    /// The query parameter for the sort column.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "sort")]
+    public string? QuerySort { get; set; }
+
+    /// <summary>
+    /// The query parameter for the sort direction.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "sortDir")]
+    public string? QuerySortDir { get; set; }
+
+    /// <summary>
+    /// The query parameter for the search term.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "q")]
+    public string? QueryQ { get; set; }
+
+    /// <summary>
+    /// The query parameter for the city filter.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "city")]
+    public string? QueryCity { get; set; }
+
+    /// <summary>
+    /// The query parameter for the salutation filter.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "salutationId")]
+    public Guid? QuerySalutationId { get; set; }
+
+    /// <summary>
+    /// The query parameter for the gender filter.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "genderId")]
+    public Guid? QueryGenderId { get; set; }
+
+    /// <summary>
+    /// The query parameter for the nationality filter.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "nationalityId")]
+    public Guid? QueryNationalityId { get; set; }
+
+    /// <summary>
+    /// The query parameter for the marital status filter.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "maritalStatusId")]
+    public Guid? QueryMaritalStatusId { get; set; }
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
+        _currentPage = QueryPage ?? 1;
+        _pageSize = QueryPageSize ?? 25;
+        _sort = QuerySort;
+        _sortDir = Enum.TryParse<SortDirection>(QuerySortDir, true, out var sd) ? sd : null;
+        _searchTerm = QueryQ;
+
+        _filter = new PersonFilterQuery
+        {
+            City = QueryCity,
+            SalutationId = QuerySalutationId,
+            GenderId = QueryGenderId,
+            NationalityId = QueryNationalityId,
+            MaritalStatusId = QueryMaritalStatusId
+        };
+
+        UpdateFilterChips();
         await LoadPersons();
     }
 
-    /// <summary>
-    /// Loads the person list from the API, optionally filtered by a search term.
-    /// </summary>
     private async Task LoadPersons()
     {
-        ListResult<PersonDto>? result;
-
-        if (string.IsNullOrWhiteSpace(_searchTerm))
-        {
-            result = await PersonApi.GetAll(CancellationToken.None);
-        }
-        else
-        {
-            result = await PersonApi.Search(_searchTerm, CancellationToken.None);
-        }
+        var result = await PersonApi.GetPaged(_currentPage, _pageSize, _sort, _sortDir, _searchTerm, _filter, CancellationToken.None);
 
         if (result is not null)
         {
@@ -78,22 +179,210 @@
         }
     }
 
-    /// <summary>
-    /// Handles the search callback from the DataGrid.
-    /// </summary>
-    /// <param name="searchTerm">The search term entered by the user.</param>
+    private void UpdateUrl()
+    {
+        var queryParams = new Dictionary<string, object?>
+        {
+            ["page"] = _currentPage > 1 ? _currentPage : null,
+            ["pageSize"] = _pageSize != 25 ? _pageSize : null,
+            ["sort"] = _sort,
+            ["sortDir"] = _sortDir?.ToString(),
+            ["q"] = string.IsNullOrWhiteSpace(_searchTerm) ? null : _searchTerm,
+            ["city"] = _filter.City,
+            ["salutationId"] = _filter.SalutationId,
+            ["genderId"] = _filter.GenderId,
+            ["nationalityId"] = _filter.NationalityId,
+            ["maritalStatusId"] = _filter.MaritalStatusId
+        };
+
+        var uri = Navigation.GetUriWithQueryParameters(queryParams);
+        Navigation.NavigateTo(uri, replace: true);
+    }
+
+    private void UpdateFilterChips()
+    {
+        var chips = new List<FilterChipModel>();
+
+        if (!string.IsNullOrWhiteSpace(_filter.City))
+        {
+            chips.Add(new FilterChipModel { Key = "city", Label = "City", Value = _filter.City });
+        }
+
+        if (_filter.SalutationId.HasValue)
+        {
+            chips.Add(new FilterChipModel { Key = "salutationId", Label = "Salutation", Value = _filter.SalutationId.Value.ToString()[..8] });
+        }
+
+        if (_filter.GenderId.HasValue)
+        {
+            chips.Add(new FilterChipModel { Key = "genderId", Label = "Gender", Value = _filter.GenderId.Value.ToString()[..8] });
+        }
+
+        if (_filter.NationalityId.HasValue)
+        {
+            chips.Add(new FilterChipModel { Key = "nationalityId", Label = "Nationality", Value = _filter.NationalityId.Value.ToString()[..8] });
+        }
+
+        if (_filter.MaritalStatusId.HasValue)
+        {
+            chips.Add(new FilterChipModel { Key = "maritalStatusId", Label = "Marital Status", Value = _filter.MaritalStatusId.Value.ToString()[..8] });
+        }
+
+        if (_filter.CreatedFrom.HasValue)
+        {
+            chips.Add(new FilterChipModel { Key = "createdFrom", Label = "Created from", Value = _filter.CreatedFrom.Value.ToString("d") });
+        }
+
+        if (_filter.CreatedTo.HasValue)
+        {
+            chips.Add(new FilterChipModel { Key = "createdTo", Label = "Created to", Value = _filter.CreatedTo.Value.ToString("d") });
+        }
+
+        _filterChips = chips;
+        _activeFilterCount = chips.Count;
+    }
+
     private async Task HandleSearch(string searchTerm)
     {
         _searchTerm = searchTerm;
+        _currentPage = 1;
+        _selectedItems = [];
+        UpdateUrl();
         await LoadPersons();
     }
 
-    /// <summary>
-    /// Navigates to the detail page when a row is clicked.
-    /// </summary>
-    /// <param name="person">The clicked person.</param>
+    private async Task HandlePageChanged(int page)
+    {
+        _currentPage = page;
+        _selectedItems = [];
+        UpdateUrl();
+        await LoadPersons();
+    }
+
+    private async Task HandlePageSizeChanged(int pageSize)
+    {
+        _pageSize = pageSize;
+        _currentPage = 1;
+        _selectedItems = [];
+        UpdateUrl();
+        await LoadPersons();
+    }
+
+    private async Task HandleSort((string SortKey, SortDirection? SortDir) args)
+    {
+        _sort = args.SortDir.HasValue ? args.SortKey : null;
+        _sortDir = args.SortDir;
+        _currentPage = 1;
+        UpdateUrl();
+        await LoadPersons();
+    }
+
+    private async Task HandleFilterApply(PersonFilterQuery filter)
+    {
+        _filter = filter;
+        _currentPage = 1;
+        _selectedItems = [];
+        UpdateFilterChips();
+        UpdateUrl();
+        await LoadPersons();
+    }
+
+    private async Task HandleFilterRemove(string key)
+    {
+        _filter = key switch
+        {
+            "city" => _filter with { City = null },
+            "salutationId" => _filter with { SalutationId = null },
+            "genderId" => _filter with { GenderId = null },
+            "nationalityId" => _filter with { NationalityId = null },
+            "maritalStatusId" => _filter with { MaritalStatusId = null },
+            "createdFrom" => _filter with { CreatedFrom = null },
+            "createdTo" => _filter with { CreatedTo = null },
+            _ => _filter
+        };
+
+        _currentPage = 1;
+        UpdateFilterChips();
+        UpdateUrl();
+        await LoadPersons();
+    }
+
+    private async Task HandleFilterClearAll()
+    {
+        _filter = new PersonFilterQuery();
+        _currentPage = 1;
+        UpdateFilterChips();
+        UpdateUrl();
+        await LoadPersons();
+    }
+
     private void HandleRowClick(PersonDto person)
     {
         Navigation.NavigateTo($"/persons/{person.Id}");
+    }
+
+    private void HandleNew()
+    {
+        Navigation.NavigateTo("/persons/create");
+    }
+
+    private void HandleEdit()
+    {
+        if (_selectedItems.Count == 1)
+        {
+            Navigation.NavigateTo($"/persons/{_selectedItems.First()}/edit");
+        }
+    }
+
+    private void HandleEditItem(PersonDto person)
+    {
+        Navigation.NavigateTo($"/persons/{person.Id}/edit");
+    }
+
+    private void HandleDeleteItem(PersonDto person)
+    {
+        _pendingDeleteIds = [person.Id];
+        _deleteConfirmText = $"Are you sure you want to delete {person.FirstName} {person.LastName}?";
+        _showDeleteConfirm = true;
+    }
+
+    private void HandleDeleteSelected()
+    {
+        if (_selectedItems.Count == 0)
+        {
+            return;
+        }
+
+        _pendingDeleteIds = _selectedItems.ToList();
+        _deleteConfirmText = $"Are you sure you want to delete {_selectedItems.Count} person(s)?";
+        _showDeleteConfirm = true;
+    }
+
+    private async Task HandleDeleteConfirmed()
+    {
+        _showDeleteConfirm = false;
+        if (_pendingDeleteIds is null || _pendingDeleteIds.Count == 0)
+        {
+            return;
+        }
+
+        var deleted = await PersonApi.DeleteMany(_pendingDeleteIds, CancellationToken.None);
+        if (deleted > 0)
+        {
+            Toast.Show($"Successfully deleted {deleted} person(s).", ToastLevel.Success);
+            _selectedItems = [];
+            await LoadPersons();
+        }
+        else
+        {
+            Toast.Show("Failed to delete persons.", ToastLevel.Error);
+        }
+
+        _pendingDeleteIds = null;
+    }
+
+    private async Task HandlePrint()
+    {
+        await JS.InvokeVoidAsync("window.print");
     }
 }
