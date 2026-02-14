@@ -126,12 +126,14 @@ public sealed class EfPersonRepository(OdinDbContext context) : IPersonRepositor
 
         if (filter.CreatedFrom.HasValue)
         {
-            queryable = queryable.Where(p => p.CreatedAt >= filter.CreatedFrom.Value);
+            var from = DateTime.SpecifyKind(filter.CreatedFrom.Value, DateTimeKind.Utc);
+            queryable = queryable.Where(p => p.CreatedAt >= from);
         }
 
         if (filter.CreatedTo.HasValue)
         {
-            queryable = queryable.Where(p => p.CreatedAt <= filter.CreatedTo.Value);
+            var to = DateTime.SpecifyKind(filter.CreatedTo.Value, DateTimeKind.Utc);
+            queryable = queryable.Where(p => p.CreatedAt <= to);
         }
 
         var totalCount = await queryable.CountAsync(cancellationToken);
