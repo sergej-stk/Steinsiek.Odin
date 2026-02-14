@@ -31,8 +31,10 @@
     <ProjectReference Include="..\Modules\Core\Steinsiek.Odin.Modules.Core.Shared\Steinsiek.Odin.Modules.Core.Shared.csproj" />
     <ProjectReference Include="..\Modules\Auth\Steinsiek.Odin.Modules.Auth\Steinsiek.Odin.Modules.Auth.csproj" />
     <ProjectReference Include="..\Modules\Auth\Steinsiek.Odin.Modules.Auth.Shared\Steinsiek.Odin.Modules.Auth.Shared.csproj" />
-    <ProjectReference Include="..\Modules\Products\Steinsiek.Odin.Modules.Products\Steinsiek.Odin.Modules.Products.csproj" />
-    <ProjectReference Include="..\Modules\Products\Steinsiek.Odin.Modules.Products.Shared\Steinsiek.Odin.Modules.Products.Shared.csproj" />
+    <ProjectReference Include="..\Modules\Persons\Steinsiek.Odin.Modules.Persons\Steinsiek.Odin.Modules.Persons.csproj" />
+    <ProjectReference Include="..\Modules\Persons\Steinsiek.Odin.Modules.Persons.Shared\Steinsiek.Odin.Modules.Persons.Shared.csproj" />
+    <ProjectReference Include="..\Modules\Companies\Steinsiek.Odin.Modules.Companies\Steinsiek.Odin.Modules.Companies.csproj" />
+    <ProjectReference Include="..\Modules\Companies\Steinsiek.Odin.Modules.Companies.Shared\Steinsiek.Odin.Modules.Companies.Shared.csproj" />
   </ItemGroup>
 
 </Project>

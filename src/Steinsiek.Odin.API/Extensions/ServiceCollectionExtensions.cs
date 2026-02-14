@@ -13,7 +13,23 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddModules(this IServiceCollection services)
     {
         AuthModule.RegisterServices(services);
-        ProductsModule.RegisterServices(services);
+        PersonsModule.RegisterServices(services);
+        CompaniesModule.RegisterServices(services);
+        return services;
+    }
+
+    /// <summary>
+    /// Registers core infrastructure services including audit logging.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddCoreInfrastructure(this IServiceCollection services)
+    {
+        services.AddHttpContextAccessor();
+        services.AddScoped<Steinsiek.Odin.Modules.Core.Persistence.AuditSaveChangesInterceptor>();
+        services.AddScoped<Steinsiek.Odin.Modules.Core.Repositories.IAuditLogRepository, Steinsiek.Odin.Modules.Core.Repositories.EfAuditLogRepository>();
+        services.AddScoped<Steinsiek.Odin.Modules.Core.Services.IAuditLogService, Steinsiek.Odin.Modules.Core.Services.AuditLogService>();
+        services.AddScoped<Steinsiek.Odin.Modules.Core.Services.ITranslationService, Steinsiek.Odin.Modules.Core.Services.TranslationService>();
         return services;
     }
 
@@ -27,8 +43,10 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<OdinDbContextOptions>(options =>
         {
+            options.ModuleAssemblies.Add(typeof(Steinsiek.Odin.Modules.Core.Entities.BaseEntity).Assembly);
             options.ModuleAssemblies.Add(typeof(AuthModule).Assembly);
-            options.ModuleAssemblies.Add(typeof(Steinsiek.Odin.Modules.Products.ProductsModule).Assembly);
+            options.ModuleAssemblies.Add(typeof(PersonsModule).Assembly);
+            options.ModuleAssemblies.Add(typeof(CompaniesModule).Assembly);
         });
 
         var provider = configuration.GetValue<string>("DatabaseProvider") ?? "InMemory";
