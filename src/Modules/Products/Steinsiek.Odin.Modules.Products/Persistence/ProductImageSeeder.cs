@@ -5,7 +5,7 @@ namespace Steinsiek.Odin.Modules.Products.Persistence;
 /// </summary>
 public static class ProductImageSeeder
 {
-    private static readonly Dictionary<Guid, string> SeedImages = new()
+    private static readonly Dictionary<Guid, string> _seedImages = new()
     {
         { Guid.Parse("11111111-0001-0001-0001-000000000001"), "iphone-15-pro.jpg" },
         { Guid.Parse("11111111-0001-0001-0001-000000000002"), "macbook-air-m3.jpg" },
@@ -26,7 +26,7 @@ public static class ProductImageSeeder
         var imageSet = dbContext.Set<ProductImageData>();
         var assembly = typeof(ProductImageSeeder).Assembly;
 
-        foreach (var (productId, fileName) in SeedImages)
+        foreach (var (productId, fileName) in _seedImages)
         {
             if (imageSet.Any(i => i.ProductId == productId))
             {
