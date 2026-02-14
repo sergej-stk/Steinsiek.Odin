@@ -110,12 +110,14 @@ public sealed class EfCompanyRepository(OdinDbContext context) : ICompanyReposit
 
         if (filter.FoundingDateFrom.HasValue)
         {
-            queryable = queryable.Where(c => c.FoundingDate >= filter.FoundingDateFrom.Value);
+            var from = DateTime.SpecifyKind(filter.FoundingDateFrom.Value, DateTimeKind.Utc);
+            queryable = queryable.Where(c => c.FoundingDate >= from);
         }
 
         if (filter.FoundingDateTo.HasValue)
         {
-            queryable = queryable.Where(c => c.FoundingDate <= filter.FoundingDateTo.Value);
+            var to = DateTime.SpecifyKind(filter.FoundingDateTo.Value, DateTimeKind.Utc);
+            queryable = queryable.Where(c => c.FoundingDate <= to);
         }
 
         var totalCount = await queryable.CountAsync(cancellationToken);
