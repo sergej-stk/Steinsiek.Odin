@@ -39,8 +39,13 @@ jobs:
       - name: Restore
         run: dotnet restore --locked-mode
 
-      - name: Test
-        run: dotnet test --no-restore --logger "trx;LogFileName=results.trx" --results-directory ./test-results
+      - name: Test with Coverage
+        run: >-
+          dotnet test --no-restore
+          --logger "trx;LogFileName=results.trx"
+          --results-directory ./test-results
+          --collect:"XPlat Code Coverage"
+          --settings coverlet.runsettings
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v6
@@ -57,3 +62,39 @@ jobs:
           name: Test Results
           path: ./test-results/**/*.trx
           reporter: dotnet-trx
+
+      - name: Install ReportGenerator
+        if: always()
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Generate Coverage Report
+        if: always()
+        run: >-
+          reportgenerator
+          -reports:"./test-results/**/coverage.cobertura.xml"
+          -targetdir:"./coverage-report"
+          -reporttypes:"Html;Cobertura;TextSummary"
+
+      - name: Check Coverage Threshold
+        if: success()
+        run: |
+          SUMMARY_FILE="./coverage-report/Summary.txt"
+          if [ ! -f "$SUMMARY_FILE" ]; then
+            echo "Coverage summary not found"
+            exit 1
+          fi
+          LINE_COVERAGE=$(grep "Line coverage" "$SUMMARY_FILE" | grep -oP '[\d.]+' | head -1)
+          echo "Line coverage: ${LINE_COVERAGE}%"
+          if [ "$(echo "$LINE_COVERAGE < 55" | bc -l)" -eq 1 ]; then
+            echo "Coverage ${LINE_COVERAGE}% is below 55% threshold"
+            exit 1
+          fi
+          echo "Coverage ${LINE_COVERAGE}% meets 55% threshold"
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: coverage-report
+          path: ./coverage-report/
+          retention-days: 30
