@@ -66,8 +66,11 @@ public sealed class PersonsControllerTests
         // Arrange
         var detail = new PersonDetailDto
         {
-            Id = Guid.NewGuid(), FirstName = "Max", LastName = "Mustermann",
-            FullName = "Max Mustermann", CreatedAt = DateTime.UtcNow
+            Id = Guid.NewGuid(),
+            FirstName = "Max",
+            LastName = "Mustermann",
+            FullName = "Max Mustermann",
+            CreatedAt = DateTime.UtcNow
         };
         _serviceMock.Setup(s => s.GetById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(detail);

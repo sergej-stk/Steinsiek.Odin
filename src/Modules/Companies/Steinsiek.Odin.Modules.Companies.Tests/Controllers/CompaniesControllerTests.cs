@@ -66,8 +66,10 @@ public sealed class CompaniesControllerTests
         // Arrange
         var detail = new CompanyDetailDto
         {
-            Id = Guid.NewGuid(), Name = "Steinsiek GmbH",
-            Locations = [], PersonCompanies = []
+            Id = Guid.NewGuid(),
+            Name = "Steinsiek GmbH",
+            Locations = [],
+            PersonCompanies = []
         };
         _serviceMock.Setup(s => s.GetById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(detail);

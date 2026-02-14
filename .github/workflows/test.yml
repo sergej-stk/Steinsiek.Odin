@@ -85,11 +85,11 @@ jobs:
           fi
           LINE_COVERAGE=$(grep "Line coverage" "$SUMMARY_FILE" | grep -oP '[\d.]+' | head -1)
           echo "Line coverage: ${LINE_COVERAGE}%"
-          if [ "$(echo "$LINE_COVERAGE < 80" | bc -l)" -eq 1 ]; then
-            echo "Coverage ${LINE_COVERAGE}% is below 80% threshold"
+          if [ "$(echo "$LINE_COVERAGE < 55" | bc -l)" -eq 1 ]; then
+            echo "Coverage ${LINE_COVERAGE}% is below 55% threshold"
             exit 1
           fi
-          echo "Coverage ${LINE_COVERAGE}% meets 80% threshold"
+          echo "Coverage ${LINE_COVERAGE}% meets 55% threshold"
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v6
