@@ -2,7 +2,7 @@
   "openapi": "3.1.1",
   "info": {
     "title": "Steinsiek.Odin API",
-    "description": "E-Commerce REST API - Version 1",
+    "description": "Employee and Company Management API - Version 1",
     "version": "v1"
   },
   "paths": {

@@ -10,10 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Added
 
-- Modular monolith project structure with Core, Auth, and Products modules
+- Modular monolith project structure with Core, Auth, Persons, and Companies modules
 - JWT Bearer authentication with login, register, and current user endpoints
-- Products module with CRUD operations and search
-- Categories management with CRUD operations
+- Persons module with CRUD operations and search
+- Companies module with CRUD operations and search
 - API versioning with URL-based routing (`/api/v1/...`)
 - Redis caching via .NET Aspire orchestration
 - Serilog structured logging with LogContext enrichment middleware
