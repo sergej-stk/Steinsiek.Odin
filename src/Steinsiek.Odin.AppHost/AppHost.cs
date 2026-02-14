@@ -25,7 +25,7 @@ try
         .WaitFor(redis)
         .WaitFor(postgres)
         .WithEnvironment("DatabaseProvider", "PostgreSQL")
-        .WithIconName("ShoppingBag", IconVariant.Filled);
+        .WithIconName("People", IconVariant.Filled);
 
     builder.AddProject<Projects.Steinsiek_Odin_Web>("web")
         .WithReference(api)

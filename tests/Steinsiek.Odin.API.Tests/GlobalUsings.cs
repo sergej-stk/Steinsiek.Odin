@@ -10,4 +10,3 @@ global using Microsoft.AspNetCore.Mvc.Testing;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Steinsiek.Odin.Modules.Auth.Shared.DTOs;
 global using Steinsiek.Odin.Modules.Core.Shared.DTOs;
-global using Steinsiek.Odin.Modules.Products.Shared.DTOs;

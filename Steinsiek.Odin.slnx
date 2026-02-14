@@ -16,10 +16,15 @@
     <Project Path="src/Modules/Core/Steinsiek.Odin.Modules.Core.Tests/Steinsiek.Odin.Modules.Core.Tests.csproj" />
     <Project Path="src/Modules/Core/Steinsiek.Odin.Modules.Core/Steinsiek.Odin.Modules.Core.csproj" />
   </Folder>
-  <Folder Name="/src/Modules/Products/">
-    <Project Path="src/Modules/Products/Steinsiek.Odin.Modules.Products.Shared/Steinsiek.Odin.Modules.Products.Shared.csproj" />
-    <Project Path="src/Modules/Products/Steinsiek.Odin.Modules.Products.Tests/Steinsiek.Odin.Modules.Products.Tests.csproj" />
-    <Project Path="src/Modules/Products/Steinsiek.Odin.Modules.Products/Steinsiek.Odin.Modules.Products.csproj" />
+  <Folder Name="/src/Modules/Persons/">
+    <Project Path="src/Modules/Persons/Steinsiek.Odin.Modules.Persons/Steinsiek.Odin.Modules.Persons.csproj" />
+    <Project Path="src/Modules/Persons/Steinsiek.Odin.Modules.Persons.Shared/Steinsiek.Odin.Modules.Persons.Shared.csproj" />
+    <Project Path="src/Modules/Persons/Steinsiek.Odin.Modules.Persons.Tests/Steinsiek.Odin.Modules.Persons.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Companies/">
+    <Project Path="src/Modules/Companies/Steinsiek.Odin.Modules.Companies/Steinsiek.Odin.Modules.Companies.csproj" />
+    <Project Path="src/Modules/Companies/Steinsiek.Odin.Modules.Companies.Shared/Steinsiek.Odin.Modules.Companies.Shared.csproj" />
+    <Project Path="src/Modules/Companies/Steinsiek.Odin.Modules.Companies.Tests/Steinsiek.Odin.Modules.Companies.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Steinsiek.Odin.API.Tests/Steinsiek.Odin.API.Tests.csproj" />

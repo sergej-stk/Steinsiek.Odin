@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Steinsiek.Odin is a modular .NET Aspire E-Commerce platform. The backend follows a **Modular Monolith** approach where each domain (Auth, Products, etc.) is encapsulated in a separate Class Library. The frontend is a **Blazor Web App with Bootstrap 5** that communicates with the API via typed HttpClient services and Aspire service discovery.
+Steinsiek.Odin is a modular .NET Aspire **Employee and Company Management** platform. The backend follows a **Modular Monolith** approach where each domain (Auth, Persons, Companies, etc.) is encapsulated in a separate Class Library. The frontend is a **Blazor Web App with Bootstrap 5** that communicates with the API via typed HttpClient services and Aspire service discovery.
 
 ## Technology Stack
 
@@ -27,24 +27,29 @@ Steinsiek.Odin/
 ├── src/
 │   ├── Steinsiek.Odin.AppHost/           # Aspire Orchestration
 │   ├── Steinsiek.Odin.ServiceDefaults/   # Shared Aspire Config
-│   ├── Steinsiek.Odin.API/               # Host API (Program.cs, Middleware)
+│   ├── Steinsiek.Odin.API/               # Host API (Program.cs, Middleware, Dashboard)
 │   ├── Steinsiek.Odin.Web/              # Bootstrap 5 Frontend
 │   └── Modules/
 │       ├── Core/
 │       │   ├── Core.slnx                        # Module-specific solution
-│       │   ├── Steinsiek.Odin.Modules.Core/     # Shared Abstractions
+│       │   ├── Steinsiek.Odin.Modules.Core/     # Shared Abstractions, Lookups, Audit
 │       │   ├── Steinsiek.Odin.Modules.Core.Shared/
 │       │   └── Steinsiek.Odin.Modules.Core.Tests/
 │       ├── Auth/
 │       │   ├── Auth.slnx                        # Module-specific solution
-│       │   ├── Steinsiek.Odin.Modules.Auth/     # Auth Module
+│       │   ├── Steinsiek.Odin.Modules.Auth/     # Auth Module (JWT + RBAC)
 │       │   ├── Steinsiek.Odin.Modules.Auth.Shared/   # DTOs
 │       │   └── Steinsiek.Odin.Modules.Auth.Tests/
-│       └── Products/
-│           ├── Products.slnx                    # Module-specific solution
-│           ├── Steinsiek.Odin.Modules.Products/      # Products Module
-│           ├── Steinsiek.Odin.Modules.Products.Shared/   # DTOs
-│           └── Steinsiek.Odin.Modules.Products.Tests/
+│       ├── Persons/
+│       │   ├── Persons.slnx                     # Module-specific solution
+│       │   ├── Steinsiek.Odin.Modules.Persons/       # Persons Module
+│       │   ├── Steinsiek.Odin.Modules.Persons.Shared/    # DTOs
+│       │   └── Steinsiek.Odin.Modules.Persons.Tests/
+│       └── Companies/
+│           ├── Companies.slnx                   # Module-specific solution
+│           ├── Steinsiek.Odin.Modules.Companies/      # Companies Module
+│           ├── Steinsiek.Odin.Modules.Companies.Shared/   # DTOs
+│           └── Steinsiek.Odin.Modules.Companies.Tests/
 └── tests/
     └── Steinsiek.Odin.API.Tests/         # Integration tests
 ```
@@ -106,7 +111,8 @@ Registration happens centrally in `ServiceCollectionExtensions.cs`:
 public static IServiceCollection AddModules(this IServiceCollection services)
 {
     AuthModule.RegisterServices(services);
-    ProductsModule.RegisterServices(services);
+    PersonsModule.RegisterServices(services);
+    CompaniesModule.RegisterServices(services);
     return services;
 }
 ```
@@ -114,12 +120,13 @@ public static IServiceCollection AddModules(this IServiceCollection services)
 ## Language Policy
 - The entire project must be in English
 - All code, comments, variable names, strings, and documentation must use English
-- Demo data (product names, descriptions, categories) must be in English
+- Demo data (person names, company names, lookup values) must be in English
 
 ## Important Conventions
 
 ### Entities
-- All entities inherit from `BaseEntity` (Id, CreatedAt, UpdatedAt)
+- All entities inherit from `BaseEntity` (Id, CreatedAt, UpdatedAt, IsDeleted, DeletedAt)
+- Soft-delete is handled transparently via global query filter and `SaveChangesAsync` override
 - Use `required` modifier where appropriate
 - Guid as primary key
 
@@ -522,7 +529,7 @@ Protected endpoints must document 401 Unauthorized responses:
 | Response Code | When Required |
 |---------------|---------------|
 | 401 Unauthorized | Endpoints with `[Authorize]` (no `[AllowAnonymous]`) |
-| 403 Forbidden | Role-based authorization (future) |
+| 403 Forbidden | Role-based authorization |
 
 ### Attribute Ordering
 `ProducesResponseType` attributes must be sorted by status code number (ascending):
@@ -706,8 +713,10 @@ Each module owns a dedicated schema:
 
 | Module | Schema | Tables |
 |--------|--------|--------|
-| Auth | `auth` | `Users` |
-| Products | `products` | `Products`, `Categories`, `ProductImages` |
+| Core | `core` | `Languages`, `Translations`, `Salutations`, `Genders`, `MaritalStatuses`, `Countries`, `AddressTypes`, `ContactTypes`, `Industries`, `LegalForms`, `Departments`, `Positions`, `AuditLog` |
+| Auth | `auth` | `Users`, `Roles`, `UserRoles` |
+| Persons | `persons` | `Persons`, `PersonAddresses`, `PersonEmailAddresses`, `PersonPhoneNumbers`, `PersonBankAccounts`, `PersonSocialMediaLinks`, `PersonLanguages`, `PersonImages` |
+| Companies | `companies` | `Companies`, `CompanyLocations`, `CompanyImages`, `LocationImages`, `PersonCompanies` |
 
 ### Auto-Migration
 - **PostgreSQL**: `Database.Migrate()` runs at startup, applying pending migrations
@@ -776,6 +785,10 @@ The frontend is a **Blazor Web App** (`Steinsiek.Odin.Web`) with **Interactive S
 src/Steinsiek.Odin.Web/
 ├── Program.cs                          # Entry point, DI, Serilog, Bootstrap
 ├── GlobalUsings.cs                     # Global using directives
+├── Resources/                          # Localization (.resx files, EN + DE)
+│   ├── SharedResources.cs              # Marker class
+│   ├── SharedResources.resx            # English (default)
+│   └── SharedResources.de.resx         # German
 ├── Auth/                               # JWT auth state management
 │   ├── ITokenStorageService.cs
 │   ├── TokenStorageService.cs          # ProtectedSessionStorage-based
@@ -783,8 +796,9 @@ src/Steinsiek.Odin.Web/
 ├── Services/                           # Typed HttpClient API clients + Toast
 │   ├── ApiAuthenticationHandler.cs     # DelegatingHandler for JWT
 │   ├── IAuthApiClient.cs + AuthApiClient.cs
-│   ├── IProductApiClient.cs + ProductApiClient.cs
-│   ├── ICategoryApiClient.cs + CategoryApiClient.cs
+│   ├── IPersonApiClient.cs + PersonApiClient.cs
+│   ├── ICompanyApiClient.cs + CompanyApiClient.cs
+│   ├── IDashboardApiClient.cs + DashboardApiClient.cs
 │   ├── IToastService.cs + ToastService.cs  # Toast notification service
 │   ├── ToastLevel.cs                   # Toast severity enum
 │   └── ToastMessage.cs                 # Toast message model
@@ -793,10 +807,12 @@ src/Steinsiek.Odin.Web/
 │   ├── Routes.razor                    # Router with AuthorizeRouteView
 │   ├── _Imports.razor                  # Global Razor imports
 │   ├── Layout/                         # MainLayout, NavMenu
-│   ├── Pages/                          # Route pages
-│   ├── Products/                       # Product components
+│   ├── Pages/
+│   │   ├── Home.razor                  # Dashboard with stats, activity, birthdays
+│   │   ├── Persons/                    # PersonList, PersonDetail, PersonCreate, PersonEdit
+│   │   └── Companies/                  # CompanyList, CompanyDetail, CompanyCreate, CompanyEdit
 │   ├── Auth/                           # Auth form components
-│   └── Shared/                         # Reusable components (ToastContainer, ConfirmDialog, etc.)
+│   └── Shared/                         # Reusable components (DataGrid, PageHeader, etc.)
 └── wwwroot/                            # Static assets (CSS, JS interop)
 ```
 
@@ -834,27 +850,55 @@ src/Steinsiek.Odin.Web/
 
 - JWT token via `/api/v1/auth/login`
 - Token in header: `Authorization: Bearer {token}`
-- Demo user: `demo@steinsiek.de` / `Demo123!`
+- RBAC roles: Admin, Manager, User, ReadOnly (stored as JWT `ClaimTypes.Role` claims)
+- Demo user: `demo@steinsiek.de` / `Demo123!` (Admin role)
 - JWT config in `appsettings.json` under `Jwt`
 
 ## API Endpoints
 
+### Auth
 | Endpoint | Auth | Description |
 |----------|------|-------------|
 | POST /api/v1/auth/login | No | Login |
 | POST /api/v1/auth/register | No | Registration |
 | GET /api/v1/auth/me | Yes | Current user |
-| GET /api/v1/products | No | All products |
-| GET /api/v1/products/{id} | No | Product details |
-| GET /api/v1/products/search?q= | No | Search |
-| POST /api/v1/products | Yes | Create product |
-| PUT /api/v1/products/{id} | Yes | Update product |
-| DELETE /api/v1/products/{id} | Yes | Delete product |
-| GET /api/v1/products/{id}/image | No | Product image |
-| PUT /api/v1/products/{id}/image | Yes | Upload product image |
-| DELETE /api/v1/products/{id}/image | Yes | Delete product image |
-| GET /api/v1/categories | No | All categories |
-| POST /api/v1/categories | Yes | Create category |
+| GET /api/v1/auth/roles | Yes (Admin) | List all roles |
+| POST /api/v1/auth/users/{userId}/roles | Yes (Admin) | Assign role |
+| DELETE /api/v1/auth/users/{userId}/roles/{roleId} | Yes (Admin) | Remove role |
+
+### Persons
+| Endpoint | Auth | Description |
+|----------|------|-------------|
+| GET /api/v1/persons | Yes | All persons (paginated) |
+| GET /api/v1/persons/{id} | Yes | Person detail |
+| GET /api/v1/persons/search?q= | Yes | Search persons |
+| POST /api/v1/persons | Yes | Create person |
+| PUT /api/v1/persons/{id} | Yes | Update person |
+| DELETE /api/v1/persons/{id} | Yes | Soft-delete person |
+
+### Companies
+| Endpoint | Auth | Description |
+|----------|------|-------------|
+| GET /api/v1/companies | Yes | All companies (paginated) |
+| GET /api/v1/companies/{id} | Yes | Company detail |
+| GET /api/v1/companies/search?q= | Yes | Search companies |
+| POST /api/v1/companies | Yes | Create company |
+| PUT /api/v1/companies/{id} | Yes | Update company |
+| DELETE /api/v1/companies/{id} | Yes | Soft-delete company |
+
+### Dashboard
+| Endpoint | Auth | Description |
+|----------|------|-------------|
+| GET /api/v1/dashboard/stats | Yes | Aggregate statistics |
+| GET /api/v1/dashboard/recent-activity | Yes | Recent audit log entries |
+| GET /api/v1/dashboard/upcoming-birthdays | Yes | Upcoming birthdays |
+
+### Core
+| Endpoint | Auth | Description |
+|----------|------|-------------|
+| GET /api/v1/lookups | Yes | Translated lookup values |
+| GET /api/v1/auditlog/{entityType}/{entityId} | Yes (Admin) | Audit log for entity |
+| GET /api/v1/auditlog/recent | Yes (Admin) | Recent audit entries |
 
 ## Development
 
@@ -927,21 +971,28 @@ builder.AddProject<Projects.Steinsiek_Odin_Web>("web")
 // User
 Guid.Parse("11111111-1111-1111-1111-111111111111") // demo@steinsiek.de
 
-// Categories
-Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa") // Electronics
-Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb") // Clothing
-Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc") // Books
-Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd") // Household
+// Roles
+Guid.Parse("aaaa0001-0001-0001-0001-000000000001") // Admin
+Guid.Parse("aaaa0001-0001-0001-0001-000000000002") // Manager
+Guid.Parse("aaaa0001-0001-0001-0001-000000000003") // User
+Guid.Parse("aaaa0001-0001-0001-0001-000000000004") // ReadOnly
 
-// Products
-Guid.Parse("11111111-0001-0001-0001-000000000001") // iPhone 15 Pro
-Guid.Parse("11111111-0001-0001-0001-000000000002") // MacBook Air M3
-Guid.Parse("11111111-0001-0001-0001-000000000003") // Samsung Galaxy S24 Ultra
-Guid.Parse("11111111-0001-0001-0001-000000000004") // Premium Hoodie
-Guid.Parse("11111111-0001-0001-0001-000000000005") // Designer Jeans
-Guid.Parse("11111111-0001-0001-0001-000000000006") // Clean Code
-Guid.Parse("11111111-0001-0001-0001-000000000007") // Design Patterns
-Guid.Parse("11111111-0001-0001-0001-000000000008") // Coffee Machine Deluxe
+// Persons
+Guid.Parse("22222222-0001-0001-0001-000000000001") // Max Mustermann
+Guid.Parse("22222222-0001-0001-0001-000000000002") // Jane Doe
+
+// Companies
+Guid.Parse("33333333-0001-0001-0001-000000000001") // Steinsiek GmbH
+Guid.Parse("33333333-0001-0001-0001-000000000002") // Odin Consulting Ltd
+
+// Languages
+Guid.Parse("00000001-0001-0001-0001-000000000001") // de (Deutsch)
+Guid.Parse("00000001-0001-0001-0001-000000000002") // en (English)
+
+// Lookups (pattern: 000000XX-0001-0001-0001-00000000000Y)
+// Salutations: 10, Genders: 20, MaritalStatuses: 30, Countries: 40
+// AddressTypes: 50, ContactTypes: 60, Industries: 70, LegalForms: 80
+// Departments: 90, Positions: a0
 ```
 
 ## Git Commit Conventions
