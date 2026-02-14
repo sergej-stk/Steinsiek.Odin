@@ -1,0 +1,153 @@
+@page "/companies"
+@attribute [Authorize]
+@inject ICompanyApiClient CompanyApi
+@inject NavigationManager Navigation
+@inject IToastService Toast
+
+<PageTitle>Companies - Odin</PageTitle>
+
+<PageHeader Title="Companies" Subtitle="Manage companies, locations and assignments">
+    <Actions>
+        <AuthorizeView Roles="Admin,Manager">
+            <Authorized>
+                <a href="/companies/create" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i> Create Company
+                </a>
+            </Authorized>
+        </AuthorizeView>
+    </Actions>
+</PageHeader>
+
+<ErrorAlert Message="@_errorMessage" Visible="@_showError" VisibleChanged="@(v => _showError = v)" />
+
+<DataGrid TItem="CompanyDto"
+          Items="@_companies"
+          Title="All Companies"
+          ShowSearch="true"
+          OnSearch="HandleSearch"
+          OnRowClick="HandleRowClick"
+          TotalCount="@_totalCount"
+          CurrentPage="@_currentPage"
+          OnPageChanged="HandlePageChanged">
+    <HeaderTemplate>
+        <th>Name</th>
+        <th>Industry</th>
+        <th>Location</th>
+        <th>Employees</th>
+        <th>Website</th>
+    </HeaderTemplate>
+    <RowTemplate>
+        <td class="fw-medium">@context.Name</td>
+        <td>@(context.Industry ?? "\u2014")</td>
+        <td>@(context.City ?? "\u2014")</td>
+        <td>@(context.EmployeeCount?.ToString() ?? "\u2014")</td>
+        <td>
+            @if (!string.IsNullOrEmpty(context.Website))
+            {
+                <span class="text-truncate d-inline-block" style="max-width: 200px;">@context.Website</span>
+            }
+            else
+            {
+                <span>\u2014</span>
+            }
+        </td>
+    </RowTemplate>
+</DataGrid>
+
+@code {
+    /// <summary>
+    /// The list of companies to display.
+    /// </summary>
+    private IReadOnlyList<CompanyDto>? _companies;
+
+    /// <summary>
+    /// The total number of companies for pagination.
+    /// </summary>
+    private int _totalCount;
+
+    /// <summary>
+    /// The current page number.
+    /// </summary>
+    private int _currentPage = 1;
+
+    /// <summary>
+    /// The current search term.
+    /// </summary>
+    private string _searchTerm = "";
+
+    /// <summary>
+    /// The error message to display.
+    /// </summary>
+    private string? _errorMessage;
+
+    /// <summary>
+    /// Whether the error alert is visible.
+    /// </summary>
+    private bool _showError;
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCompanies();
+    }
+
+    /// <summary>
+    /// Loads companies from the API, optionally filtered by search term.
+    /// </summary>
+    private async Task LoadCompanies()
+    {
+        ListResult<CompanyDto>? result;
+
+        if (string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            result = await CompanyApi.GetAll(CancellationToken.None);
+        }
+        else
+        {
+            result = await CompanyApi.Search(_searchTerm, CancellationToken.None);
+        }
+
+        if (result is not null)
+        {
+            _companies = result.Data;
+            _totalCount = result.TotalCount;
+        }
+        else
+        {
+            _companies = [];
+            _totalCount = 0;
+            _errorMessage = "Failed to load companies. Please try again later.";
+            _showError = true;
+        }
+    }
+
+    /// <summary>
+    /// Handles the search callback from the DataGrid.
+    /// </summary>
+    /// <param name="searchTerm">The search term entered by the user.</param>
+    private async Task HandleSearch(string searchTerm)
+    {
+        _searchTerm = searchTerm;
+        _currentPage = 1;
+        await LoadCompanies();
+    }
+
+    /// <summary>
+    /// Handles row click by navigating to the company detail page.
+    /// </summary>
+    /// <param name="company">The clicked company.</param>
+    private void HandleRowClick(CompanyDto company)
+    {
+        Navigation.NavigateTo($"/companies/{company.Id}");
+    }
+
+    /// <summary>
+    /// Handles page change events.
+    /// </summary>
+    /// <param name="page">The target page number.</param>
+    private async Task HandlePageChanged(int page)
+    {
+        _currentPage = page;
+        await LoadCompanies();
+    }
+}
