@@ -1,51 +1,241 @@
 @page "/"
-@inject IProductApiClient ProductApi
-@inject ICategoryApiClient CategoryApi
+@inject IDashboardApiClient DashboardApi
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
 
-<PageTitle>Odin - Modern E-Commerce</PageTitle>
+<PageTitle>Odin - Dashboard</PageTitle>
 
-<div class="hero-section mb-4">
-    <h3 class="fw-bold">Welcome to Odin</h3>
-    <p class="mb-3" style="opacity: 0.85;">Discover our curated collection of premium products</p>
-    <a href="/products" class="btn btn-light">
-        Browse Products <i class="bi bi-arrow-right ms-1"></i>
-    </a>
-</div>
+<AuthorizeView>
+    <Authorized>
+        <PageHeader Title="Dashboard" Subtitle="Overview of your employee and company data" />
 
-@if (_categories is not null)
-{
-    <h5 class="fw-semibold mb-3">Categories</h5>
-    <div class="d-flex flex-wrap gap-2 mb-4">
-        @foreach (var category in _categories.Data)
+        @if (_isLoading)
         {
-            <a href="/products?category=@category.Id" class="badge text-bg-primary text-decoration-none fs-6 fw-normal py-2 px-3">
-                <i class="bi bi-grid me-1"></i> @category.Name
-            </a>
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
         }
-    </div>
-}
+        else
+        {
+            <div class="row g-4 mb-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="rounded-3 bg-primary bg-opacity-10 p-3 me-3">
+                                <i class="bi bi-people-fill fs-4 text-primary"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted small">Total Persons</div>
+                                <div class="fs-4 fw-bold">@(_stats?.TotalPersons ?? 0)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="rounded-3 bg-success bg-opacity-10 p-3 me-3">
+                                <i class="bi bi-building-fill fs-4 text-success"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted small">Total Companies</div>
+                                <div class="fs-4 fw-bold">@(_stats?.TotalCompanies ?? 0)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="rounded-3 bg-info bg-opacity-10 p-3 me-3">
+                                <i class="bi bi-link-45deg fs-4 text-info"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted small">Active Assignments</div>
+                                <div class="fs-4 fw-bold">@(_stats?.ActiveAssignments ?? 0)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="rounded-3 bg-warning bg-opacity-10 p-3 me-3">
+                                <i class="bi bi-calendar-plus fs-4 text-warning"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted small">New This Month</div>
+                                <div class="fs-4 fw-bold">@((_stats?.NewPersonsThisMonth ?? 0) + (_stats?.NewCompaniesThisMonth ?? 0))</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-<h5 class="fw-semibold mb-3">Featured Products</h5>
-@if (_products is null)
-{
-    <LoadingIndicator />
-}
-else
-{
-    <ProductGrid Products="_products.Data" />
-}
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-people fs-1 text-primary mb-3 d-block"></i>
+                            <h5 class="card-title">Persons</h5>
+                            <p class="card-text text-muted">Manage contacts, employees and their details</p>
+                            <a href="/persons" class="btn btn-primary">
+                                <i class="bi bi-arrow-right me-1"></i> View Persons
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-building fs-1 text-primary mb-3 d-block"></i>
+                            <h5 class="card-title">Companies</h5>
+                            <p class="card-text text-muted">Manage companies, locations and assignments</p>
+                            <a href="/companies" class="btn btn-primary">
+                                <i class="bi bi-arrow-right me-1"></i> View Companies
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-7">
+                    <div class="card h-100">
+                        <div class="card-header d-flex align-items-center">
+                            <i class="bi bi-clock-history me-2"></i>
+                            <span class="fw-semibold">Recent Activity</span>
+                        </div>
+                        <div class="card-body p-0">
+                            @if (_recentActivity is { Data.Count: > 0 })
+                            {
+                                <div class="list-group list-group-flush">
+                                    @foreach (var entry in _recentActivity.Data)
+                                    {
+                                        <div class="list-group-item d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <span class="badge @GetActionBadgeClass(entry.Action) me-2">@entry.Action</span>
+                                                <span class="fw-semibold">@entry.EntityType</span>
+                                                @if (!string.IsNullOrEmpty(entry.PropertyName))
+                                                {
+                                                    <span class="text-muted"> - @entry.PropertyName</span>
+                                                }
+                                            </div>
+                                            <small class="text-muted">@entry.Timestamp.ToString("g")</small>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                    No recent activity
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <div class="card h-100">
+                        <div class="card-header d-flex align-items-center">
+                            <i class="bi bi-cake2 me-2"></i>
+                            <span class="fw-semibold">Upcoming Birthdays</span>
+                        </div>
+                        <div class="card-body p-0">
+                            @if (_upcomingBirthdays is { Data.Count: > 0 })
+                            {
+                                <div class="list-group list-group-flush">
+                                    @foreach (var person in _upcomingBirthdays.Data)
+                                    {
+                                        <a href="@($"/persons/{person.Id}")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="bi bi-person me-2"></i>
+                                                <span class="fw-semibold">@person.FirstName @person.LastName</span>
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(person.City))
+                                            {
+                                                <small class="text-muted">@person.City</small>
+                                            }
+                                        </a>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center text-muted py-4">
+                                    <i class="bi bi-calendar-x fs-3 d-block mb-2"></i>
+                                    No upcoming birthdays
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex align-items-center justify-content-center" style="min-height: 60vh;">
+            <div class="text-center">
+                <i class="bi bi-lightning-charge-fill text-primary" style="font-size: 4rem;"></i>
+                <h2 class="fw-bold mt-3">Welcome to Odin</h2>
+                <p class="text-muted fs-5 mb-4">Employee and Company Management System</p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <a href="/login" class="btn btn-primary btn-lg">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+                    </a>
+                    <a href="/register" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-person-plus me-2"></i> Register
+                    </a>
+                </div>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
-    private ListResult<ProductDto>? _products;
-    private ListResult<CategoryDto>? _categories;
+    private DashboardStatsDto? _stats;
+    private ListResult<AuditLogDto>? _recentActivity;
+    private ListResult<PersonDto>? _upcomingBirthdays;
+    private bool _isLoading = true;
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
-        var productsTask = ProductApi.GetAll(CancellationToken.None);
-        var categoriesTask = CategoryApi.GetAll(CancellationToken.None);
-        await Task.WhenAll(productsTask, categoriesTask);
-        _products = productsTask.Result;
-        _categories = categoriesTask.Result;
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated != true)
+        {
+            _isLoading = false;
+            return;
+        }
+
+        var statsTask = DashboardApi.GetStats(CancellationToken.None);
+        var activityTask = DashboardApi.GetRecentActivity(10, CancellationToken.None);
+        var birthdaysTask = DashboardApi.GetUpcomingBirthdays(7, CancellationToken.None);
+
+        await Task.WhenAll(statsTask, activityTask, birthdaysTask);
+
+        _stats = await statsTask;
+        _recentActivity = await activityTask;
+        _upcomingBirthdays = await birthdaysTask;
+
+        _isLoading = false;
+    }
+
+    /// <summary>
+    /// Returns the appropriate Bootstrap badge class for an audit action.
+    /// </summary>
+    private static string GetActionBadgeClass(string action)
+    {
+        return action switch
+        {
+            "Created" => "bg-success",
+            "Updated" => "bg-primary",
+            "Deleted" => "bg-danger",
+            _ => "bg-secondary"
+        };
     }
 }
