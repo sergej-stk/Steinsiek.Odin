@@ -21,37 +21,43 @@ Steinsiek.Odin is a modular .NET Aspire **Employee and Company Management** plat
 
 ## Solution Structure
 
+This is a **super-repository** using Git submodules for code separation.
+
 ```
-Steinsiek.Odin/
-├── Steinsiek.Odin.slnx                   # Main orchestration solution
+Steinsiek.Odin/                              # Super-repo (orchestration)
+├── Steinsiek.Odin.slnx                      # Main solution (references all projects)
+├── .gitmodules                              # Submodule configuration
 ├── src/
-│   ├── Steinsiek.Odin.AppHost/           # Aspire Orchestration
-│   ├── Steinsiek.Odin.ServiceDefaults/   # Shared Aspire Config
-│   ├── Steinsiek.Odin.API/               # Host API (Program.cs, Middleware, Dashboard)
-│   ├── Steinsiek.Odin.Web/              # Bootstrap 5 Frontend
-│   └── Modules/
-│       ├── Core/
-│       │   ├── Core.slnx                        # Module-specific solution
-│       │   ├── Steinsiek.Odin.Modules.Core/     # Shared Abstractions, Lookups, Audit
-│       │   ├── Steinsiek.Odin.Modules.Core.Shared/
-│       │   └── Steinsiek.Odin.Modules.Core.Tests/
-│       ├── Auth/
-│       │   ├── Auth.slnx                        # Module-specific solution
-│       │   ├── Steinsiek.Odin.Modules.Auth/     # Auth Module (JWT + RBAC)
-│       │   ├── Steinsiek.Odin.Modules.Auth.Shared/   # DTOs
-│       │   └── Steinsiek.Odin.Modules.Auth.Tests/
-│       ├── Persons/
-│       │   ├── Persons.slnx                     # Module-specific solution
-│       │   ├── Steinsiek.Odin.Modules.Persons/       # Persons Module
-│       │   ├── Steinsiek.Odin.Modules.Persons.Shared/    # DTOs
-│       │   └── Steinsiek.Odin.Modules.Persons.Tests/
-│       └── Companies/
-│           ├── Companies.slnx                   # Module-specific solution
-│           ├── Steinsiek.Odin.Modules.Companies/      # Companies Module
-│           ├── Steinsiek.Odin.Modules.Companies.Shared/   # DTOs
-│           └── Steinsiek.Odin.Modules.Companies.Tests/
-└── tests/
-    └── Steinsiek.Odin.API.Tests/         # Integration tests
+│   ├── Steinsiek.Odin.AppHost/              # Aspire Orchestration
+│   ├── Steinsiek.Odin.ServiceDefaults/      # Shared Aspire Config
+│   ├── Steinsiek.Odin.API/                  # ← SUBMODULE (API + Modules + Tests)
+│   │   ├── Steinsiek.Odin.API/              # Host API project
+│   │   ├── Modules/
+│   │   │   ├── Core/Steinsiek.Odin.Modules.Core/
+│   │   │   ├── Auth/Steinsiek.Odin.Modules.Auth/
+│   │   │   ├── Persons/Steinsiek.Odin.Modules.Persons/
+│   │   │   └── Companies/Steinsiek.Odin.Modules.Companies/
+│   │   └── tests/Steinsiek.Odin.API.Tests/
+│   ├── Steinsiek.Odin.Web/                  # ← SUBMODULE (Blazor frontend)
+│   │   └── Steinsiek.Odin.Web/
+│   └── Steinsiek.Odin.Shared/              # ← SUBMODULE (DTOs & contracts)
+│       ├── Steinsiek.Odin.Modules.Core.Shared/
+│       ├── Steinsiek.Odin.Modules.Auth.Shared/
+│       ├── Steinsiek.Odin.Modules.Persons.Shared/
+│       └── Steinsiek.Odin.Modules.Companies.Shared/
+├── docs/
+└── assets/
+```
+
+### Cloning
+
+```bash
+git clone --recurse-submodules git@github.com:sergej-stk/Steinsiek.Odin.git
+```
+
+If already cloned without submodules:
+```bash
+git submodule update --init --recursive
 ```
 
 ## Language Policy

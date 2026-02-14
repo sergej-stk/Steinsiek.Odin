@@ -1,0 +1,9 @@
+[submodule "src/Steinsiek.Odin.API"]
+	path = src/Steinsiek.Odin.API
+	url = git@github.com:sergej-stk/Steinsiek.Odin.API.git
+[submodule "src/Steinsiek.Odin.Web"]
+	path = src/Steinsiek.Odin.Web
+	url = git@github.com:sergej-stk/Steinsiek.Odin.Web.git
+[submodule "src/Steinsiek.Odin.Shared"]
+	path = src/Steinsiek.Odin.Shared
+	url = git@github.com:sergej-stk/Steinsiek.Odin.Shared.git

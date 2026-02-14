@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="Steinsiek.Odin.Modules.Auth.Shared/Steinsiek.Odin.Modules.Auth.Shared.csproj" />
-  <Project Path="Steinsiek.Odin.Modules.Auth.Tests/Steinsiek.Odin.Modules.Auth.Tests.csproj" />
-  <Project Path="Steinsiek.Odin.Modules.Auth/Steinsiek.Odin.Modules.Auth.csproj" />
-</Solution>
