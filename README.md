@@ -43,12 +43,12 @@ Steinsiek is a modular Employee and Company Management platform built with .NET 
 <td align="center"><sub>Login</sub></td>
 </tr>
 <tr>
-<td width="50%"><img src="assets/screenshots/register.png" alt="Register"></td>
-<td width="50%"><img src="assets/screenshots/aspire-dashboard.png" alt="Aspire Dashboard"></td>
+<td width="50%"><img src="assets/screenshots/person-detail.png" alt="Person Detail"></td>
+<td width="50%"><img src="assets/screenshots/company-list.png" alt="Company List"></td>
 </tr>
 <tr>
-<td align="center"><sub>Register</sub></td>
-<td align="center"><sub>Aspire Dashboard</sub></td>
+<td align="center"><sub>Person Detail</sub></td>
+<td align="center"><sub>Company List</sub></td>
 </tr>
 </table>
 
