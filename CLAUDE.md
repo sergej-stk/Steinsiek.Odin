@@ -21,30 +21,17 @@ Steinsiek.Odin is a modular .NET Aspire **Employee and Company Management** plat
 
 ## Solution Structure
 
-This is a **super-repository** using Git submodules for code separation.
+This is a **super-repository** using Git submodules for code separation. Each submodule has its own README with detailed internal structure.
 
 ```
-Steinsiek.Odin/                              # Super-repo (orchestration)
-├── Steinsiek.Odin.slnx                      # Main solution (references all projects)
-├── .gitmodules                              # Submodule configuration
+Steinsiek.Odin/                          # Super-repo (orchestration)
+├── Steinsiek.Odin.slnx                  # Main solution
 ├── src/
-│   ├── Steinsiek.Odin.AppHost/              # Aspire Orchestration
-│   ├── Steinsiek.Odin.ServiceDefaults/      # Shared Aspire Config
-│   ├── Steinsiek.Odin.API/                  # ← SUBMODULE (API + Modules + Tests)
-│   │   ├── Steinsiek.Odin.API/              # Host API project
-│   │   ├── Modules/
-│   │   │   ├── Core/Steinsiek.Odin.Modules.Core/
-│   │   │   ├── Auth/Steinsiek.Odin.Modules.Auth/
-│   │   │   ├── Persons/Steinsiek.Odin.Modules.Persons/
-│   │   │   └── Companies/Steinsiek.Odin.Modules.Companies/
-│   │   └── tests/Steinsiek.Odin.API.Tests/
-│   ├── Steinsiek.Odin.Web/                  # ← SUBMODULE (Blazor frontend)
-│   │   └── Steinsiek.Odin.Web/
-│   └── Steinsiek.Odin.Shared/              # ← SUBMODULE (DTOs & contracts)
-│       ├── Steinsiek.Odin.Modules.Core.Shared/
-│       ├── Steinsiek.Odin.Modules.Auth.Shared/
-│       ├── Steinsiek.Odin.Modules.Persons.Shared/
-│       └── Steinsiek.Odin.Modules.Companies.Shared/
+│   ├── Steinsiek.Odin.AppHost/          # Aspire Orchestration
+│   ├── Steinsiek.Odin.ServiceDefaults/  # Shared Aspire Config
+│   ├── Steinsiek.Odin.API/              # ← SUBMODULE (API + Modules + Tests)
+│   ├── Steinsiek.Odin.Web/              # ← SUBMODULE (Blazor frontend)
+│   └── Steinsiek.Odin.Shared/           # ← SUBMODULE (DTOs & contracts)
 ├── docs/
 └── assets/
 ```
