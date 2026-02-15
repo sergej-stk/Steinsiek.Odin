@@ -5,7 +5,7 @@
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <Format>cobertura</Format>
-          <Exclude>[*]*.Migrations.*,[*]*.Persistence.Configurations.*,[*.AppHost]*,[*.ServiceDefaults]*,[*.Web]*,[*]*.Seeding.*</Exclude>
+          <Exclude>[*]*.Migrations.*,[*]*.Persistence.Configurations.*,[*.AppHost]*,[*.ServiceDefaults]*,[*.Web]*,[*]*.Seeding.*,[*]*.Repositories.Ef*,[*]*.Persistence.OdinDbContext,[*]*.Persistence.AuditSaveChangesInterceptor,[*]*.DesignTimeDbContextFactory</Exclude>
           <ExcludeByFile>**/Migrations/**,**/obj/**,**/Seeding/**</ExcludeByFile>
           <SkipAutoProps>true</SkipAutoProps>
         </Configuration>
