@@ -5,8 +5,8 @@
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <Format>cobertura</Format>
-          <Exclude>[*]*.Migrations.*,[*]*.Persistence.Configurations.*,[*.AppHost]*,[*.ServiceDefaults]*,[*.Web]*</Exclude>
-          <ExcludeByFile>**/Migrations/**,**/obj/**</ExcludeByFile>
+          <Exclude>[*]*.Migrations.*,[*]*.Persistence.Configurations.*,[*.AppHost]*,[*.ServiceDefaults]*,[*.Web]*,[*]*.Seeding.*</Exclude>
+          <ExcludeByFile>**/Migrations/**,**/obj/**,**/Seeding/**</ExcludeByFile>
           <SkipAutoProps>true</SkipAutoProps>
         </Configuration>
       </DataCollector>
