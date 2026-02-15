@@ -1,33 +1,38 @@
 <div align="center">
   <a href="https://github.com/sergej-stk/Steinsiek.Odin">
-    <img src="assets/logo.svg" alt="Steinsiek Logo" width="400">
+    <img src="assets/logo.svg" alt="Steinsiek Logo" width="200">
   </a>
-
-  <h3>Steinsiek</h3>
-
-  <p>A modular .NET Aspire Employee and Company Management platform</p>
+  <br>
+  <img src="assets/steinsiek-text.svg" alt="Steinsiek" width="300">
+  <br><br>
+  <p><strong>Modern Employee and Company Management, built for teams that move fast.</strong></p>
 
   [![Build](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/build.yml/badge.svg)](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/build.yml)
   [![Test](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/test.yml/badge.svg)](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/test.yml)
   [![Code Quality](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/codequality.yml/badge.svg)](https://github.com/sergej-stk/Steinsiek.Odin/actions/workflows/codequality.yml)
 
-  [Documentation](https://github.com/sergej-stk/Steinsiek.Odin) · [Report Bug](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?template=bug-report.yml&labels=bug) · [Request Feature](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?template=feature-request.yml&labels=enhancement) · [Changelog](CHANGELOG.md)
+  [Documentation](https://odin.sergejsteinsiek.com) · [Report Bug](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?template=bug-report.yml&labels=bug) · [Request Feature](https://github.com/sergej-stk/Steinsiek.Odin/issues/new?template=feature-request.yml&labels=enhancement) · [Changelog](CHANGELOG.md)
 </div>
 
 ---
 
-## About
+## Why Steinsiek?
 
-Steinsiek is a modular Employee and Company Management platform built with .NET 10 and ASP.NET Aspire. The project follows a **Modular Monolith** architecture where each domain (Auth, Persons, Companies) is encapsulated in a separate module, enabling clean separation of concerns while maintaining the simplicity of a monolithic deployment. The frontend is a Blazor Web App with Bootstrap 5.
+Steinsiek is a full-stack Employee and Company Management platform powered by .NET 10 and ASP.NET Aspire. Its **Modular Monolith** architecture gives you the clean domain separation of microservices with the operational simplicity of a single deployment. A polished Blazor frontend, a comprehensive REST API, and built-in orchestration mean your team can ship features instead of fighting infrastructure.
 
-## Features
+## Key Features
 
-- **JWT Authentication** - Secure token-based authentication
-- **API Versioning** - URL-based versioning (`/api/v1/...`)
-- **Redis Caching** - Distributed caching via Aspire
-- **Scalar API Docs** - Modern OpenAPI documentation
-- **Modular Architecture** - Clean domain separation (Auth, Persons, Companies, Core)
-- **Aspire Orchestration** - Service discovery and health monitoring
+- **Modular Monolith Architecture** — Each domain (Auth, Persons, Companies, Core) lives in its own module with dedicated entities, services, and repositories, yet deploys as one unit
+- **Person Management** — Full CRUD with detail views, addresses, phone numbers, emails, bank accounts, social media links, and image uploads
+- **Company Management** — Full CRUD with locations, employee associations, industry classification, and legal form tracking
+- **JWT Authentication & RBAC** — Secure token-based auth with four roles (Admin, Manager, User, ReadOnly) and granular endpoint authorization
+- **Interactive Dashboard** — At-a-glance statistics, recent activity feed, and upcoming birthday notifications
+- **Dark & Light Mode** — One-click theme toggle with CSS Custom Properties and Bootstrap 5
+- **Bilingual UI** — Full English and German localization via .resx resource files
+- **Audit Trail** — Automatic change tracking for every create, update, and delete across all entities
+- **Server-Side Pagination** — Filterable, sortable, paginated lists with URL-persisted state
+- **Aspire Orchestration** — PostgreSQL, Redis, API, and Web frontend wired together with service discovery and health monitoring
+- **Scalar API Docs** — Beautiful, interactive API documentation out of the box
 
 ## Preview
 
@@ -57,106 +62,65 @@ Steinsiek is a modular Employee and Company Management platform built with .NET 
 | Category | Technology |
 |----------|------------|
 | Framework | .NET 10, C# 13 |
-| Frontend | Blazor Server, Bootstrap 5 |
-| Database | PostgreSQL, EF Core |
+| Frontend | Blazor Server, Bootstrap 5.3, Bootstrap Icons |
+| Database | PostgreSQL, EF Core 10 |
 | Orchestration | ASP.NET Aspire |
 | Logging | Serilog |
 | API Docs | Scalar |
-| Authentication | JWT Bearer |
+| Authentication | JWT Bearer, BCrypt |
 | Caching | Redis |
-| Testing | MSTest |
+| Testing | MSTest 4.0 |
 
-## Project Structure
+## Quick Start
 
-```
-Steinsiek.Odin/
-├── src/
-│   ├── Steinsiek.Odin.AppHost/           # Aspire Orchestration
-│   ├── Steinsiek.Odin.ServiceDefaults/   # Shared Aspire Config
-│   ├── Steinsiek.Odin.API/               # Host API
-│   ├── Steinsiek.Odin.Web/              # Blazor Frontend
-│   └── Modules/
-│       ├── Core/                         # Shared Abstractions & Lookups
-│       ├── Auth/                         # Authentication Module
-│       ├── Persons/                      # Persons Module
-│       └── Companies/                    # Companies Module
-└── tests/
-    └── Steinsiek.Odin.API.Tests/         # Integration Tests
-```
-
-## Prerequisites
-
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- IDE of choice (Visual Studio 2022+, JetBrains Rider, or VS Code)
-
-## Installation
-
-Clone the repository and build the solution:
+**Prerequisites:** [.NET 10 SDK](https://dotnet.microsoft.com/download) and an IDE of your choice.
 
 ```bash
-git clone https://github.com/sergej-stk/Steinsiek.Odin.git
+# Clone with submodules
+git clone --recurse-submodules https://github.com/sergej-stk/Steinsiek.Odin.git
 cd Steinsiek.Odin
+
+# Build
 dotnet build
-```
 
-## Running the Application
-
-Start the application via Aspire orchestration:
-
-```bash
+# Run via Aspire
 dotnet run --project src/Steinsiek.Odin.AppHost
 ```
 
-After startup:
-- **Aspire Dashboard** - Available at the URL shown in console
-- **Scalar API Docs** - `https://localhost:{port}/scalar/v1`
+After startup the **Aspire Dashboard** URL appears in the console. From there you can access the Web frontend and API.
 
-## API Endpoints
-
-### Authentication
-
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/api/v1/auth/login` | No | User login |
-| POST | `/api/v1/auth/register` | No | User registration |
-| GET | `/api/v1/auth/me` | Yes | Current user info |
-
-### Persons
-
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/api/v1/persons` | Yes | List all persons |
-| GET | `/api/v1/persons/{id}` | Yes | Get person by ID |
-| GET | `/api/v1/persons/search?q=` | Yes | Search persons |
-| POST | `/api/v1/persons` | Yes | Create person |
-| PUT | `/api/v1/persons/{id}` | Yes | Update person |
-| DELETE | `/api/v1/persons/{id}` | Yes | Soft-delete person |
-
-### Companies
-
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/api/v1/companies` | Yes | List all companies |
-| GET | `/api/v1/companies/{id}` | Yes | Get company by ID |
-| GET | `/api/v1/companies/search?q=` | Yes | Search companies |
-| POST | `/api/v1/companies` | Yes | Create company |
-| PUT | `/api/v1/companies/{id}` | Yes | Update company |
-| DELETE | `/api/v1/companies/{id}` | Yes | Soft-delete company |
-
-### Demo Credentials
-
+**Demo credentials:**
 ```
 Email:    demo@steinsiek.de
 Password: Demo123!
 ```
 
-## Testing
+**API documentation:** `https://localhost:{port}/scalar/v1`
 
-Run all tests:
+## Project Structure
 
-```bash
-dotnet test
 ```
+Steinsiek.Odin/                              # Super-repo (orchestration + CI/CD)
+├── src/
+│   ├── Steinsiek.Odin.AppHost/              # Aspire orchestration
+│   ├── Steinsiek.Odin.ServiceDefaults/      # Shared Aspire configuration
+│   ├── Steinsiek.Odin.API/                  # [submodule] Backend API + modules + tests
+│   ├── Steinsiek.Odin.Web/                  # [submodule] Blazor Web frontend
+│   └── Steinsiek.Odin.Shared/               # [submodule] DTOs & shared contracts
+├── assets/                                   # Logo, screenshots, branding
+├── docs/                                     # Documentation site
+└── scripts/                                  # Build & generation scripts
+```
+
+## Documentation
+
+Each submodule has its own comprehensive technical README:
+
+| Repository | Description |
+|------------|-------------|
+| [Steinsiek.Odin.API](https://github.com/sergej-stk/Steinsiek.Odin.API) | Backend architecture, module structure, API endpoints, database schema, testing |
+| [Steinsiek.Odin.Web](https://github.com/sergej-stk/Steinsiek.Odin.Web) | Frontend architecture, shared components, authentication flow, theming, localization |
+| [Steinsiek.Odin.Shared](https://github.com/sergej-stk/Steinsiek.Odin.Shared) | DTO contracts, pagination patterns, validation rules, module contents |
 
 ## Contributing
 
