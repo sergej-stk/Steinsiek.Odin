@@ -2,49 +2,7 @@
 
 ## API Endpoints
 
-### Auth
-| Endpoint | Auth | Description |
-|----------|------|-------------|
-| POST /api/v1/auth/login | No | Login |
-| POST /api/v1/auth/register | No | Registration |
-| GET /api/v1/auth/me | Yes | Current user |
-| GET /api/v1/auth/roles | Yes (Admin) | List all roles |
-| POST /api/v1/auth/users/{userId}/roles | Yes (Admin) | Assign role |
-| DELETE /api/v1/auth/users/{userId}/roles/{roleId} | Yes (Admin) | Remove role |
-
-### Persons
-| Endpoint | Auth | Description |
-|----------|------|-------------|
-| GET /api/v1/persons | Yes | All persons (paginated) |
-| GET /api/v1/persons/{id} | Yes | Person detail |
-| GET /api/v1/persons/search?q= | Yes | Search persons |
-| POST /api/v1/persons | Yes | Create person |
-| PUT /api/v1/persons/{id} | Yes | Update person |
-| DELETE /api/v1/persons/{id} | Yes | Soft-delete person |
-
-### Companies
-| Endpoint | Auth | Description |
-|----------|------|-------------|
-| GET /api/v1/companies | Yes | All companies (paginated) |
-| GET /api/v1/companies/{id} | Yes | Company detail |
-| GET /api/v1/companies/search?q= | Yes | Search companies |
-| POST /api/v1/companies | Yes | Create company |
-| PUT /api/v1/companies/{id} | Yes | Update company |
-| DELETE /api/v1/companies/{id} | Yes | Soft-delete company |
-
-### Dashboard
-| Endpoint | Auth | Description |
-|----------|------|-------------|
-| GET /api/v1/dashboard/stats | Yes | Aggregate statistics |
-| GET /api/v1/dashboard/recent-activity | Yes | Recent audit log entries |
-| GET /api/v1/dashboard/upcoming-birthdays | Yes | Upcoming birthdays |
-
-### Core
-| Endpoint | Auth | Description |
-|----------|------|-------------|
-| GET /api/v1/lookups | Yes | Translated lookup values |
-| GET /api/v1/auditlog/{entityType}/{entityId} | Yes (Admin) | Audit log for entity |
-| GET /api/v1/auditlog/recent | Yes (Admin) | Recent audit entries |
+For the full API endpoint reference, see the documentation at [odin.sergejsteinsiek.com](https://odin.sergejsteinsiek.com).
 
 ## Configuration
 
