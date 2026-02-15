@@ -16,6 +16,7 @@ try
         .WithoutHttpsCertificate();
 
     var postgres = builder.AddPostgres("postgres")
+        .WithDataVolume("steinsiek-odin-postgres")
         .WithPgAdmin();
     var odinDb = postgres.AddDatabase("odindb");
 
