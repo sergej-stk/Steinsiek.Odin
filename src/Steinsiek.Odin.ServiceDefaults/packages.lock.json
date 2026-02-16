@@ -32,11 +32,11 @@
       },
       "OpenTelemetry.Extensions.Hosting": {
         "type": "Direct",
-        "requested": "[1.13.1, )",
-        "resolved": "1.13.1",
-        "contentHash": "gULeizu0WH4YxnVltLO/Ml12aGxpk2Qrz3dm3MUgohQ/Y8HsGDzuAhawEP1eas6dMO61PJta1dy6KqNbVIJQyw==",
+        "requested": "[1.15.0, )",
+        "resolved": "1.15.0",
+        "contentHash": "RixjKyB1pbYGhWdvPto4KJs+exdQknJsnjUO9WszdLles5Vcd0EYzxPNJdwmLjYfP+Jfbr4B5nktM4ZgeHSWtg==",
         "dependencies": {
-          "OpenTelemetry": "1.13.1"
+          "OpenTelemetry": "1.15.0"
         }
       },
       "OpenTelemetry.Instrumentation.AspNetCore": {
@@ -136,23 +136,23 @@
       },
       "OpenTelemetry": {
         "type": "Transitive",
-        "resolved": "1.13.1",
-        "contentHash": "rrM2NlZ0Xla2Ar8zzU09n+HoLFq8b+Kjx7vrmR0tdYfWLYWGNcXHOITXUiyaK8RrFEceMEoF45VBsaf4QPmKcg==",
+        "resolved": "1.15.0",
+        "contentHash": "7mS/oZFF8S6xyqGQfMU1btp0nXJQUPWV535Vp/XMLYwRAUv36xQN+U4vufWBF1+z4HnRTOwuFHtUSGnHbyN6FQ==",
         "dependencies": {
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.13.1"
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.15.0"
         }
       },
       "OpenTelemetry.Api": {
         "type": "Transitive",
-        "resolved": "1.13.1",
-        "contentHash": "tieglRERo7Rgu8oE8aamnuXCMPEW5fXIqO5ngTMCNk9pOEXanc0SdQ86ZAD1goNiGcjWHn+P3WMZp0FZSJgCoQ=="
+        "resolved": "1.15.0",
+        "contentHash": "vk5OGdf6K9kQScCWo3bRjhDWCv6Pqw92IpX4dlARZ8B1WL7/2NGTDtCkkw42eQf7UdwyoHKzVvMH/PtL8d6z7w=="
       },
       "OpenTelemetry.Api.ProviderBuilderExtensions": {
         "type": "Transitive",
-        "resolved": "1.13.1",
-        "contentHash": "x8QXMsrIyp+XzDUFQAM+C4upAPNbwaBIPjTWEoonziWAav6weS8OxsMKrE4wz7Zly8ATlsoxk0mWZ+PHO3Wg0w==",
+        "resolved": "1.15.0",
+        "contentHash": "OnuSUlRpGvowkOzGFQfy+KZFu0cITfKfh2IYJJiZskxVJiOuexwOOuvfDAgpJdmTzVWAHjYdz2shcHZaJ06UjQ==",
         "dependencies": {
-          "OpenTelemetry.Api": "1.13.1"
+          "OpenTelemetry.Api": "1.15.0"
         }
       },
       "Polly.Core": {
