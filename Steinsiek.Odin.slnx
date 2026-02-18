@@ -1,34 +1,27 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path=".editorconfig" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Steinsiek.Odin.AppHost/Steinsiek.Odin.AppHost.csproj" />
     <Project Path="src/Steinsiek.Odin.ServiceDefaults/Steinsiek.Odin.ServiceDefaults.csproj" />
     <Project Path="src/Steinsiek.Odin.API/Steinsiek.Odin.API/Steinsiek.Odin.API.csproj" />
     <Project Path="src/Steinsiek.Odin.Web/Steinsiek.Odin.Web/Steinsiek.Odin.Web.csproj" />
-  </Folder>
-  <Folder Name="/src/Shared/">
+    <Project Path="src/Steinsiek.Odin.API/Modules/Core/Steinsiek.Odin.Modules.Core/Steinsiek.Odin.Modules.Core.csproj" />
     <Project Path="src/Steinsiek.Odin.Shared/Steinsiek.Odin.Modules.Core.Shared/Steinsiek.Odin.Modules.Core.Shared.csproj" />
+    <Project Path="src/Steinsiek.Odin.API/Modules/Auth/Steinsiek.Odin.Modules.Auth/Steinsiek.Odin.Modules.Auth.csproj" />
     <Project Path="src/Steinsiek.Odin.Shared/Steinsiek.Odin.Modules.Auth.Shared/Steinsiek.Odin.Modules.Auth.Shared.csproj" />
+    <Project Path="src/Steinsiek.Odin.API/Modules/Persons/Steinsiek.Odin.Modules.Persons/Steinsiek.Odin.Modules.Persons.csproj" />
     <Project Path="src/Steinsiek.Odin.Shared/Steinsiek.Odin.Modules.Persons.Shared/Steinsiek.Odin.Modules.Persons.Shared.csproj" />
+    <Project Path="src/Steinsiek.Odin.API/Modules/Companies/Steinsiek.Odin.Modules.Companies/Steinsiek.Odin.Modules.Companies.csproj" />
     <Project Path="src/Steinsiek.Odin.Shared/Steinsiek.Odin.Modules.Companies.Shared/Steinsiek.Odin.Modules.Companies.Shared.csproj" />
   </Folder>
-  <Folder Name="/src/Modules/" />
-  <Folder Name="/src/Modules/Core/">
-    <Project Path="src/Steinsiek.Odin.API/Modules/Core/Steinsiek.Odin.Modules.Core/Steinsiek.Odin.Modules.Core.csproj" />
-    <Project Path="src/Steinsiek.Odin.API/Modules/Core/Steinsiek.Odin.Modules.Core.Tests/Steinsiek.Odin.Modules.Core.Tests.csproj" />
-  </Folder>
-  <Folder Name="/src/Modules/Auth/">
-    <Project Path="src/Steinsiek.Odin.API/Modules/Auth/Steinsiek.Odin.Modules.Auth/Steinsiek.Odin.Modules.Auth.csproj" />
-    <Project Path="src/Steinsiek.Odin.API/Modules/Auth/Steinsiek.Odin.Modules.Auth.Tests/Steinsiek.Odin.Modules.Auth.Tests.csproj" />
-  </Folder>
-  <Folder Name="/src/Modules/Persons/">
-    <Project Path="src/Steinsiek.Odin.API/Modules/Persons/Steinsiek.Odin.Modules.Persons/Steinsiek.Odin.Modules.Persons.csproj" />
-    <Project Path="src/Steinsiek.Odin.API/Modules/Persons/Steinsiek.Odin.Modules.Persons.Tests/Steinsiek.Odin.Modules.Persons.Tests.csproj" />
-  </Folder>
-  <Folder Name="/src/Modules/Companies/">
-    <Project Path="src/Steinsiek.Odin.API/Modules/Companies/Steinsiek.Odin.Modules.Companies/Steinsiek.Odin.Modules.Companies.csproj" />
-    <Project Path="src/Steinsiek.Odin.API/Modules/Companies/Steinsiek.Odin.Modules.Companies.Tests/Steinsiek.Odin.Modules.Companies.Tests.csproj" />
-  </Folder>
   <Folder Name="/tests/">
+    <Project Path="src/Steinsiek.Odin.API/Modules/Core/Steinsiek.Odin.Modules.Core.Tests/Steinsiek.Odin.Modules.Core.Tests.csproj" />
+    <Project Path="src/Steinsiek.Odin.API/Modules/Auth/Steinsiek.Odin.Modules.Auth.Tests/Steinsiek.Odin.Modules.Auth.Tests.csproj" />
+    <Project Path="src/Steinsiek.Odin.API/Modules/Persons/Steinsiek.Odin.Modules.Persons.Tests/Steinsiek.Odin.Modules.Persons.Tests.csproj" />
+    <Project Path="src/Steinsiek.Odin.API/Modules/Companies/Steinsiek.Odin.Modules.Companies.Tests/Steinsiek.Odin.Modules.Companies.Tests.csproj" />
     <Project Path="src/Steinsiek.Odin.API/tests/Steinsiek.Odin.API.Tests/Steinsiek.Odin.API.Tests.csproj" />
   </Folder>
 </Solution>

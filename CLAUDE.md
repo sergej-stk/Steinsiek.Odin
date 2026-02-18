@@ -23,6 +23,7 @@ Steinsiek.Odin is a modular .NET Aspire **Employee and Company Management** plat
 
 This is a **super-repository** using Git submodules for code separation. Each submodule has its own README with detailed internal structure.
 
+### Physical Layout (on disk)
 ```
 Steinsiek.Odin/                          # Super-repo (orchestration)
 ├── Steinsiek.Odin.slnx                  # Main solution
@@ -35,6 +36,15 @@ Steinsiek.Odin/                          # Super-repo (orchestration)
 ├── docs/
 └── assets/
 ```
+
+### Solution Folders (in IDE)
+```
+/Solution Items/         # Directory.Build.props, .editorconfig
+/src/                    # All 12 source projects (flat)
+/tests/                  # All 5 test projects (flat)
+```
+
+Follows the Microsoft eShop convention: all source projects flat under `/src/`, all test projects flat under `/tests/`. No nested sub-folders.
 
 ### Cloning
 

@@ -85,13 +85,27 @@ cd src/Steinsiek.Odin.Shared
 dotnet new classlib -n Steinsiek.Odin.Modules.{Name}.Shared
 ```
 
-3. Add to main solution (`Steinsiek.Odin.slnx`):
-```bash
-cd C:\Development\Steinsiek.Odin
-dotnet sln add src/Steinsiek.Odin.API/Modules/{Name}/Steinsiek.Odin.Modules.{Name}/Steinsiek.Odin.Modules.{Name}.csproj
-dotnet sln add src/Steinsiek.Odin.API/Modules/{Name}/Steinsiek.Odin.Modules.{Name}.Tests/Steinsiek.Odin.Modules.{Name}.Tests.csproj
-dotnet sln add src/Steinsiek.Odin.Shared/Steinsiek.Odin.Modules.{Name}.Shared/Steinsiek.Odin.Modules.{Name}.Shared.csproj
+3. Add to main solution (`Steinsiek.Odin.slnx`) following the flat `src/` + `tests/` convention (eShop pattern):
+
+All source projects go flat in `/src/`, all test projects go flat in `/tests/`. Edit the `.slnx` file directly:
+```xml
+<!-- Add source + shared to /src/ (flat, no sub-folders) -->
+<Folder Name="/src/">
+  <Project Path="src/Steinsiek.Odin.API/Modules/{Name}/Steinsiek.Odin.Modules.{Name}/Steinsiek.Odin.Modules.{Name}.csproj" />
+  <Project Path="src/Steinsiek.Odin.Shared/Steinsiek.Odin.Modules.{Name}.Shared/Steinsiek.Odin.Modules.{Name}.Shared.csproj" />
+</Folder>
+
+<!-- Add test project to /tests/ (flat) -->
+<Folder Name="/tests/">
+  <Project Path="src/Steinsiek.Odin.API/Modules/{Name}/Steinsiek.Odin.Modules.{Name}.Tests/Steinsiek.Odin.Modules.{Name}.Tests.csproj" />
+</Folder>
 ```
+
+**Failure Conditions:**
+- Placing `.Shared` projects in a separate `/Shared/` solution folder is incorrect
+- Placing test projects inside `/src/` is incorrect — tests always go in `/tests/`
+- Creating nested sub-folders like `/src/Modules/{Name}/` is incorrect — keep `/src/` flat
+- Using custom folder names like `/Hosts/` or `/Infrastructure/` instead of `/src/` is incorrect
 
 4. Add project references (paths relative to each .csproj):
 ```bash
