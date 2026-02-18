@@ -9,6 +9,10 @@ updates:
     open-pull-requests-limit: 10
     commit-message:
       prefix: "Update"
+    groups:
+      opentelemetry:
+        patterns:
+          - "OpenTelemetry*"
 
   - package-ecosystem: github-actions
     directory: /
