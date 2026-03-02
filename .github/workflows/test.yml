@@ -51,7 +51,7 @@ jobs:
           --settings coverlet.runsettings
 
       - name: Upload Test Results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: test-results
@@ -95,7 +95,7 @@ jobs:
           echo "Coverage ${LINE_COVERAGE}% meets 55% threshold"
 
       - name: Upload Coverage Report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage-report
